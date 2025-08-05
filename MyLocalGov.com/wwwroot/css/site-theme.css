@@ -2,7 +2,7 @@
    SITE-WIDE THEME VARIABLES & STYLES
    =========================================== */
 
-/* Color Palette - Government Blue Theme */
+/* Color Palette - Government Blue Theme with South African Accents */
 :root {
   /* Primary Colors */
   --primary-blue-dark: #1e3a8a;
@@ -14,6 +14,17 @@
   /* Secondary Colors */
   --secondary-blue-light: #93c5fd;
   --secondary-blue-pale: #dbeafe;
+  
+  /* South African Accent Colors */
+  --sa-green: #007a3d;
+  --sa-gold: #ffb612;
+  --sa-red: #de3831;
+  --sa-black: #000000;
+  --sa-white: #ffffff;
+  
+  /* Accent Variants */
+  --accent-gold-light: rgba(255, 182, 18, 0.2);
+  --accent-green-light: rgba(0, 122, 61, 0.2);
   
   /* Neutral Colors */
   --white: #ffffff;

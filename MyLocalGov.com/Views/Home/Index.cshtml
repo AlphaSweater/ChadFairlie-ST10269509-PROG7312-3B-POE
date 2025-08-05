@@ -7,8 +7,9 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>Government Project Portal</title>
+	<title>My Local Gov.com - South African Municipal Services Portal</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Official municipal services portal for South African citizens. Report issues, request services, stay informed about local events, and track your service requests." />
 	<link href="~/css/site-theme.css" rel="stylesheet" />
 	<link href="~/css/landing-page.css" rel="stylesheet" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -20,7 +21,7 @@
 		<!-- Official Badge -->
 		<div class="badge-container">
 			<div class="official-badge fade-in">
-				🛡️ Official Portal
+				🇿🇦 Official Municipal Portal
 			</div>
 		</div>
 
@@ -31,30 +32,35 @@
 			</div>
 			<div class="title">My Local Gov.com</div>
 			<div class="subtitle">
-				Secure access to official government services and project management systems.
-				Built with security and efficiency in mind for public sector operations.
+				Your South African municipal services portal. Report issues, request services, and stay informed about local events and announcements.
 			</div>
-			<button id="enterButton" class="btn" aria-label="Enter Portal" role="button">
-				Enter Portal
+			<button id="enterButton" class="btn" aria-label="Access Municipal Services" role="button">
+				Access Portal
 				<span style="margin-left: 8px;" aria-hidden="true">→</span>
 			</button>
 		</header>
+
 		<!-- Features Grid -->
 		<section class="features-grid" aria-label="Portal Features">
 			<div class="feature-card">
-				<div class="feature-icon">🔒</div>
-				<div class="feature-title">Secure Access</div>
-				<div class="feature-description">End-to-end encryption and multi-factor authentication</div>
+				<div class="feature-icon">�</div>
+				<div class="feature-title">Report Issues</div>
+				<div class="feature-description">Easily report municipal problems like potholes, water leaks, or power outages directly to your local municipality.</div>
+			</div>
+			<div class="feature-card">
+				<div class="feature-icon">📝</div>
+				<div class="feature-title">Request Services</div>
+				<div class="feature-description">Submit requests for municipal services such as waste collection, permits, or general maintenance.</div>
+			</div>
+			<div class="feature-card">
+				<div class="feature-icon">📅</div>
+				<div class="feature-title">Local Events & Announcements</div>
+				<div class="feature-description">Stay updated on community events, council meetings, and important municipal announcements.</div>
 			</div>
 			<div class="feature-card">
 				<div class="feature-icon">📊</div>
-				<div class="feature-title">Project Management</div>
-				<div class="feature-description">Comprehensive tools for government project oversight</div>
-			</div>
-			<div class="feature-card">
-				<div class="feature-icon">🌐</div>
-				<div class="feature-title">Digital Services</div>
-				<div class="feature-description">Streamlined access to public digital services</div>
+				<div class="feature-title">Track Your Requests</div>
+				<div class="feature-description">Monitor the progress of your submitted issues and service requests with status updates.</div>
 			</div>
 		</section>
 	</main>
@@ -95,9 +101,10 @@
 					ripple.remove();
 				}, 600);
 
-				// Here you can add navigation logic
-				// For example: window.location.href = '/Dashboard';
-				console.log('Enter button clicked - Add your navigation logic here');
+				// Navigation to dashboard/main application
+				// For now, just log - you can replace with actual navigation
+				console.log('Accessing My Local Gov.com portal...');
+				// Example: window.location.href = '/Dashboard';
 			});
 
 			// Add staggered animation to feature cards
@@ -109,6 +116,5 @@
 			});
 		});
 	</script>
-
 </body>
 </html>

@@ -151,7 +151,7 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--spacing-lg);
   margin-top: 60px;
-  max-width: 800px;
+  max-width: 900px;
   width: 100%;
 }
 
@@ -172,7 +172,7 @@
 }
 
 .feature-icon {
-  font-size: 32px;
+  font-size: 36px;
   margin-bottom: var(--spacing-md);
   color: var(--secondary-blue-light);
 }
@@ -181,12 +181,13 @@
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-sm);
+  color: var(--white);
 }
 
 .feature-description {
   font-size: var(--font-size-sm);
   color: var(--white-transparent-80);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 /* Responsive Design */
@@ -212,6 +213,7 @@
   .features-grid {
     grid-template-columns: 1fr;
     margin-top: var(--spacing-2xl);
+    gap: var(--spacing-md);
   }
   
   .badge-container {
