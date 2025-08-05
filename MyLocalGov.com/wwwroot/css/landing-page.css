@@ -42,7 +42,7 @@
   height: 180px;
   border-radius: var(--border-radius-circle);
   border: 4px solid var(--white-transparent-30);
-  background: linear-gradient(45deg, var(--primary-blue-accent), var(--primary-blue-hover));
+  background: linear-gradient(45deg, var(--sa-green), var(--sa-green-light));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +53,8 @@
 
 .logo:hover {
   transform: scale(1.05);
-  box-shadow: var(--shadow-2xl);
+  box-shadow: 0 15px 40px rgba(9, 162, 19, 0.3);
+  border-color: var(--sa-green-light);
 }
 
 .logo-icon {
@@ -82,8 +83,9 @@
 }
 
 .subtitle strong {
-  color: var(--secondary-blue-light);
+  color: var(--sa-green-light);
   font-weight: var(--font-weight-semibold);
+  text-shadow: 1px 1px 2px var(--black-transparent-30);
 }
 
 /* Services Section */
@@ -104,6 +106,19 @@
   color: var(--white);
   margin-bottom: var(--spacing-sm);
   text-shadow: 1px 1px 2px var(--black-transparent-30);
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--sa-green);
+  border-radius: 2px;
 }
 
 .section-subtitle {
@@ -118,15 +133,16 @@
   font-weight: var(--font-weight-semibold);
   padding: var(--spacing-md) var(--spacing-2xl);
   border-radius: var(--border-radius-md);
-  background: linear-gradient(45deg, var(--primary-blue-accent), var(--primary-blue-hover));
+  background: linear-gradient(45deg, var(--sa-green), var(--sa-green-light));
   border: 2px solid var(--white-transparent-20);
   color: var(--white);
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 15px rgba(9, 162, 19, 0.3);
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
   overflow: hidden;
+  font-weight: var(--font-weight-bold);
 }
 
 #enterButton::before {
@@ -136,7 +152,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, var(--white-transparent-20), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left var(--transition-slow);
 }
 
@@ -145,10 +161,10 @@
 }
 
 #enterButton:hover {
-  background: linear-gradient(45deg, var(--primary-blue-medium), var(--primary-blue-light));
+  background: linear-gradient(45deg, var(--sa-green-dark), var(--sa-green));
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--white-transparent-40);
+  box-shadow: 0 8px 25px rgba(9, 162, 19, 0.4);
+  border-color: var(--sa-green-light);
 }
 
 #enterButton:active {
@@ -164,10 +180,10 @@
 }
 
 .official-badge {
-  background: var(--white-transparent-15);
+  background: rgba(9, 162, 19, 0.15);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--white-transparent-20);
+  border: 1px solid var(--sa-green-light);
   border-radius: var(--border-radius-full);
   padding: var(--spacing-sm) var(--spacing-lg);
   font-size: var(--font-size-sm);
@@ -175,6 +191,7 @@
   color: var(--white);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(9, 162, 19, 0.2);
 }
 
 /* Features Grid */
@@ -196,7 +213,7 @@
   background: var(--white-transparent-15) !important;
   transform: translateY(-8px);
   box-shadow: 0 8px 25px var(--black-transparent-40) !important;
-  border-color: var(--white-transparent-30) !important;
+  border-color: var(--sa-green-light) !important;
 }
 
 .feature-card .card-body {
@@ -208,9 +225,27 @@
   height: 100%;
 }
 
+/* Add subtle variety to individual cards */
+.feature-card:nth-child(1) {
+  background: linear-gradient(135deg, var(--white-transparent-10), rgba(9, 162, 19, 0.03)) !important;
+}
+
+.feature-card:nth-child(2) {
+  background: linear-gradient(135deg, var(--white-transparent-10), rgba(59, 130, 246, 0.05)) !important;
+}
+
+.feature-card:nth-child(3) {
+  background: linear-gradient(135deg, var(--white-transparent-10), rgba(147, 197, 253, 0.05)) !important;
+}
+
+.feature-card:nth-child(4) {
+  background: linear-gradient(135deg, var(--white-transparent-10), rgba(9, 162, 19, 0.02)) !important;
+}
+
 .feature-icon {
-  color: var(--secondary-blue-light) !important;
+  color: var(--sa-gold) !important;
   filter: drop-shadow(2px 2px 4px var(--black-transparent-30));
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .feature-title {
