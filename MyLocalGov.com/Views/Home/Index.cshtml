@@ -1,8 +1,114 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+	Layout = null;
+	ViewData["Title"] = "Landing Page";
 }
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<head>
+	<meta charset="utf-8" />
+	<title>Government Project Portal</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="~/css/site-theme.css" rel="stylesheet" />
+	<link href="~/css/landing-page.css" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<main class="landing-page-container">
+		<!-- Official Badge -->
+		<div class="badge-container">
+			<div class="official-badge fade-in">
+				🛡️ Official Portal
+			</div>
+		</div>
+
+		<!-- Logo and Title -->
+		<header class="logo-container slide-up">
+			<div class="logo">
+				<div class="logo-icon">🏛️</div>
+			</div>
+			<div class="title">My Local Gov.com</div>
+			<div class="subtitle">
+				Secure access to official government services and project management systems.
+				Built with security and efficiency in mind for public sector operations.
+			</div>
+			<button id="enterButton" class="btn" aria-label="Enter Portal" role="button">
+				Enter Portal
+				<span style="margin-left: 8px;" aria-hidden="true">→</span>
+			</button>
+		</header>
+		<!-- Features Grid -->
+		<section class="features-grid" aria-label="Portal Features">
+			<div class="feature-card">
+				<div class="feature-icon">🔒</div>
+				<div class="feature-title">Secure Access</div>
+				<div class="feature-description">End-to-end encryption and multi-factor authentication</div>
+			</div>
+			<div class="feature-card">
+				<div class="feature-icon">📊</div>
+				<div class="feature-title">Project Management</div>
+				<div class="feature-description">Comprehensive tools for government project oversight</div>
+			</div>
+			<div class="feature-card">
+				<div class="feature-icon">🌐</div>
+				<div class="feature-title">Digital Services</div>
+				<div class="feature-description">Streamlined access to public digital services</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			document.body.classList.add('page-loaded');
+			const enterButton = document.getElementById("enterButton");
+
+			// Add click animation to enter button
+			enterButton.addEventListener("click", (e) => {
+				// Add a ripple effect
+				const ripple = document.createElement('span');
+				const rect = enterButton.getBoundingClientRect();
+				const size = Math.max(rect.width, rect.height);
+				const x = e.clientX - rect.left - size / 2;
+				const y = e.clientY - rect.top - size / 2;
+
+				ripple.style.cssText = `
+					position: absolute;
+					width: ${size}px;
+					height: ${size}px;
+					left: ${x}px;
+					top: ${y}px;
+					background: rgba(255,255,255,0.3);
+					border-radius: 50%;
+					transform: scale(0);
+					animation: ripple 0.6s linear;
+					pointer-events: none;
+				`;
+
+				enterButton.style.position = 'relative';
+				enterButton.style.overflow = 'hidden';
+				enterButton.appendChild(ripple);
+
+				setTimeout(() => {
+					ripple.remove();
+				}, 600);
+
+				// Here you can add navigation logic
+				// For example: window.location.href = '/Dashboard';
+				console.log('Enter button clicked - Add your navigation logic here');
+			});
+
+			// Add staggered animation to feature cards
+			const featureCards = document.querySelectorAll('.feature-card');
+			featureCards.forEach((card, index) => {
+				setTimeout(() => {
+					card.classList.add('slide-up');
+				}, 200 * (index + 1));
+			});
+		});
+	</script>
+
+</body>
+</html>
