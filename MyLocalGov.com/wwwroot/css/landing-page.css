@@ -179,57 +179,54 @@
 
 /* Features Grid */
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-xl);
   width: 100%;
 }
 
 .feature-card {
-  background: var(--white-transparent-10);
+  background: var(--white-transparent-10) !important;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--white-transparent-20);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-xl);
-  text-align: left;
+  border: 1px solid var(--white-transparent-20) !important;
+  border-radius: var(--border-radius-lg) !important;
   transition: all var(--transition-normal);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-md);
+  height: 100%;
 }
 
 .feature-card:hover {
-  background: var(--white-transparent-15);
+  background: var(--white-transparent-15) !important;
   transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--white-transparent-30);
+  box-shadow: 0 8px 25px var(--black-transparent-40) !important;
+  border-color: var(--white-transparent-30) !important;
+}
+
+.feature-card .card-body {
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 .feature-icon {
-  font-size: 48px;
-  color: var(--secondary-blue-light);
-  margin-bottom: var(--spacing-sm);
-}
-
-.feature-content {
-  flex: 1;
+  color: var(--secondary-blue-light) !important;
+  filter: drop-shadow(2px 2px 4px var(--black-transparent-30));
 }
 
 .feature-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-sm);
-  color: var(--white);
-  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--white) !important;
+  margin-bottom: var(--spacing-sm) !important;
+  text-shadow: 1px 1px 2px var(--black-transparent-30);
 }
 
 .feature-description {
-  font-size: var(--font-size-sm);
-  color: var(--white-transparent-80);
-  line-height: 1.6;
-  margin: 0;
+  font-size: var(--font-size-sm) !important;
+  color: var(--white-transparent-80) !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  flex: 1;
 }
 
 /* Responsive Design */
@@ -252,18 +249,20 @@
     font-size: 60px;
   }
   
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-  
-  .feature-card {
-    text-align: center;
-    align-items: center;
+  .feature-card .card-body {
+    padding: var(--spacing-lg);
   }
   
   .feature-icon {
-    font-size: 40px;
+    font-size: 2.5rem !important;
+  }
+  
+  .feature-title {
+    font-size: var(--font-size-base) !important;
+  }
+  
+  .feature-description {
+    font-size: 0.875rem !important;
   }
   
   .section-title {
@@ -273,6 +272,29 @@
   .badge-container {
     position: static;
     margin-bottom: var(--spacing-lg);
+  }
+}
+
+/* Ensure cards maintain equal height and proper spacing */
+@media (min-width: 992px) {
+  .feature-card {
+    min-height: 280px;
+  }
+}
+
+/* Animation improvements for Bootstrap cards */
+.feature-card.slide-up {
+  animation: slideUpCard 0.6s ease-out forwards;
+}
+
+@keyframes slideUpCard {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
