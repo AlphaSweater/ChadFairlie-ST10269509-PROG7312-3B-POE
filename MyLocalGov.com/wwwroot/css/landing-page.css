@@ -52,7 +52,7 @@
 }
 
 .logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) rotate(5deg);
   box-shadow: 0 15px 40px rgba(9, 162, 19, 0.3);
   border-color: var(--sa-green-light);
 }
@@ -117,8 +117,9 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: var(--sa-green);
+  background: linear-gradient(90deg, var(--sa-green), var(--sa-green-light));
   border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(9, 162, 19, 0.3);
 }
 
 .section-subtitle {
@@ -131,18 +132,19 @@
 #enterButton {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-md) var(--spacing-2xl);
+  padding: 18px var(--spacing-2xl);
   border-radius: var(--border-radius-md);
   background: linear-gradient(45deg, var(--sa-green), var(--sa-green-light));
   border: 2px solid var(--white-transparent-20);
   color: var(--white);
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 15px rgba(9, 162, 19, 0.3);
+  box-shadow: 0 6px 20px rgba(9, 162, 19, 0.3);
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
   overflow: hidden;
   font-weight: var(--font-weight-bold);
+  min-width: 200px;
 }
 
 #enterButton::before {
@@ -162,9 +164,10 @@
 
 #enterButton:hover {
   background: linear-gradient(45deg, var(--sa-green-dark), var(--sa-green));
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(9, 162, 19, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(9, 162, 19, 0.4);
   border-color: var(--sa-green-light);
+  letter-spacing: 1.5px;
 }
 
 #enterButton:active {
@@ -192,6 +195,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 4px 15px rgba(9, 162, 19, 0.2);
+  animation: subtle-pulse 3s ease-in-out infinite;
 }
 
 /* Features Grid */
@@ -211,8 +215,8 @@
 
 .feature-card:hover {
   background: var(--white-transparent-15) !important;
-  transform: translateY(-8px);
-  box-shadow: 0 8px 25px var(--black-transparent-40) !important;
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 35px var(--black-transparent-40) !important;
   border-color: var(--sa-green-light) !important;
 }
 
@@ -338,6 +342,28 @@
         transform: scale(2);
         opacity: 0;
     }
+}
+
+@keyframes subtle-pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(9, 162, 19, 0.2);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(9, 162, 19, 0.3);
+    }
+}
+
+/* Focus states for accessibility */
+#enterButton:focus {
+    outline: 3px solid var(--sa-green-light);
+    outline-offset: 3px;
+}
+
+.feature-card:focus-within {
+    outline: 2px solid var(--sa-green-light);
+    outline-offset: 2px;
 }
 
 body {
