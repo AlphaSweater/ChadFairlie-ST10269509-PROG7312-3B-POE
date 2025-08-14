@@ -1,27 +1,14 @@
 @{
-    Layout = null;
+    Layout = "_Layout";
     ViewData["Title"] = "Landing Page";
+    ViewData["HideNavbar"] = true;
 }
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8" />
-    <title>My Local Gov.com - South African Municipal Services Portal</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Official municipal services portal for South African citizens. Report issues, request services, stay informed about local events, and track your service requests." />
-    <link href="~/css/site-theme.css" rel="stylesheet" />
-    <link href="~/css/landing-page.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-
-<body>
-    <main class="landing-page-container">
+<main class="landing-page-container">
         <!-- Official Badge -->
         <div class="badge-container">
             <div class="official-badge fade-in">
-                🇿🇦 Official Municipal Portal
+                🇿� Official Municipal Portal
             </div>
         </div>
 
@@ -30,7 +17,7 @@
             <div class="logo">
                 <div class="logo-icon">🏛️</div>
             </div>
-            <h1 class="title">My Local Gov.com</h1>
+			<h1 class="title">Civic Connect</h1>
             <p class="subtitle">
                 Your South African municipal services portal.<br>
                 <strong>Report issues • Request services • Stay informed</strong>
@@ -131,9 +118,8 @@
                 }, 600);
 
                 // Navigation to dashboard/main application
-                // For now, just log - you can replace with actual navigation
                 console.log('Accessing My Local Gov.com portal...');
-                // Example: window.location.href = '/Dashboard';
+                window.location.href = '/Home/Dashboard';
             });
 
             // Add staggered animation to feature cards
@@ -145,5 +131,40 @@
             });
         });
     </script>
-</body>
-</html>
+</main>
+
+<style>
+    /* Override layout styles for landing page */
+    .layout-container {
+        padding: 0 !important;
+    }
+
+    .layout-main {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .layout-footer {
+        display: none !important;
+    }
+
+    /* Landing page specific styles */
+    .landing-page-container {
+        background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-xl);
+        position: relative;
+        overflow-x: hidden;
+    }
+</style>
+
+<link href="~/css/landing-page.css" rel="stylesheet" />

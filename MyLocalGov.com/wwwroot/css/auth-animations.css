@@ -1,0 +1,35 @@
+﻿@keyframes fadeInSlide {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.fade-out {
+	opacity: 0;
+	transform: scale(0.95);
+	transition: all 0.4s ease;
+	pointer-events: none;
+}
+
+.form-container.animated,
+.logo-container.form-active,
+.title.form-active {
+	animation: fadeInSlide 0.5s ease forwards;
+}
+
+#formContainer {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: all 0.4s ease;
+}
+
+	#formContainer.show {
+		opacity: 1;
+		transform: translateY(0);
+	}

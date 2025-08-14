@@ -3,47 +3,430 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MyLocalGov.com</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MyLocalGov.com.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - Civic Connect</title>
+    <link href="~/css/site-theme.css" rel="stylesheet" />
+    <link href="~/css/dashboard.css" rel="stylesheet" />
+    <link href="~/css/landing-page.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Layout Navbar Styles - Enhanced Dashboard Style */
+        .layout-navbar {
+            background: var(--white-transparent-10);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--white-transparent-20);
+            padding: var(--spacing-md) 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-family: var(--font-family-primary);
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-xl);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .navbar-brand:hover {
+            color: var(--white-transparent-90);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            font-size: 28px;
+        }
+
+        .brand-text {
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .navbar-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            background: var(--white-transparent-10);
+            border: 1px solid var(--white-transparent-20);
+            border-radius: var(--border-radius-full);
+            padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-sm) var(--spacing-lg);
+            color: var(--white);
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-sm);
+            width: 280px;
+            transition: all var(--transition-normal);
+        }
+
+        .search-input::placeholder {
+            color: var(--white-transparent-80);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: var(--white-transparent-15);
+            border-color: var(--white-transparent-40);
+            box-shadow: 0 0 0 3px var(--white-transparent-20);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: var(--spacing-md);
+            color: var(--white-transparent-80);
+            pointer-events: none;
+        }
+
+        .navbar-notifications {
+            position: relative;
+        }
+
+        .notification-btn {
+            background: var(--white-transparent-10);
+            border: 1px solid var(--white-transparent-20);
+            border-radius: var(--border-radius-circle);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            background: var(--white-transparent-15);
+            transform: translateY(-2px);
+        }
+
+        .notification-icon {
+            font-size: 20px;
+            color: var(--white);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--sa-red);
+            color: var(--white);
+            font-size: 10px;
+            font-weight: var(--font-weight-bold);
+            padding: 2px 6px;
+            border-radius: var(--border-radius-full);
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .navbar-menu {
+            position: relative;
+        }
+
+        .menu-btn {
+            background: var(--white-transparent-10);
+            border: 1px solid var(--white-transparent-20);
+            border-radius: var(--border-radius-md);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+
+        .menu-btn:hover {
+            background: var(--white-transparent-15);
+            transform: translateY(-2px);
+        }
+
+        .menu-icon {
+            font-size: 18px;
+            color: var(--white);
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: var(--spacing-sm);
+            background: var(--white-transparent-10);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--white-transparent-20);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-sm);
+            min-width: 200px;
+            box-shadow: var(--shadow-xl);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--transition-normal);
+            z-index: 1001;
+        }
+
+        .menu-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--white);
+            text-decoration: none;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-sm);
+            border-radius: var(--border-radius-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .menu-item:hover {
+            background: var(--white-transparent-20);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background: var(--primary-blue-light);
+            color: var(--white);
+        }
+
+        .menu-item .menu-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: var(--white-transparent-20);
+            margin: var(--spacing-sm) 0;
+        }
+
+        /* Responsive navbar */
+        @@media (max-width: 768px) {
+            .navbar-content {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                padding: var(--spacing-md);
+            }
+
+            .navbar-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: var(--spacing-md);
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .navbar-brand {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                font-size: var(--font-size-lg);
+            }
+        }
+
+        .layout-container {
+            background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        .layout-main {
+            padding: var(--spacing-xl);
+            background: var(--white-transparent-10);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            margin: var(--spacing-xl);
+            border: 1px solid var(--white-transparent-20);
+            box-shadow: var(--shadow-md);
+        }
+
+        .layout-footer {
+            background: var(--black-transparent-20);
+            border-top: 1px solid var(--white-transparent-20);
+            color: var(--white-transparent-90);
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-sm);
+            padding: var(--spacing-lg) 0;
+            margin-top: var(--spacing-2xl);
+        }
+
+        .layout-footer a {
+            color: var(--white-transparent-90);
+            text-decoration: none;
+            transition: color var(--transition-normal);
+        }
+
+        .layout-footer a:hover {
+            color: var(--white);
+        }
+
+        /* Override default bootstrap container */
+        .custom-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+    </style>
 </head>
-<body>
+<body class="layout-container">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MyLocalGov.com</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+        @if (ViewData["HideNavbar"] == null || (bool)ViewData["HideNavbar"] == false)
+        {
+            <nav class="layout-navbar slide-in-up">
+                <div class="navbar-content">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="brand-icon">🏛️</span>
+                        <span class="brand-text">Civic Connect</span>
+                    </a>
+                    <div class="navbar-actions">
+                        <div class="navbar-search">
+                            <input type="text" placeholder="Search services..." class="search-input">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <div class="navbar-notifications">
+                            <button class="notification-btn" onclick="showComingSoon('Notifications')">
+                                <span class="notification-icon">🔔</span>
+                                <span class="notification-badge">3</span>
+                            </button>
+                        </div>
+                        <div class="navbar-menu">
+                            <button class="menu-btn" onclick="toggleMenu()">
+                                <span class="menu-icon">☰</span>
+                            </button>
+                            <div class="menu-dropdown" id="menuDropdown">
+                                <a href="/" class="menu-item">
+                                    <span class="menu-icon">🏠</span>
+                                    Home
+                                </a>
+                                <a href="/Home/Dashboard" class="menu-item">
+                                    <span class="menu-icon">📊</span>
+                                    Dashboard
+                                </a>
+                                <a href="#" class="menu-item" onclick="showComingSoon('Services')">
+                                    <span class="menu-icon">📋</span>
+                                    Services
+                                </a>
+                                <a href="#" class="menu-item" onclick="showComingSoon('Events')">
+                                    <span class="menu-icon">📅</span>
+                                    Events
+                                </a>
+                                <div class="menu-divider"></div>
+                                <a href="#" class="menu-item" onclick="showComingSoon('Profile')">
+                                    <span class="menu-icon">👤</span>
+                                    My Profile
+                                </a>
+                                <a href="/Home/Privacy" class="menu-item">
+                                    <span class="menu-icon">🔒</span>
+                                    Privacy
+                                </a>
+                                <a href="#" class="menu-item" onclick="showComingSoon('Settings')">
+                                    <span class="menu-icon">⚙️</span>
+                                    Settings
+                                </a>
+                                <div class="menu-divider"></div>
+                                <a href="#" class="menu-item" onclick="showComingSoon('Logout')">
+                                    <span class="menu-icon">🚪</span>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        }
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="custom-container">
+        <main role="main" class="layout-main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - MyLocalGov.com - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="layout-footer">
+        <div class="custom-container">
+            <div class="text-center">
+                &copy; 2025 - Civic Connect - South African Municipal Services Portal -
+                <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show coming soon alerts for features under development
+        function showComingSoon(feature) {
+            alert(`🚧 ${feature} feature coming soon!\n\nThis feature is currently under development and will be available in a future update.`);
+        }
+
+        // Toggle menu dropdown
+        function toggleMenu() {
+            const menuDropdown = document.getElementById('menuDropdown');
+            menuDropdown.classList.toggle('show');
+        }
+
+        // Add active class to current page nav link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const menuItems = document.querySelectorAll('.menu-item');
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const menuDropdown = document.getElementById('menuDropdown');
+                const menuBtn = document.querySelector('.menu-btn');
+
+                if (menuDropdown && menuBtn && !menuBtn.contains(event.target) && !menuDropdown.contains(event.target)) {
+                    menuDropdown.classList.remove('show');
+                }
+            });
+
+            // Set active menu item based on current page
+            menuItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && currentPath.includes(href) && href !== '/') {
+                    item.classList.add('active');
+                } else if (href === '/' && currentPath === '/') {
+                    item.classList.add('active');
+                }
+            });
+
+            // Add page loaded animation
+            document.body.classList.add('page-loaded');
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

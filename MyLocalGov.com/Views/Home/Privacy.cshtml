@@ -1,6 +1,82 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="privacy-page">
+    <div class="page-header mb-4">
+        <h1 class="display-4 text-white mb-3">
+            🔒 Privacy Policy
+        </h1>
+        <p class="lead text-white-50">
+            Your privacy and data protection are important to us
+        </p>
+    </div>
+
+    <div class="privacy-content">
+        <div class="card border-0 shadow-sm mb-4" style="background: var(--white-transparent-20); backdrop-filter: blur(10px);">
+            <div class="card-body p-4">
+                <h3 class="card-title text-white mb-3">📋 Information We Collect</h3>
+                <div class="text-white-75">
+                    <p>When you use Civic Connect, we may collect the following information:</p>
+                    <ul>
+                        <li>Personal identification information (Name, ID number, contact details)</li>
+                        <li>Service request details and municipal interactions</li>
+                        <li>Location data for issue reporting (with your consent)</li>
+                        <li>Usage data to improve our services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4" style="background: var(--white-transparent-20); backdrop-filter: blur(10px);">
+            <div class="card-body p-4">
+                <h3 class="card-title text-white mb-3">🛡️ How We Protect Your Information</h3>
+                <div class="text-white-75">
+                    <p>We implement appropriate security measures to protect your personal information:</p>
+                    <ul>
+                        <li>Encrypted data transmission and storage</li>
+                        <li>Secure authentication and access controls</li>
+                        <li>Regular security audits and updates</li>
+                        <li>Compliance with South African POPIA (Protection of Personal Information Act)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4" style="background: var(--white-transparent-20); backdrop-filter: blur(10px);">
+            <div class="card-body p-4">
+                <h3 class="card-title text-white mb-3">📞 Contact Us</h3>
+                <div class="text-white-75">
+                    <p>If you have any questions about this Privacy Policy, please contact us:</p>
+                    <ul>
+                        <li><strong>Email:</strong> privacy@civicconnect.gov.za</li>
+                        <li><strong>Phone:</strong> 0800 CIVIC (0800 24842)</li>
+                        <li><strong>Address:</strong> Municipal Offices, Civic Center, Your City</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info border-0" style="background: var(--sa-green-light); color: var(--white);">
+            <h5 class="alert-heading">🌍 Commitment to Citizens</h5>
+            <p class="mb-0">
+                As a South African municipal services platform, we are committed to transparency, 
+                accountability, and protecting the rights of all citizens in accordance with our constitutional values.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-white-75 {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+    
+    .privacy-content .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .privacy-content .card:hover {
+        transform: translateY(-2px);
+    }
+</style>

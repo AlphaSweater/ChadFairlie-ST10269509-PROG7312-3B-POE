@@ -10,11 +10,11 @@
   --primary-blue-light: #3b82f6;
   --primary-blue-accent: #1d4ed8;
   --primary-blue-hover: #2563eb;
-  
+
   /* Secondary Colors */
   --secondary-blue-light: #93c5fd;
   --secondary-blue-pale: #dbeafe;
-  
+
   /* South African Accent Colors */
   --sa-green: #09a213;
   --sa-green-dark: #078310;
@@ -23,11 +23,11 @@
   --sa-red: #de3831;
   --sa-black: #000000;
   --sa-white: #ffffff;
-  
+
   /* Accent Variants */
   --accent-gold-light: rgba(255, 182, 18, 0.2);
   --accent-green-light: rgba(0, 122, 61, 0.2);
-  
+
   /* Neutral Colors */
   --white: #ffffff;
   --white-transparent-10: rgba(255, 255, 255, 0.1);
@@ -37,18 +37,18 @@
   --white-transparent-40: rgba(255, 255, 255, 0.4);
   --white-transparent-80: rgba(255, 255, 255, 0.8);
   --white-transparent-90: rgba(255, 255, 255, 0.9);
-  
+
   --black-transparent-20: rgba(0, 0, 0, 0.2);
   --black-transparent-30: rgba(0, 0, 0, 0.3);
   --black-transparent-40: rgba(0, 0, 0, 0.4);
-  
+
   /* Typography */
   --font-family-primary: 'Inter', sans-serif;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  
+
   /* Font Sizes */
   --font-size-xs: 12px;
   --font-size-sm: 14px;
@@ -59,7 +59,7 @@
   --font-size-3xl: 30px;
   --font-size-4xl: 36px;
   --font-size-5xl: 48px;
-  
+
   /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -69,7 +69,7 @@
   --spacing-2xl: 40px;
   --spacing-3xl: 48px;
   --spacing-4xl: 64px;
-  
+
   /* Border Radius */
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
@@ -77,14 +77,14 @@
   --border-radius-xl: 16px;
   --border-radius-full: 50px;
   --border-radius-circle: 50%;
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 4px var(--black-transparent-20);
   --shadow-md: 0 4px 15px var(--black-transparent-20);
   --shadow-lg: 0 8px 25px var(--black-transparent-30);
   --shadow-xl: 0 10px 30px var(--black-transparent-30);
   --shadow-2xl: 0 15px 40px var(--black-transparent-40);
-  
+
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
@@ -265,13 +265,13 @@
 }
 
 @keyframes slideUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px); 
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -283,7 +283,7 @@
   .text-title-xl {
     font-size: var(--font-size-3xl);
   }
-  
+
   .text-subtitle {
     font-size: var(--font-size-base);
     padding: 0 var(--spacing-lg);
