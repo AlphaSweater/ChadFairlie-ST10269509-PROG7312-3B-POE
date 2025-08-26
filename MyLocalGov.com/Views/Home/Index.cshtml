@@ -1,170 +1,237 @@
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Landing Page";
-    ViewData["HideNavbar"] = true;
+	Layout = "_Layout";
+	ViewData["Title"] = "Landing Page";
+	ViewData["HideNavbar"] = true;
 }
 
-<main class="landing-page-container">
-        <!-- Official Badge -->
-        <div class="badge-container">
-            <div class="official-badge fade-in">
-                🇿� Official Municipal Portal
-            </div>
-        </div>
+<main class="landing-page-container" id="landingPageContainer">
+	<!-- Logo and Title -->
 
-        <!-- Logo and Title -->
-        <header class="logo-container slide-up">
-            <div class="logo">
-                <div class="logo-icon">🏛️</div>
-            </div>
-			<h1 class="title">Civic Connect</h1>
-            <p class="subtitle">
-                Your South African municipal services portal.<br>
-                <strong>Report issues • Request services • Stay informed</strong>
-            </p>
-            <button id="enterButton" class="btn" aria-label="Access Municipal Services" role="button">
-                Get Started
-                <span style="margin-left: 8px;" aria-hidden="true">→</span>
-            </button>
-        </header>
+	<header class="logo-container" id="logoContainer">
+		<div class="logo">
+			<div class="logo-icon">🏛️</div>
+		</div>
+		<h1 class="title" id="title">Civic Connect</h1>
+		<p class="subtitle" id="subtitle">
+			Your South African municipal services portal.<br>
+			<strong>Report issues • Request services • Stay informed</strong>
+		</p>
+		<button id="enterButton" class="btn btn-primary mt-3">
+			Get Started →
+		</button>
+	</header>
 
-        <!-- Services Section -->
-        <section class="services-section">
-            <div class="section-header">
-                <h2 class="section-title">Municipal Services</h2>
-                <p class="section-subtitle">Everything you need to engage with your local municipality</p>
-            </div>
+	<!-- Hidden Form Container -->
+	<div class="form-container hidden" id="formContainer">
+		<!-- Login Form -->
+		<form id="loginForm" class="form" method="post" action="/Auth/Login">
+			<div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
+			<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-2" />
+			<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-2" />
+			<button type="submit" class="btn btn-primary button-confirm">Log In</button>
+			<p class="mt-3"><a href="#" id="showSignUp" class="switch-link">Need an account? Sign Up Here!</a></p>
+		</form>
 
-            <!-- Features Grid -->
-            <div class="row g-4" aria-label="Portal Features">
-                <div class="col-12 col-sm-6 col-lg-3">
-                    <div class="card h-100 text-center feature-card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3 fs-1">📢</div>
-                            <h3 class="card-title feature-title">Report Issues</h3>
-                            <p class="card-text feature-description">Report municipal problems like potholes, water leaks, or
-                                power outages directly to your local municipality.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-3">
-                    <div class="card h-100 text-center feature-card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3 fs-1">📝</div>
-                            <h3 class="card-title feature-title">Request Services</h3>
-                            <p class="card-text feature-description">Submit requests for municipal services such as waste
-                                collection, permits, or general maintenance.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-3">
-                    <div class="card h-100 text-center feature-card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3 fs-1">📅</div>
-                            <h3 class="card-title feature-title">Local Events</h3>
-                            <p class="card-text feature-description">Stay updated on community events, council meetings, and
-                                important municipal announcements.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-3">
-                    <div class="card h-100 text-center feature-card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3 fs-1">📊</div>
-                            <h3 class="card-title feature-title">Track Requests</h3>
-                            <p class="card-text feature-description">Monitor the progress of your submitted issues and service
-                                requests with status updates.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.body.classList.add('page-loaded');
-            const enterButton = document.getElementById("enterButton");
-
-            // Add click animation to enter button
-            enterButton.addEventListener("click", (e) => {
-                // Add a ripple effect
-                const ripple = document.createElement('span');
-                const rect = enterButton.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-
-                ripple.style.cssText = `
-                    position: absolute;
-                    width: ${size}px;
-                    height: ${size}px;
-                    left: ${x}px;
-                    top: ${y}px;
-                    background: rgba(255,255,255,0.3);
-                    border-radius: 50%;
-                    transform: scale(0);
-                    animation: ripple 0.6s linear;
-                    pointer-events: none;
-                `;
-
-                enterButton.style.position = 'relative';
-                enterButton.style.overflow = 'hidden';
-                enterButton.appendChild(ripple);
-
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-
-                // Navigation to dashboard/main application
-                console.log('Accessing My Local Gov.com portal...');
-                window.location.href = '/Home/Dashboard';
-            });
-
-            // Add staggered animation to feature cards
-            const featureCards = document.querySelectorAll('.feature-card');
-            featureCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add('slide-up');
-                }, 200 * (index + 1));
-            });
-        });
-    </script>
+		<!-- Signup Form -->
+		<form id="signUpForm" class="form hidden" method="post" action="/Auth/SignUp">
+			<div class="title">Welcome,<br><span class="text-muted">create an account</span></div>
+			<input type="text" name="name" placeholder="Name" class="form-control inputbox mb-2" />
+			<input type="text" name="surname" placeholder="Surname" class="form-control inputbox mb-2" />
+			<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-2" />
+			<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-2" />
+			<input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control inputbox mb-2" />
+			<button type="submit" class="btn btn-primary button-confirm">Sign Up</button>
+			<p class="mt-3"><a href="#" id="showLogin" class="switch-link">Already have an account? Log In</a></p>
+		</form>
+	</div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const enterButton = document.getElementById("enterButton");
+		const landingPageContainer = document.getElementById("landingPageContainer");
+		const logoContainer = document.getElementById("logoContainer");
+		const title = document.getElementById("title");
+		const subtitle = document.getElementById("subtitle");
+		const formContainer = document.getElementById("formContainer");
+		const loginForm = document.getElementById("loginForm");
+		const signUpForm = document.getElementById("signUpForm");
+		const showSignUp = document.getElementById("showSignUp");
+		const showLogin = document.getElementById("showLogin");
+
+		// Transition to forms
+		enterButton.addEventListener("click", () => {
+			enterButton.classList.add("fade-out");
+			setTimeout(() => {
+				enterButton.classList.add("hidden");
+				landingPageContainer.classList.add("form-active");
+				logoContainer.classList.add("form-active");
+				title.classList.add("form-active");
+				subtitle.classList.add("hidden");
+				formContainer.classList.remove("hidden");
+				formContainer.classList.add("show");
+			}, 400);
+		});
+
+		// Switch forms
+		showSignUp.addEventListener("click", (e) => {
+			e.preventDefault();
+			loginForm.classList.add("hidden");
+			signUpForm.classList.remove("hidden");
+		});
+
+		showLogin.addEventListener("click", (e) => {
+			e.preventDefault();
+			signUpForm.classList.add("hidden");
+			loginForm.classList.remove("hidden");
+		});
+	});
+</script>
+
+
 <style>
-    /* Override layout styles for landing page */
-    .layout-container {
-        padding: 0 !important;
-    }
+	.landing-page-container {
+		background: transparent;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		border: none;
+		box-shadow: none;
+		transition: all 0.5s cubic-bezier(.77,0,.18,1);
+	}
 
-    .layout-main {
-        background: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
+	.landing-page-container.form-active {
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 100px;
+		min-height: 100vh;
+	}
 
-    .layout-footer {
-        display: none !important;
-    }
+	.logo-container {
+		text-align: center;
+		margin-bottom: 40px;
+		transition: all 0.5s cubic-bezier(.77,0,.18,1);
+		background: none;
+		border: none;
+		box-shadow: none;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 
-    /* Landing page specific styles */
-    .landing-page-container {
-        background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: var(--spacing-xl);
-        position: relative;
-        overflow-x: hidden;
-    }
+	.logo {
+		width: 220px;
+		height: 220px;
+		font-size: 110px;
+		transition: all 0.5s cubic-bezier(.77,0,.18,1);
+	}
+
+	.title {
+		font-size: 56px;
+		margin-bottom: 18px;
+		transition: font-size 0.5s cubic-bezier(.77,0,.18,1);
+	}
+
+	.logo-container.form-active {
+		margin-right: 0;
+		margin-bottom: 0;
+		text-align: right;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+	}
+
+	.logo-container.form-active .logo {
+		width: 160px;
+		height: 160px;
+		font-size: 80px;
+	}
+
+	.logo-container.form-active .title {
+		font-size: 38px;
+	}
+
+	.form-container {
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+		transition: all 0.5s cubic-bezier(.77,0,.18,1);
+		min-width: 320px;
+		max-width: 400px;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.form-container.show {
+		min-width: 340px;
+		max-width: 420px;
+	}
+
+	.form {
+		background: #fff;
+		color: #333;
+		border-radius: 18px;
+		padding: 28px 20px 20px 20px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+		width: 100%;
+		max-width: 400px;
+		font-size: 1rem;
+		transition: box-shadow 0.3s, border 0.3s, max-width 0.5s cubic-bezier(.77,0,.18,1);
+	}
+
+	.form-container.show .form {
+		max-width: 420px;
+		font-size: 1.08rem;
+	}
+
+	.inputbox {
+		border-radius: 10px;
+		border: 1.5px solid #ccc;
+		padding: 14px;
+		font-size: 1.08rem;
+		width: 100%;
+	}
+
+	.button-confirm {
+		width: 100%;
+		margin-top: 16px;
+		border-radius: 10px;
+		font-weight: 600;
+		font-size: 1.08rem;
+	}
+
+	.hidden {
+		display: none !important;
+	}
+
+	.fade-out {
+		opacity: 0;
+		transition: opacity 0.4s;
+	}
+	main {
+		background: transparent !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
+
+	@@media (max-width: 900px) {
+		.landing-page-container.form-active {
+			flex-direction: column;
+			align-items: center;
+			gap: 30px;
+			padding-top: 30px;
+		}
+		.logo-container.form-active {
+			align-items: center;
+		}
+		.form-container {
+			min-width: 320px;
+			max-width: 100vw;
+		}
+	}
 </style>
-
-<link href="~/css/landing-page.css" rel="stylesheet" />
