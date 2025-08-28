@@ -1,5 +1,3 @@
-
-
 /* ===============================
    LANDING PAGE STYLES (Index)
    =============================== */
@@ -17,13 +15,13 @@
 	transition: all 0.5s cubic-bezier(.77,0,.18,1);
 }
 
-.landing-page-container.form-active {
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	gap: 100px;
-	min-height: 100vh;
-}
+	.landing-page-container.form-active {
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 100px;
+		min-height: 100vh;
+	}
 
 .logo-container {
 	text-align: center;
@@ -59,15 +57,15 @@
 	height: 100%;
 }
 
-.logo-container.form-active .logo {
-	width: 160px;
-	height: 160px;
-	font-size: 80px;
-}
+	.logo-container.form-active .logo {
+		width: 160px;
+		height: 160px;
+		font-size: 80px;
+	}
 
-.logo-container.form-active .title {
-	font-size: 38px;
-}
+	.logo-container.form-active .title {
+		font-size: 38px;
+	}
 
 .form-container {
 	display: flex;
@@ -80,10 +78,10 @@
 	justify-content: center;
 }
 
-.form-container.show {
-	min-width: 340px;
-	max-width: 420px;
-}
+	.form-container.show {
+		min-width: 340px;
+		max-width: 420px;
+	}
 
 .form {
 	/* Uses global .card-glass for glassmorphism look, override only if needed */
@@ -141,9 +139,11 @@ main {
 		gap: 30px;
 		padding-top: 30px;
 	}
+
 	.logo-container.form-active {
 		align-items: center;
 	}
+
 	.form-container {
 		min-width: 320px;
 		max-width: 100vw;
@@ -159,6 +159,7 @@ main {
 		opacity: 0;
 		transform: translateY(20px);
 	}
+
 	to {
 		opacity: 1;
 		transform: translateY(0);
@@ -177,7 +178,7 @@ main {
 	transition: all 0.4s ease;
 }
 
-#formContainer.show {
-	opacity: 1;
-	transform: translateY(0);
-}
+	#formContainer.show {
+		opacity: 1;
+		transform: translateY(0);
+	}

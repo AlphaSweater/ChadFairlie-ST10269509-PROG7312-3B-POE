@@ -19,7 +19,7 @@ namespace MyLocalGov.com
 				options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 			// Identity setup
-			builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+			builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 			{
 				options.Password.RequiredLength = 6;
 				options.Password.RequireNonAlphanumeric = false;
@@ -32,9 +32,17 @@ namespace MyLocalGov.com
 			builder.Services.ConfigureApplicationCookie(options =>
 			{
 				options.LoginPath = "/Account/Login";
+				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 			});
 
 			var app = builder.Build();
+
+			// Enforce HTTPS and HSTS
+			if (!app.Environment.IsDevelopment())
+			{
+				app.UseHttpsRedirection();
+				app.UseHsts();
+			}
 
 			// Auto-migrate database
 			using (var scope = app.Services.CreateScope())
@@ -42,31 +50,42 @@ namespace MyLocalGov.com
 				var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 				db.Database.Migrate();
 
-				// Seed roles if not exist
-				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-				string[] roles = { "Admin", "User" };
+				// Seed roles
+				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+				string[] roles = { "Admin", "MunicipalWorker", "Citizen" };
 				foreach (var role in roles)
 				{
 					if (!await roleManager.RoleExistsAsync(role))
 					{
-						await roleManager.CreateAsync(new ApplicationRole { Name = role });
+						await roleManager.CreateAsync(new IdentityRole { Name = role });
 					}
 				}
 
-				// Optionally seed an admin user
-				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+				// Seed an admin user
+				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 				var adminEmail = "admin@test.com";
 				if (await userManager.FindByEmailAsync(adminEmail) == null)
 				{
-					var adminUser = new ApplicationUser
+					var adminUser = new IdentityUser
 					{
 						UserName = adminEmail,
-						Email = adminEmail,
-						FirstName = "Admin",
-						LastName = "Guy"
+						Email = adminEmail
 					};
 					await userManager.CreateAsync(adminUser, "Password123!");
 					await userManager.AddToRoleAsync(adminUser, "Admin");
+
+					// Create UserProfile for admin
+					var adminProfile = new UserProfileModel
+					{
+						Id = adminUser.Id,
+						FirstName = "Admin",
+						LastName = "Guy",
+						Location = "Head Office",
+						PreferencesJson = "{}",
+						User = adminUser
+					};
+					db.UserProfiles.Add(adminProfile);
+					await db.SaveChangesAsync();
 				}
 			}
 

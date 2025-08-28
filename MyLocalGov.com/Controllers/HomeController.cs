@@ -1,17 +1,21 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using MyLocalGov.com.Data;
 using MyLocalGov.com.Models;
 using MyLocalGov.com.ViewModels;
+using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MyLocalGov.com.Controllers
 {
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
+		private readonly ApplicationDbContext _dbContext; // Assume ApplicationDbContext is your DB context class
 
-		public HomeController(ILogger<HomeController> logger)
+		public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
 		{
 			_logger = logger;
+			_dbContext = dbContext;
 		}
 
 		public IActionResult Index()
@@ -26,15 +30,22 @@ namespace MyLocalGov.com.Controllers
 
 		public IActionResult Dashboard()
 		{
+			// Get the logged-in user's ID
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			// Query the database for the user's details
+			// (Assuming you have injected ApplicationDbContext via DI)
+			var user = _dbContext.UserProfiles.FirstOrDefault(u => u.Id == userId);
+
 			var viewModel = new DashboardViewModel
 			{
 				User = new UserInfo
 				{
-					Name = "Citizen User",
-					IdNumber = "9012345678901",
-					Avatar = "CU",
-					Municipality = "City of Cape Town",
-					Ward = "Ward 15"
+					Name = user != null ? $"{user.FullName}" : "Citizen User",
+					IdNumber = "9012345678901", // Replace with your actual property
+					Avatar = user != null ? $"{user.FirstName[0]}{user.LastName[0]}" : "CU",
+					Municipality = "City of Cape Town", // Replace with your actual property
+					Ward = "Ward 15" // Replace with your actual property
 				},
 				Stats = new DashboardStats
 				{

@@ -5,7 +5,7 @@ namespace MyLocalGov.com.ViewModels
 	public class RegisterViewModel
 	{
 		[Required]
-		public string Name { get; set; }
+		public string FirstName { get; set; }
 
 		[Required]
 		public string Surname { get; set; }
