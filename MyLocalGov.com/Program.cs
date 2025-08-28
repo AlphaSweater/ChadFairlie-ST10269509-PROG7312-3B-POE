@@ -62,8 +62,8 @@ namespace MyLocalGov.com
 					{
 						UserName = adminEmail,
 						Email = adminEmail,
-						Name = "Admin",
-						Surname = "Guy"
+						FirstName = "Admin",
+						LastName = "Guy"
 					};
 					await userManager.CreateAsync(adminUser, "Password123!");
 					await userManager.AddToRoleAsync(adminUser, "Admin");

@@ -2,6 +2,9 @@
 	Layout = "_Layout";
 	ViewData["Title"] = "Landing Page";
 	ViewData["HideNavbar"] = true;
+    var showForm = Context.Request.Query["showForm"].ToString();
+    var email = Context.Request.Query["email"].ToString();
+    var error = Context.Request.Query["error"].ToString();
 }
 
 <main class="landing-page-container" id="landingPageContainer">
@@ -23,27 +26,31 @@
 
 	<!-- Hidden Form Container -->
 	<div class="form-container hidden" id="formContainer">
+		<!-- Error Message -->
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="alert alert-danger mb-2">@error</div>
+        }
 		<!-- Login Form -->
-		<form id="loginForm" class="form" method="post" action="/Auth/Login">
-			<div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
-			<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-2" />
-			<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-2" />
-			<button type="submit" class="btn btn-primary button-confirm">Log In</button>
-			<p class="mt-3"><a href="#" id="showSignUp" class="switch-link">Need an account? Sign Up Here!</a></p>
-		</form>
-
+        <form id="loginForm" class="form hidden" method="post" action="/Account/Login">
+            <div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
+            <input type="email" name="email" placeholder="Email" class="form-control inputbox mb-2" value="@(showForm == "login" ? email : "")" />
+            <input type="password" name="password" placeholder="Password" class="form-control inputbox mb-2" />
+            <button type="submit" class="btn btn-primary button-confirm">Log In</button>
+            <p class="mt-3"><a href="#" id="showSignUp" class="switch-link">Need an account? Sign Up Here!</a></p>
+        </form>
 		<!-- Signup Form -->
-		<form id="signUpForm" class="form hidden" method="post" action="/Auth/SignUp">
-			<div class="title">Welcome,<br><span class="text-muted">create an account</span></div>
-			<input type="text" name="name" placeholder="Name" class="form-control inputbox mb-2" />
-			<input type="text" name="surname" placeholder="Surname" class="form-control inputbox mb-2" />
-			<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-2" />
-			<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-2" />
-			<input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control inputbox mb-2" />
-			<button type="submit" class="btn btn-primary button-confirm">Sign Up</button>
-			<p class="mt-3"><a href="#" id="showLogin" class="switch-link">Already have an account? Log In</a></p>
-		</form>
-	</div>
+        <form id="signUpForm" class="form hidden" method="post" action="/Account/Register">
+            <div class="title">Welcome,<br><span class="text-muted">create an account</span></div>
+            <input type="text" name="firstName" placeholder="FirstName" class="form-control inputbox mb-2" />
+            <input type="text" name="lastName" placeholder="LastName" class="form-control inputbox mb-2" />
+            <input type="email" name="email" placeholder="Email" class="form-control inputbox mb-2" value="@(showForm == "register" ? email : "")" />
+            <input type="password" name="password" placeholder="Password" class="form-control inputbox mb-2" />
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control inputbox mb-2" />
+            <button type="submit" class="btn btn-primary button-confirm">Sign Up</button>
+            <p class="mt-3"><a href="#" id="showLogin" class="switch-link">Already have an account? Log In</a></p>
+        </form>
+    </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
@@ -60,6 +67,30 @@
 		const showSignUp = document.getElementById("showSignUp");
 		const showLogin = document.getElementById("showLogin");
 
+		// Helper: get query param
+		function getQueryParam(name) {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get(name);
+		}
+
+		// On page load, if showForm is set, show the correct form
+		const showForm = getQueryParam("showForm");
+		if (showForm === "login") {
+			formContainer.classList.remove("hidden");
+			formContainer.classList.add("show");
+			loginForm.classList.remove("hidden");
+			signUpForm.classList.add("hidden");
+			subtitle.classList.add("hidden");
+			enterButton.classList.add("hidden");
+		} else if (showForm === "register") {
+			formContainer.classList.remove("hidden");
+			formContainer.classList.add("show");
+			loginForm.classList.add("hidden");
+			signUpForm.classList.remove("hidden");
+			subtitle.classList.add("hidden");
+			enterButton.classList.add("hidden");
+		}
+
 		// Transition to forms
 		enterButton.addEventListener("click", () => {
 			enterButton.classList.add("fade-out");
@@ -71,6 +102,9 @@
 				subtitle.classList.add("hidden");
 				formContainer.classList.remove("hidden");
 				formContainer.classList.add("show");
+				// Show login form by default
+				loginForm.classList.remove("hidden");
+				signUpForm.classList.add("hidden");
 			}, 400);
 		});
 

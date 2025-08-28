@@ -23,7 +23,10 @@ namespace MyLocalGov.com.Controllers
 		public async Task<IActionResult> Register(RegisterViewModel model)
 		{
 			if (!ModelState.IsValid)
-				return View(model);
+			{
+				// Redirect to Index with register form visible and email pre-filled
+				return RedirectToAction("Index", "Home", new { showForm = "register", email = model.Email });
+			}
 
 			var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
 			var result = await _userManager.CreateAsync(user, model.Password);
@@ -37,9 +40,8 @@ namespace MyLocalGov.com.Controllers
 				return RedirectToAction("Index", "Home");
 			}
 
-			foreach (var error in result.Errors)
-				ModelState.AddModelError("", error.Description);
-			return View(model);
+			// Redirect to Index with register form visible and email pre-filled
+			return RedirectToAction("Index", "Home", new { showForm = "register", email = model.Email, error = result.Errors.FirstOrDefault()?.Description });
 		}
 
 		[HttpGet]
@@ -49,14 +51,17 @@ namespace MyLocalGov.com.Controllers
 		public async Task<IActionResult> Login(LoginViewModel model)
 		{
 			if (!ModelState.IsValid)
-				return View(model);
+			{
+				// Redirect to Index with login form visible and email pre-filled
+				return RedirectToAction("Index", "Home", new { showForm = "login", email = model.Email });
+			}
 
 			var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
 			if (result.Succeeded)
-				return RedirectToAction("Index", "Home");
+				return RedirectToAction("Dashboard", "Home");
 
-			ModelState.AddModelError("", "Invalid login attempt.");
-			return View(model);
+			// Redirect to Index with login form visible and email pre-filled
+			return RedirectToAction("Index", "Home", new { showForm = "login", email = model.Email, error = "Invalid login attempt." });
 		}
 
 		[HttpPost]
