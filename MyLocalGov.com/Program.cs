@@ -42,15 +42,31 @@ namespace MyLocalGov.com
 				var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 				db.Database.Migrate();
 
-				// Seed roles
+				// Seed roles if not exist
 				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-				string[] roles = new[] { "Admin", "User" };
+				string[] roles = { "Admin", "User" };
 				foreach (var role in roles)
 				{
 					if (!await roleManager.RoleExistsAsync(role))
 					{
 						await roleManager.CreateAsync(new ApplicationRole { Name = role });
 					}
+				}
+
+				// Optionally seed an admin user
+				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+				var adminEmail = "admin@test.com";
+				if (await userManager.FindByEmailAsync(adminEmail) == null)
+				{
+					var adminUser = new ApplicationUser
+					{
+						UserName = adminEmail,
+						Email = adminEmail,
+						Name = "Admin",
+						Surname = "Guy"
+					};
+					await userManager.CreateAsync(adminUser, "Password123!");
+					await userManager.AddToRoleAsync(adminUser, "Admin");
 				}
 			}
 
