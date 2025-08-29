@@ -50,6 +50,7 @@ namespace MyLocalGov.com
 
 			// Register Repositories
 			builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 			builder.Services.AddScoped<IIssueRepository, IssueRepository>();
