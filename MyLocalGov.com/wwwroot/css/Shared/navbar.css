@@ -17,7 +17,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	max-width: 1400px;
+	max-width: 80vw;
 	margin: 0 auto;
 	padding: 0 var(--spacing-lg);
 }
@@ -170,13 +170,15 @@
 	padding: var(--spacing-sm);
 	min-width: 200px;
 	box-shadow: var(--shadow-xl);
+	opacity: 0;
 	visibility: hidden;
 	transform: translateY(-10px);
-	transition: all var(--transition-normal);
+	transition: opacity var(--transition-normal), transform var(--transition-normal);
 	z-index: 1001;
 }
 
 	.menu-dropdown.show {
+		opacity: 1;
 		visibility: visible;
 		transform: translateY(0);
 	}

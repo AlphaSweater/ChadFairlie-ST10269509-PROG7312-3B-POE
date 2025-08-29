@@ -1,4 +1,3 @@
-
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Landing Page";
@@ -10,67 +9,67 @@
     bool formActive = !string.IsNullOrEmpty(showForm);
 }
 
-<main class="landing-page-bg .full-bleed-bg" id="landingPageContainer">
-    <section class="landing-page-row">
-        <header class="logo-container">
-            <div class="logo">
-                <span class="logo-icon">🏛️</span>
+<main class="landing-page-bg page-fade-in" id="landingPageContainer">
+    <section class="landing-page-row slide-in-right">
+        <header class="logo-container grow-in">
+            <div class="logo pulse">
+                <span class="logo-icon fade-in">🏛️</span>
             </div>
-            <h1 class="title">Civic Connect</h1>
-            <p class="subtitle @(formActive ? "hidden" : "")" id="subtitle">
+            <h1 class="title fade-in">Civic Connect</h1>
+            <p class="subtitle @(formActive ? "hidden" : "fade-in")" id="subtitle">
                 Your South African municipal services portal.<br>
                 <strong>Report issues • Request services • Stay informed</strong>
             </p>
-            <button id="enterButton" class="btn btn-primary mt-3 @(formActive ? "hidden" : "")">
+            <button id="enterButton" class="btn btn-primary mt-3 @(formActive ? "hidden" : "fade-in") ripple-effect">
                 Get Started →
             </button>
         </header>
 
-        <section class="form-container @(formActive ? "active" : "")" id="formContainer">
-            <form id="loginForm" class="form @(showForm == "login" ? "active" : "")" method="post" action="/Account/Login">
-                <div class="title">
+        <section class="form-container @(formActive ? "active slide-in-left" : "")" id="formContainer">
+            <form id="loginForm" class="form @(showForm == "login" ? "active grow-in" : "")" method="post" action="/Account/Login">
+                <div class="title fade-in">
                     Welcome,<br><span class="text-muted">login to continue</span>
                 </div>
                 @if (!string.IsNullOrEmpty(loginError))
                 {
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert alert-danger fade-in" role="alert">
                         <span>@loginError</span>
                     </div>
                 }
                 <input type="email" name="email" placeholder="Email"
-                       class="form-control"
+                       class="form-control fade-in"
                        value="@(showForm == "login" ? email : "")" required />
                 <input type="password" name="password" placeholder="Password"
-                       class="form-control" required />
-                <button type="submit" class="btn btn-success">Log In</button>
-                <p class="text-center">
+                       class="form-control fade-in" required />
+                <button type="submit" class="btn btn-success fade-in ripple-effect">Log In</button>
+                <p class="text-center fade-in">
                     <a href="#" id="showSignUp" class="switch-link">Need an account? Sign Up Here!</a>
                 </p>
             </form>
 
-            <form id="signUpForm" class="form @(showForm == "register" ? "active" : "")" method="post" action="/Account/Register">
-                <div class="title">
+            <form id="signUpForm" class="form @(showForm == "register" ? "active grow-in" : "")" method="post" action="/Account/Register">
+                <div class="title fade-in">
                     Welcome,<br><span class="text-muted">create an account</span>
                 </div>
                 @if (!string.IsNullOrEmpty(registerError))
                 {
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert alert-danger fade-in" role="alert">
                         <span>@registerError</span>
                     </div>
                 }
                 <input type="text" name="firstName" placeholder="First Name"
-                       class="form-control" required />
+                       class="form-control fade-in" required />
                 <input type="text" name="lastName" placeholder="Last Name"
-                       class="form-control" required />
+                       class="form-control fade-in" required />
                 <input type="email" name="email" placeholder="Email"
-                       class="form-control"
+                       class="form-control fade-in"
                        value="@(showForm == "register" ? email : "")" required />
                 <input type="password" name="password" placeholder="Password"
-                       class="form-control" required />
+                       class="form-control fade-in" required />
                 <input type="password" name="confirmPassword" placeholder="Confirm Password"
-                       class="form-control" required />
-                <button type="submit" class="btn btn-success">Sign Up</button>
-                <p class="text-center">
+                       class="form-control fade-in" required />
+                <button type="submit" class="btn btn-success fade-in ripple-effect">Sign Up</button>
+                <p class="text-center fade-in">
                     <a href="#" id="showLogin" class="switch-link">Already have an account? Log In</a>
                 </p>
             </form>
@@ -94,9 +93,9 @@
             enterButton.addEventListener("click", () => {
                 landingPageContainer.classList.add("active");
                 subtitle.classList.add("hidden");
-                formContainer.classList.add("active");
-                loginForm.classList.add("active");
-                signUpForm.classList.remove("active");
+                formContainer.classList.add("active", "slide-in-left");
+                loginForm.classList.add("active", "grow-in");
+                signUpForm.classList.remove("active", "grow-in");
                 enterButton.classList.add("hidden");
             });
         }
@@ -104,20 +103,21 @@
         if (showSignUp) {
             showSignUp.addEventListener("click", (e) => {
                 e.preventDefault();
-                loginForm.classList.remove("active");
-                signUpForm.classList.add("active");
+                loginForm.classList.remove("active", "grow-in");
+                signUpForm.classList.add("active", "grow-in");
             });
         }
 
         if (showLogin) {
             showLogin.addEventListener("click", (e) => {
                 e.preventDefault();
-                signUpForm.classList.remove("active");
-                loginForm.classList.add("active");
+                signUpForm.classList.remove("active", "grow-in");
+                loginForm.classList.add("active", "grow-in");
             });
         }
     });
 </script>
 
-<link rel="stylesheet" href="/css/Home/Index.css" asp-append-version="true" />
+<link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
+<link rel="stylesheet" href="/css/Shared/animations.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
