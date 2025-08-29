@@ -10,9 +10,9 @@ namespace MyLocalGov.com.Controllers
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
-		private readonly ApplicationDbContext _dbContext; // Assume ApplicationDbContext is your DB context class
+		private readonly MyLocalGovDbContext _dbContext; // Assume ApplicationDbContext is your DB context class
 
-		public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
+		public HomeController(ILogger<HomeController> logger, MyLocalGovDbContext dbContext)
 		{
 			_logger = logger;
 			_dbContext = dbContext;
@@ -35,7 +35,7 @@ namespace MyLocalGov.com.Controllers
 
 			// Query the database for the user's details
 			// (Assuming you have injected ApplicationDbContext via DI)
-			var user = _dbContext.UserProfiles.FirstOrDefault(u => u.Id == userId);
+			var user = _dbContext.UserProfiles.FirstOrDefault(u => u.UserID == userId);
 
 			var viewModel = new DashboardViewModel
 			{

@@ -40,16 +40,8 @@ namespace MyLocalGov.com.Controllers
 				// Create UserProfile for the new user
 				using (var scope = HttpContext.RequestServices.CreateScope())
 				{
-					var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-					var profile = new UserProfileModel
-					{
-						Id = user.Id,
-						FirstName = model.FirstName,
-						LastName = model.Surname,
-						Location = "",
-						PreferencesJson = "{}",
-						User = user
-					};
+					var db = scope.ServiceProvider.GetRequiredService<MyLocalGovDbContext>();
+					var profile = new UserProfileModel(model, user);
 					db.UserProfiles.Add(profile);
 					await db.SaveChangesAsync();
 				}

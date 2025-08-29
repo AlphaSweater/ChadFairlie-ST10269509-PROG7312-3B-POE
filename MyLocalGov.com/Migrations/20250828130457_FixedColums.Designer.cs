@@ -10,7 +10,7 @@ using MyLocalGov.com.Data;
 
 namespace MyLocalGov.com.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(MyLocalGovDbContext))]
     [Migration("20250828130457_FixedColums")]
     partial class FixedColums
     {

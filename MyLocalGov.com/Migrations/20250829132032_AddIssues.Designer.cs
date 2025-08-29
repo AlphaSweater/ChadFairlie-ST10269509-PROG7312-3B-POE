@@ -11,8 +11,8 @@ using MyLocalGov.com.Data;
 namespace MyLocalGov.com.Migrations
 {
     [DbContext(typeof(MyLocalGovDbContext))]
-    [Migration("20250828154747_AddUserProfileTable")]
-    partial class AddUserProfileTable
+    [Migration("20250829132032_AddIssues")]
+    partial class AddIssues
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -212,9 +212,120 @@ namespace MyLocalGov.com.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MyLocalGov.com.Models.IssueAttachmentModel", b =>
+                {
+                    b.Property<int>("AttachmentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("FileBlob")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("FileSizeBytes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IssueID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("AttachmentID");
+
+                    b.HasIndex("IssueID");
+
+                    b.ToTable("IssueAttachments");
+                });
+
+            modelBuilder.Entity("MyLocalGov.com.Models.IssueModel", b =>
+                {
+                    b.Property<int>("IssueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateReported")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("LocationText")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReporterUserID")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("StatusID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("IssueID");
+
+                    b.HasIndex("ReporterUserID");
+
+                    b.ToTable("Issues");
+                });
+
             modelBuilder.Entity("MyLocalGov.com.Models.UserProfileModel", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("UserID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DefaultAddressLine")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DefaultCity")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("DefaultLatitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("DefaultLongitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("DefaultPostalCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DefaultSuburb")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
@@ -222,21 +333,22 @@ namespace MyLocalGov.com.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PreferencesJson")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<int>("ReputationPoints")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserID");
 
                     b.ToTable("UserProfiles");
                 });
@@ -292,15 +404,42 @@ namespace MyLocalGov.com.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MyLocalGov.com.Models.IssueAttachmentModel", b =>
+                {
+                    b.HasOne("MyLocalGov.com.Models.IssueModel", "Issue")
+                        .WithMany("Attachments")
+                        .HasForeignKey("IssueID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Issue");
+                });
+
+            modelBuilder.Entity("MyLocalGov.com.Models.IssueModel", b =>
+                {
+                    b.HasOne("MyLocalGov.com.Models.UserProfileModel", "Reporter")
+                        .WithMany()
+                        .HasForeignKey("ReporterUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reporter");
+                });
+
             modelBuilder.Entity("MyLocalGov.com.Models.UserProfileModel", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithOne()
-                        .HasForeignKey("MyLocalGov.com.Models.UserProfileModel", "Id")
+                        .HasForeignKey("MyLocalGov.com.Models.UserProfileModel", "UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MyLocalGov.com.Models.IssueModel", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 #pragma warning restore 612, 618
         }

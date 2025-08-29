@@ -15,7 +15,7 @@ namespace MyLocalGov.com
 			builder.Services.AddControllersWithViews();
 
 			// SQLite Database
-			builder.Services.AddDbContext<ApplicationDbContext>(options =>
+			builder.Services.AddDbContext<MyLocalGovDbContext>(options =>
 				options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 			// Identity setup
@@ -26,7 +26,7 @@ namespace MyLocalGov.com
 				options.Password.RequireUppercase = false;
 				options.Password.RequireDigit = false;
 			})
-			.AddEntityFrameworkStores<ApplicationDbContext>()
+			.AddEntityFrameworkStores<MyLocalGovDbContext>()
 			.AddDefaultTokenProviders();
 
 			builder.Services.ConfigureApplicationCookie(options =>
@@ -47,11 +47,13 @@ namespace MyLocalGov.com
 			// Auto-migrate database
 			using (var scope = app.Services.CreateScope())
 			{
-				var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+				var db = scope.ServiceProvider.GetRequiredService<MyLocalGovDbContext>();
 				db.Database.Migrate();
 
 				// Seed roles
+				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
 				string[] roles = { "Admin", "MunicipalWorker", "Citizen" };
 				foreach (var role in roles)
 				{
@@ -61,32 +63,8 @@ namespace MyLocalGov.com
 					}
 				}
 
-				// Seed an admin user
-				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-				var adminEmail = "admin@test.com";
-				if (await userManager.FindByEmailAsync(adminEmail) == null)
-				{
-					var adminUser = new IdentityUser
-					{
-						UserName = adminEmail,
-						Email = adminEmail
-					};
-					await userManager.CreateAsync(adminUser, "Password123!");
-					await userManager.AddToRoleAsync(adminUser, "Admin");
-
-					// Create UserProfile for admin
-					var adminProfile = new UserProfileModel
-					{
-						Id = adminUser.Id,
-						FirstName = "Admin",
-						LastName = "Guy",
-						Location = "Head Office",
-						PreferencesJson = "{}",
-						User = adminUser
-					};
-					db.UserProfiles.Add(adminProfile);
-					await db.SaveChangesAsync();
-				}
+				// Seed test data (regular user and issues)
+				await TestDataSeeder.SeedAsync(db, userManager);
 			}
 
 			// Middleware
