@@ -18,12 +18,12 @@
         }
 
         .layout-main {
-            @* padding: var(--spacing-xl); *@
+            padding: var(--spacing-xl);
             background: var(--white-transparent-10);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: var(--border-radius-lg);
-            @* margin: var(--spacing-xl); *@
+            margin: var(--spacing-xl);
             border: 1px solid var(--white-transparent-20);
             box-shadow: var(--shadow-md);
         }
@@ -48,25 +48,38 @@
             color: var(--white);
         }
 
-        /* Override default bootstrap container */
+        /* Container: top padding only when navbar is visible */
         .custom-container {
             margin: 0 auto;
             padding: 0 var(--spacing-lg);
-            padding-top: 77px;
         }
+        .has-navbar .custom-container { padding-top: 77px; }
+        @@media (max-width: 768px) { .has-navbar .custom-container { padding-top: 317px; } }
 
-        /* Responsive Design */
-        @@media (max-width: 768px) {
-            .custom-container {
-                padding-top: 317px;
-            }
-        }
+        /* When navbar is hidden, let page own the background/padding */
+        .no-navbar .layout-main { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
     </style>
 </head>
 
-<body class="layout-container @(ViewData["HideNavbar"] != null && (bool)ViewData["HideNavbar"] ? "landing-page-full-bg" : "")">
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    var routeKey = $"{controller}/{action}";
+    var excludedRoutes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        // Add routes that should not show the navbar
+        "Auth/Index",
+        "Account/Login",
+        "Account/Register"
+    };
+    var explicitHide = ViewData["HideNavbar"] is bool b && b;
+    var hideNavbar = explicitHide || excludedRoutes.Contains(routeKey);
+    var bodyClass = $"layout-container {(hideNavbar ? "no-navbar" : "has-navbar")} {(hideNavbar ? "landing-page-full-bg" : string.Empty)}";
+}
+
+<body class="@bodyClass">
     <header>
-        @if (ViewData["HideNavbar"] == null || (bool)ViewData["HideNavbar"] == false)
+        @if (!hideNavbar)
         {
         <nav class="layout-navbar slide-in-up">
             <div class="navbar-content">
