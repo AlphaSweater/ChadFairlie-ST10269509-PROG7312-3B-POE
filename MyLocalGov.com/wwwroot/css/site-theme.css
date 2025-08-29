@@ -4,92 +4,84 @@
 
 /* Color Palette - Government Blue Theme with South African Accents */
 :root {
-  /* Primary Colors */
-  --primary-blue-dark: #1e3a8a;
-  --primary-blue-medium: #1e40af;
-  --primary-blue-light: #3b82f6;
-  --primary-blue-accent: #1d4ed8;
-  --primary-blue-hover: #2563eb;
-
-  /* Secondary Colors */
-  --secondary-blue-light: #93c5fd;
-  --secondary-blue-pale: #dbeafe;
-
-  /* South African Accent Colors */
-  --sa-green: #09a213;
-  --sa-green-dark: #078310;
-  --sa-green-light: #2db33b;
-  --sa-gold: #ffb612;
-  --sa-red: #de3831;
-  --sa-black: #000000;
-  --sa-white: #ffffff;
-
-  /* Accent Variants */
-  --accent-gold-light: rgba(255, 182, 18, 0.2);
-  --accent-green-light: rgba(0, 122, 61, 0.2);
-
-  /* Neutral Colors */
-  --white: #ffffff;
-  --white-transparent-10: rgba(255, 255, 255, 0.1);
-  --white-transparent-15: rgba(255, 255, 255, 0.15);
-  --white-transparent-20: rgba(255, 255, 255, 0.2);
-  --white-transparent-30: rgba(255, 255, 255, 0.3);
-  --white-transparent-40: rgba(255, 255, 255, 0.4);
-  --white-transparent-80: rgba(255, 255, 255, 0.8);
-  --white-transparent-90: rgba(255, 255, 255, 0.9);
-
-  --black-transparent-20: rgba(0, 0, 0, 0.2);
-  --black-transparent-30: rgba(0, 0, 0, 0.3);
-  --black-transparent-40: rgba(0, 0, 0, 0.4);
-
-  /* Typography */
-  --font-family-primary: 'Inter', sans-serif;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  /* Font Sizes */
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-base: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 24px;
-  --font-size-3xl: 30px;
-  --font-size-4xl: 36px;
-  --font-size-5xl: 48px;
-
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 40px;
-  --spacing-3xl: 48px;
-  --spacing-4xl: 64px;
-
-  /* Border Radius */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-radius-xl: 16px;
-  --border-radius-full: 50px;
-  --border-radius-circle: 50%;
-
-  /* Shadows */
-  --shadow-sm: 0 2px 4px var(--black-transparent-20);
-  --shadow-md: 0 4px 15px var(--black-transparent-20);
-  --shadow-lg: 0 8px 25px var(--black-transparent-30);
-  --shadow-xl: 0 10px 30px var(--black-transparent-30);
-  --shadow-2xl: 0 15px 40px var(--black-transparent-40);
-
-  /* Transitions */
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
-  --transition-very-slow: 0.8s ease;
+	/* Primary Colors */
+	--primary-blue-dark: #1e3a8a;
+	--primary-blue-medium: #1e40af;
+	--primary-blue-light: #3b82f6;
+	--primary-blue-accent: #1d4ed8;
+	--primary-blue-hover: #2563eb;
+	/* Secondary Colors */
+	--secondary-blue-light: #93c5fd;
+	--secondary-blue-pale: #dbeafe;
+	/* South African Accent Colors */
+	--new-green: #198754;
+	--new-green-dark: #11603c; 
+	--new-green-light: #28a869;
+	--sa-green: #09a213;
+	--sa-green-dark: #078310;
+	--sa-green-light: #2db33b;
+	--sa-gold: #ffb612;
+	--sa-red: #de3831;
+	--sa-black: #000000;
+	--sa-white: #ffffff;
+	/* Accent Variants */
+	--accent-gold-light: rgba(255, 182, 18, 0.2);
+	--accent-green-light: rgba(0, 122, 61, 0.2);
+	/* Neutral Colors */
+	--white: #ffffff;
+	--white-transparent-10: rgba(255, 255, 255, 0.1);
+	--white-transparent-15: rgba(255, 255, 255, 0.15);
+	--white-transparent-20: rgba(255, 255, 255, 0.2);
+	--white-transparent-30: rgba(255, 255, 255, 0.3);
+	--white-transparent-40: rgba(255, 255, 255, 0.4);
+	--white-transparent-80: rgba(255, 255, 255, 0.8);
+	--white-transparent-90: rgba(255, 255, 255, 0.9);
+	--black-transparent-20: rgba(0, 0, 0, 0.2);
+	--black-transparent-30: rgba(0, 0, 0, 0.3);
+	--black-transparent-40: rgba(0, 0, 0, 0.4);
+	/* Typography */
+	--font-family-primary: 'Inter', sans-serif;
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+	/* Font Sizes */
+	--font-size-xs: 12px;
+	--font-size-sm: 14px;
+	--font-size-base: 16px;
+	--font-size-lg: 18px;
+	--font-size-xl: 20px;
+	--font-size-2xl: 24px;
+	--font-size-3xl: 30px;
+	--font-size-4xl: 36px;
+	--font-size-5xl: 48px;
+	/* Spacing */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 24px;
+	--spacing-xl: 32px;
+	--spacing-2xl: 40px;
+	--spacing-3xl: 48px;
+	--spacing-4xl: 64px;
+	/* Border Radius */
+	--border-radius-sm: 4px;
+	--border-radius-md: 8px;
+	--border-radius-lg: 12px;
+	--border-radius-xl: 16px;
+	--border-radius-full: 50px;
+	--border-radius-circle: 50%;
+	/* Shadows */
+	--shadow-sm: 0 2px 4px var(--black-transparent-20);
+	--shadow-md: 0 4px 15px var(--black-transparent-20);
+	--shadow-lg: 0 8px 25px var(--black-transparent-30);
+	--shadow-xl: 0 10px 30px var(--black-transparent-30);
+	--shadow-2xl: 0 15px 40px var(--black-transparent-40);
+	/* Transitions */
+	--transition-fast: 0.2s ease;
+	--transition-normal: 0.3s ease;
+	--transition-slow: 0.5s ease;
+	--transition-very-slow: 0.8s ease;
 }
 
 /* ===========================================
