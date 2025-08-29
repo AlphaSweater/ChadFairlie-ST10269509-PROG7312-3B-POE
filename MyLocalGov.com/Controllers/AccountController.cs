@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MyLocalGov.com.Data;
 using MyLocalGov.com.Models;
 using MyLocalGov.com.ViewModels;
+using MyLocalGov.com.Repositories;
+using MyLocalGov.com.Repositories.Interfaces;
 
 namespace MyLocalGov.com.Controllers
 {
@@ -10,11 +11,16 @@ namespace MyLocalGov.com.Controllers
 	{
 		private readonly UserManager<IdentityUser> _userManager;
 		private readonly SignInManager<IdentityUser> _signInManager;
+		private readonly IUnitOfWork _unitOfWork;
 
-		public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+		public AccountController(
+			UserManager<IdentityUser> userManager,
+			SignInManager<IdentityUser> signInManager,
+			IUnitOfWork unitOfWork)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
+			_unitOfWork = unitOfWork;
 		}
 
 		[HttpGet]
@@ -40,14 +46,10 @@ namespace MyLocalGov.com.Controllers
 				// Assign "Citizen" role by default
 				await _userManager.AddToRoleAsync(user, "Citizen");
 
-				// Create UserProfile for the new user
-				using (var scope = HttpContext.RequestServices.CreateScope())
-				{
-					var db = scope.ServiceProvider.GetRequiredService<MyLocalGovDbContext>();
-					var profile = new UserProfileModel(model, user);
-					db.UserProfiles.Add(profile);
-					await db.SaveChangesAsync();
-				}
+				// Use UnitOfWork and repository for profile creation
+				var profile = new UserProfileModel(model, user);
+				await _unitOfWork.UserProfiles.CreateProfileForUserAsync(profile);
+				await _unitOfWork.SaveAsync();
 
 				await _signInManager.SignInAsync(user, isPersistent: false);
 				return RedirectToAction("Index", "Account");

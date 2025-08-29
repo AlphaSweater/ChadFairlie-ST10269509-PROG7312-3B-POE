@@ -52,7 +52,7 @@ namespace MyLocalGov.com.Models
 			UserID = user.Id;
 			User = user;
 			FirstName = model.FirstName;
-			LastName = model.Surname;
+			LastName = model.LastName;
 			PreferencesJson = "{}";
 		}
 

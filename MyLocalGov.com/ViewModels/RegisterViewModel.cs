@@ -8,7 +8,7 @@ namespace MyLocalGov.com.ViewModels
 		public string FirstName { get; set; }
 
 		[Required]
-		public string Surname { get; set; }
+		public string LastName { get; set; }
 
 		[Required, EmailAddress]
 		public string Email { get; set; }
