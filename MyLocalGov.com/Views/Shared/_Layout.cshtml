@@ -54,15 +54,15 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 var(--spacing-lg);
-            padding-top: 77px; 
+            padding-top: 77px;
         }
 
-		/* Responsive Design */
-		@@media (max-width: 768px) {
-			.custom-container {
-				padding-top: 317px;
-			}
-		}
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .custom-container {
+                padding-top: 317px;
+            }
+        }
     </style>
 </head>
 
@@ -92,10 +92,6 @@
                             <span class="menu-icon">☰</span>
                         </button>
                         <div class="menu-dropdown" id="menuDropdown">
-                            <a href="/" class="menu-item">
-                                <span class="menu-icon">🏠</span>
-                                Home
-                            </a>
                             <a href="/Home/Dashboard" class="menu-item">
                                 <span class="menu-icon">📊</span>
                                 Dashboard
@@ -122,10 +118,12 @@
                                 Settings
                             </a>
                             <div class="menu-divider"></div>
-                            <a href="#" class="menu-item" onclick="showComingSoon('Logout')">
-                                <span class="menu-icon">🚪</span>
-                                Logout
-                            </a>
+                            <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                                <button type="submit" class="menu-item menu-item-btn">
+                                    <span class="menu-icon">🚪</span>
+                                    Logout
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -173,8 +171,18 @@
                 const href = item.getAttribute('href');
                 if (href && currentPath.includes(href) && href !== '/') {
                     item.classList.add('active');
+                    item.addEventListener('click', function (e) {
+                        e.preventDefault();
+                    });
+                    item.style.pointerEvents = 'none';
+                    item.style.opacity = '0.6';
                 } else if (href === '/' && currentPath === '/') {
                     item.classList.add('active');
+                    item.addEventListener('click', function (e) {
+                        e.preventDefault();
+                    });
+                    item.style.pointerEvents = 'none';
+                    item.style.opacity = '0.6';
                 }
             });
 

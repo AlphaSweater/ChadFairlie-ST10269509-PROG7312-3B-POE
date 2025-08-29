@@ -205,10 +205,38 @@
 		color: var(--white);
 	}
 
-	.menu-item .menu-icon {
+	.menu-item .menu-item-btn .menu-icon {
 		font-size: 16px;
 		width: 20px;
 		text-align: center;
+	}
+
+.menu-item-btn {
+    background: none;
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--white);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    width: 100%;
+}
+
+	.menu-item-btn:hover {
+		background: var(--white-transparent-20);
+		color: var(--white);
+		text-decoration: none;
+	}
+
+	.menu-item-btn.active {
+		background: var(--primary-blue-light);
+		color: var(--white);
 	}
 
 .menu-divider {
