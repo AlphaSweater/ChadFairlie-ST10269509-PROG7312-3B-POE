@@ -455,3 +455,39 @@ body {
 	body.page-loaded {
 		opacity: 1;
 	}
+
+/* Ensure landing page background covers the whole viewport and removes layout borders/margins */
+body.landing-page-full-bg {
+    background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light)) !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow-x: hidden;
+}
+
+body.landing-page-full-bg .custom-container {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.landing-page-full-bg .layout-main {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+}
+
+body.landing-page-full-bg .landing-page-container {
+    min-height: 100vh;
+    width: 100vw !important;
+    padding: 0 !important;
+}
