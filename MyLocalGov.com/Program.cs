@@ -21,10 +21,10 @@ namespace MyLocalGov.com
 			// Identity setup
 			builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 			{
-				options.Password.RequiredLength = 6;
-				options.Password.RequireNonAlphanumeric = false;
-				options.Password.RequireUppercase = false;
-				options.Password.RequireDigit = false;
+				options.Password.RequiredLength = 8;
+				options.Password.RequireNonAlphanumeric = true;
+				options.Password.RequireUppercase = true;
+				options.Password.RequireDigit = true;
 			})
 			.AddEntityFrameworkStores<MyLocalGovDbContext>()
 			.AddDefaultTokenProviders();
@@ -33,6 +33,12 @@ namespace MyLocalGov.com
 			{
 				options.LoginPath = "/Account/Login";
 				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+				options.Cookie.IsEssential = true;
+				options.Cookie.HttpOnly = true;
+				options.Cookie.SameSite = SameSiteMode.Strict;
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Optional: set session timeout
+				options.SlidingExpiration = true;
+				options.Cookie.MaxAge = null; // Make cookie session-based (expires when browser closes)
 			});
 
 			var app = builder.Build();
@@ -86,7 +92,7 @@ namespace MyLocalGov.com
 
 			app.MapControllerRoute(
 				name: "default",
-				pattern: "{controller=Home}/{action=Index}/{id?}");
+				pattern: "{controller=Account}/{action=Index}/{id?}");
 
 			app.Run();
 		}

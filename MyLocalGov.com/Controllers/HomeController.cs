@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyLocalGov.com.Data;
 using MyLocalGov.com.Models;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace MyLocalGov.com.Controllers
 {
+	[Authorize]
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
