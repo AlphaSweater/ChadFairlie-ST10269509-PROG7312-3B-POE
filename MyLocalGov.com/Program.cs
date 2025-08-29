@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyLocalGov.com.Data;
 using MyLocalGov.com.Models;
+using MyLocalGov.com.Repositories;
+using MyLocalGov.com.Repositories.Interfaces;
 
 namespace MyLocalGov.com
 {
@@ -11,14 +13,18 @@ namespace MyLocalGov.com
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			// Add services to the container.
+			// ============================================
+			// 1. Configure Services (Dependency Injection)
+			// ============================================
+
+			// Add Razor Pages and MVC Controllers
 			builder.Services.AddControllersWithViews();
 
-			// SQLite Database
+			// Register DbContext (SQLite)
 			builder.Services.AddDbContext<MyLocalGovDbContext>(options =>
 				options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-			// Identity setup
+			// Register Identity (User & Role Management)
 			builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 			{
 				options.Password.RequiredLength = 8;
@@ -29,6 +35,7 @@ namespace MyLocalGov.com
 			.AddEntityFrameworkStores<MyLocalGovDbContext>()
 			.AddDefaultTokenProviders();
 
+			// Configure Authentication Cookie
 			builder.Services.ConfigureApplicationCookie(options =>
 			{
 				options.LoginPath = "/Account/Login";
@@ -36,27 +43,28 @@ namespace MyLocalGov.com
 				options.Cookie.IsEssential = true;
 				options.Cookie.HttpOnly = true;
 				options.Cookie.SameSite = SameSiteMode.Strict;
-				options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Optional: set session timeout
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Session timeout
 				options.SlidingExpiration = true;
-				options.Cookie.MaxAge = null; // Make cookie session-based (expires when browser closes)
+				options.Cookie.MaxAge = null; // Session-based cookie
 			});
 
+			// Register Repositories
+			builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+			// ============================================
+			// 2. Build Application
+			// ============================================
 			var app = builder.Build();
 
-			// Enforce HTTPS and HSTS
-			if (!app.Environment.IsDevelopment())
-			{
-				app.UseHttpsRedirection();
-				app.UseHsts();
-			}
-
-			// Auto-migrate database
+			// ============================================
+			// 3. Database Migration & Data Seeding
+			// ============================================
 			using (var scope = app.Services.CreateScope())
 			{
 				var db = scope.ServiceProvider.GetRequiredService<MyLocalGovDbContext>();
 				db.Database.Migrate();
 
-				// Seed roles
+				// Seed Roles
 				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -69,16 +77,18 @@ namespace MyLocalGov.com
 					}
 				}
 
-				// Seed test data (regular user and issues)
+				// Seed Test Data (Users & Issues)
 				await TestDataSeeder.SeedAsync(db, userManager);
 			}
 
-			// Middleware
-			// Configure the HTTP request pipeline.
+			// ============================================
+			// 4. Configure Middleware Pipeline
+			// ============================================
+
+			// Error Handling & Security
 			if (!app.Environment.IsDevelopment())
 			{
 				app.UseExceptionHandler("/Home/Error");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
 
@@ -87,13 +97,20 @@ namespace MyLocalGov.com
 
 			app.UseRouting();
 
-			app.UseAuthentication(); // Must be before Authorization
+			// Authentication & Authorization
+			app.UseAuthentication(); // Must be before UseAuthorization
 			app.UseAuthorization();
 
+			// ============================================
+			// 5. Endpoint Routing
+			// ============================================
 			app.MapControllerRoute(
 				name: "default",
 				pattern: "{controller=Account}/{action=Index}/{id?}");
 
+			// ============================================
+			// 6. Run Application
+			// ============================================
 			app.Run();
 		}
 	}
