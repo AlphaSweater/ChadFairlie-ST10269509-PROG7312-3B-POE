@@ -491,3 +491,30 @@ body.landing-page-full-bg .landing-page-container {
     width: 100vw !important;
     padding: 0 !important;
 }
+
+/* When form is active, move logo/title to the left and enlarge */
+.logo-container.form-active {
+    text-align: left;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+    max-width: 420px;
+    margin-left: 0;
+    margin-right: auto;
+    transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+}
+
+.logo.form-active {
+    width: 220px;
+    height: 220px;
+    margin: 0 0 var(--spacing-lg) 0;
+    transition: all var(--transition-normal);
+}
+
+.title.form-active {
+    font-size: 54px;
+    text-align: left;
+    margin-bottom: var(--spacing-md);
+    transition: all var(--transition-normal);
+}
