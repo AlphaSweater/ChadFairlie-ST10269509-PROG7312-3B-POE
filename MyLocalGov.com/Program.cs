@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyLocalGov.com.Data;
-using MyLocalGov.com.Models;
 using MyLocalGov.com.Repositories.Implementations;
 using MyLocalGov.com.Repositories.Interfaces;
+using MyLocalGov.com.Services.Implementations;
+using MyLocalGov.com.Services.Interfaces;
 
 namespace MyLocalGov.com
 {
@@ -47,6 +48,9 @@ namespace MyLocalGov.com
 				options.SlidingExpiration = true;
 				options.Cookie.MaxAge = null; // Session-based cookie
 			});
+
+			// Register Services
+			builder.Services.AddScoped<IAuthService, AuthService>();
 
 			// Register Repositories
 			builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
