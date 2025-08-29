@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using MyLocalGov.com.Data;
 using MyLocalGov.com.Repositories.Interfaces;
 
-namespace MyLocalGov.com.Repositories
+namespace MyLocalGov.com.Repositories.Implementations
 {
 	/// <summary>
 	/// UnitOfWork implementation.

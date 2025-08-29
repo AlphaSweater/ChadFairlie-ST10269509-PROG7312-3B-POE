@@ -2,7 +2,7 @@
 using MyLocalGov.com.Data;
 using MyLocalGov.com.Repositories.Interfaces;
 
-namespace MyLocalGov.com.Repositories
+namespace MyLocalGov.com.Repositories.Implementations
 {
 	public class Repository<T> : IRepository<T> where T : class
 	{

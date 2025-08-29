@@ -4,7 +4,7 @@ using MyLocalGov.com.Data;
 using MyLocalGov.com.Models;
 using MyLocalGov.com.Repositories.Interfaces;
 
-namespace MyLocalGov.com.Repositories
+namespace MyLocalGov.com.Repositories.Implementations
 {
 	public class UserProfileRepository : Repository<UserProfileModel>, IUserProfileRepository
 	{
