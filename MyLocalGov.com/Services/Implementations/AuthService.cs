@@ -8,12 +8,22 @@ using System.Threading.Tasks;
 
 namespace MyLocalGov.com.Services.Implementations
 {
+	/// <summary>
+	/// Service for handling authentication and registration logic.
+	/// Uses ASP.NET Core Identity and UnitOfWork for profile management.
+	/// </summary>
 	public class AuthService : IAuthService
 	{
+		// =============================================
+		// Dependencies
+		// =============================================
 		private readonly UserManager<IdentityUser> _userManager;
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly IUnitOfWork _unitOfWork;
 
+		/// <summary>
+		/// Constructor: injects Identity managers and UnitOfWork.
+		/// </summary>
 		public AuthService(
 			UserManager<IdentityUser> userManager,
 			SignInManager<IdentityUser> signInManager,
@@ -24,11 +34,26 @@ namespace MyLocalGov.com.Services.Implementations
 			_unitOfWork = unitOfWork;
 		}
 
+		// =============================================
+		// Login Logic
+		// =============================================
+
+		/// <summary>
+		/// Attempts to sign in a user with the provided credentials.
+		/// </summary>
 		public async Task<SignInResult> LoginAsync(LoginViewModel model)
 		{
 			return await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
 		}
 
+		// =============================================
+		// Registration Logic
+		// =============================================
+
+		/// <summary>
+		/// Registers a new user and creates their profile.
+		/// If profile creation fails, the user is removed.
+		/// </summary>
 		public async Task<IdentityResult> RegisterAsync(RegisterViewModel model)
 		{
 			var user = new IdentityUser { UserName = model.Email, Email = model.Email };
@@ -65,6 +90,13 @@ namespace MyLocalGov.com.Services.Implementations
 			return result;
 		}
 
+		// =============================================
+		// Logout Logic
+		// =============================================
+
+		/// <summary>
+		/// Signs out the current user.
+		/// </summary>
 		public async Task LogoutAsync()
 		{
 			await _signInManager.SignOutAsync();
