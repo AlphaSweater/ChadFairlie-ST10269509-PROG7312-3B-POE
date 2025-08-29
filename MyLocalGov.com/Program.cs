@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyLocalGov.com.Data;
 using MyLocalGov.com.Models;
-using MyLocalGov.com.Repositories;
+using MyLocalGov.com.Repositories.Implementations;
 using MyLocalGov.com.Repositories.Interfaces;
 
 namespace MyLocalGov.com

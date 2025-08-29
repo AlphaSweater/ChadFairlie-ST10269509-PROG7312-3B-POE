@@ -1,26 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using MyLocalGov.com.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyLocalGov.com.ViewModels;
-using MyLocalGov.com.Repositories;
-using MyLocalGov.com.Repositories.Interfaces;
+using MyLocalGov.com.Services.Interfaces;
 
 namespace MyLocalGov.com.Controllers
 {
 	public class AccountController : Controller
 	{
-		private readonly UserManager<IdentityUser> _userManager;
-		private readonly SignInManager<IdentityUser> _signInManager;
-		private readonly IUnitOfWork _unitOfWork;
+		private readonly IAuthService _authService;
 
-		public AccountController(
-			UserManager<IdentityUser> userManager,
-			SignInManager<IdentityUser> signInManager,
-			IUnitOfWork unitOfWork)
+		public AccountController(IAuthService authService)
 		{
-			_userManager = userManager;
-			_signInManager = signInManager;
-			_unitOfWork = unitOfWork;
+			_authService = authService;
 		}
 
 		[HttpGet]
@@ -34,29 +24,20 @@ namespace MyLocalGov.com.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				// Redirect to Index with register form visible and email pre-filled
 				return RedirectToAction("Index", "Account", new { showForm = "register", email = model.Email });
 			}
 
-			var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-			var result = await _userManager.CreateAsync(user, model.Password);
+			var result = await _authService.RegisterAsync(model);
 
 			if (result.Succeeded)
+				return RedirectToAction("Login", "Account");
+
+			return RedirectToAction("Index", "Account", new
 			{
-				// Assign "Citizen" role by default
-				await _userManager.AddToRoleAsync(user, "Citizen");
-
-				// Use UnitOfWork and repository for profile creation
-				var profile = new UserProfileModel(model, user);
-				await _unitOfWork.UserProfiles.CreateProfileForUserAsync(profile);
-				await _unitOfWork.SaveAsync();
-
-				await _signInManager.SignInAsync(user, isPersistent: false);
-				return RedirectToAction("Index", "Account");
-			}
-
-			// Redirect to Index with register form visible and email pre-filled
-			return RedirectToAction("Index", "Account", new { showForm = "register", email = model.Email, registerError = result.Errors.FirstOrDefault()?.Description });
+				showForm = "register",
+				email = model.Email,
+				registerError = result.Errors.FirstOrDefault()?.Description
+			});
 		}
 
 		[HttpGet]
@@ -67,23 +48,27 @@ namespace MyLocalGov.com.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				// Redirect to Index with login form visible and email pre-filled
 				return RedirectToAction("Index", "Account", new { showForm = "login", email = model.Email });
 			}
 
-			var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+			var result = await _authService.LoginAsync(model);
+
 			if (result.Succeeded)
 				return RedirectToAction("Dashboard", "Home");
 
-			// Redirect to Index with login form visible and email pre-filled
-			return RedirectToAction("Index", "Account", new { showForm = "login", email = model.Email, loginError = "Invalid login attempt." });
+			return RedirectToAction("Index", "Account", new
+			{
+				showForm = "login",
+				email = model.Email,
+				loginError = "Incorrect email or password used."
+			});
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Logout()
 		{
-			await _signInManager.SignOutAsync();
-			return RedirectToAction("Index", "Home");
+			await _authService.LogoutAsync();
+			return RedirectToAction("Index", "Account");
 		}
 	}
 }
