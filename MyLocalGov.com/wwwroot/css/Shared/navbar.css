@@ -1,12 +1,14 @@
-﻿/* Custom Layout Navbar Styles - Enhanced Dashboard Style */
+﻿/* Custom Layout Navbar Styles */
 .layout-navbar {
 	background: var(--white-transparent-10);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
 	border-bottom: 1px solid var(--white-transparent-20);
 	padding: var(--spacing-md) 0;
-	position: sticky;
+	position: fixed;
 	top: 0;
+	left: 0;
+	width: 100%;
 	z-index: 1000;
 	box-shadow: var(--shadow-md);
 }
@@ -160,7 +162,7 @@
 	top: 100%;
 	right: 0;
 	margin-top: var(--spacing-sm);
-	background: var(--white-transparent-10);
+	background: var(--primary-blue-dark);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
 	border: 1px solid var(--white-transparent-20);
@@ -168,7 +170,6 @@
 	padding: var(--spacing-sm);
 	min-width: 200px;
 	box-shadow: var(--shadow-xl);
-	opacity: 0;
 	visibility: hidden;
 	transform: translateY(-10px);
 	transition: all var(--transition-normal);
@@ -176,7 +177,6 @@
 }
 
 	.menu-dropdown.show {
-		opacity: 1;
 		visibility: visible;
 		transform: translateY(0);
 	}
