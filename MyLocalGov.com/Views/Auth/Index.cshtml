@@ -10,13 +10,13 @@
     bool formActive = !string.IsNullOrEmpty(showForm);
 }
 
-<main class="landing-page-container @(formActive ? "form-active" : "")" id="landingPageContainer">
+<main class="landing-page-container @(formActive ? "active" : "")" id="landingPageContainer">
     <section class="landing-page-row">
-        <header class="logo-container @(formActive ? "form-active" : "")" id="logoContainer">
+        <header class="logo-container" id="logoContainer">
             <div class="logo">
                 <span class="logo-icon">🏛️</span>
             </div>
-            <h1 class="title @(formActive ? "form-active" : "")" id="title">Civic Connect</h1>
+            <h1 class="title" id="title">Civic Connect</h1>
             <p class="subtitle @(formActive ? "hidden" : "")" id="subtitle">
                 Your South African municipal services portal.<br>
                 <strong>Report issues • Request services • Stay informed</strong>
@@ -26,8 +26,8 @@
             </button>
         </header>
 
-        <section class="form-container @(formActive ? "show" : "hidden")" id="formContainer">
-            <form id="loginForm" class="form card shadow-sm p-4 @(showForm == "login" ? "" : "hidden")" method="post" action="/Account/Login">
+        <section class="form-container @(formActive ? "active" : "")" id="formContainer">
+            <form id="loginForm" class="form card shadow-sm p-4 @(showForm == "login" ? "active" : "")" method="post" action="/Account/Login">
                 <div class="title mb-3">
                     Welcome,<br><span class="text-muted">login to continue</span>
                 </div>
@@ -49,7 +49,7 @@
                 </p>
             </form>
 
-            <form id="signUpForm" class="form card shadow-sm p-4 @(showForm == "register" ? "" : "hidden")" method="post" action="/Account/Register">
+            <form id="signUpForm" class="form card shadow-sm p-4 @(showForm == "register" ? "active" : "")" method="post" action="/Account/Register">
                 <div class="title mb-3">
                     Welcome,<br><span class="text-muted">create an account</span>
                 </div>
@@ -85,8 +85,6 @@
     document.addEventListener("DOMContentLoaded", function () {
         const enterButton = document.getElementById("enterButton");
         const landingPageContainer = document.getElementById("landingPageContainer");
-        const logoContainer = document.getElementById("logoContainer");
-        const title = document.getElementById("title");
         const subtitle = document.getElementById("subtitle");
         const formContainer = document.getElementById("formContainer");
         const loginForm = document.getElementById("loginForm");
@@ -96,14 +94,11 @@
 
         if (enterButton) {
             enterButton.addEventListener("click", () => {
-                landingPageContainer.classList.add("form-active");
-                logoContainer.classList.add("form-active");
-                title.classList.add("form-active");
+                landingPageContainer.classList.add("active");
                 subtitle.classList.add("hidden");
-                formContainer.classList.remove("hidden");
-                formContainer.classList.add("show");
-                loginForm.classList.remove("hidden");
-                signUpForm.classList.add("hidden");
+                formContainer.classList.add("active");
+                loginForm.classList.add("active");
+                signUpForm.classList.remove("active");
                 enterButton.classList.add("hidden");
             });
         }
@@ -111,16 +106,16 @@
         if (showSignUp) {
             showSignUp.addEventListener("click", (e) => {
                 e.preventDefault();
-                loginForm.classList.add("hidden");
-                signUpForm.classList.remove("hidden");
+                loginForm.classList.remove("active");
+                signUpForm.classList.add("active");
             });
         }
 
         if (showLogin) {
             showLogin.addEventListener("click", (e) => {
                 e.preventDefault();
-                signUpForm.classList.add("hidden");
-                loginForm.classList.remove("hidden");
+                signUpForm.classList.remove("active");
+                loginForm.classList.add("active");
             });
         }
     });

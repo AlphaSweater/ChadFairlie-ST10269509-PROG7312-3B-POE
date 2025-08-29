@@ -45,7 +45,7 @@ body.landing-page-full-bg .landing-page-container {
 	min-width: 260px;
 	max-width: 400px;
 }
-.logo-container.form-active {
+.landing-page-container.active .logo-container {
 	text-align: left;
 	align-items: flex-start;
 	margin-bottom: var(--spacing-xl);
@@ -66,7 +66,7 @@ body.landing-page-full-bg .landing-page-container {
 	font-size: 110px;
 	transition: all var(--transition-normal);
 }
-.logo.form-active {
+.landing-page-container.active .logo {
 	width: 220px;
 	height: 220px;
 	margin: 0 0 var(--spacing-lg) 0;
@@ -92,7 +92,7 @@ body.landing-page-full-bg .landing-page-container {
 	color: var(--white);
 	transition: font-size 0.5s cubic-bezier(.77,0,.18,1);
 }
-.title.form-active {
+.landing-page-container.active .title {
 	font-size: 54px;
 	text-align: left;
 }
@@ -103,16 +103,20 @@ body.landing-page-full-bg .landing-page-container {
 	margin-bottom: var(--spacing-2xl);
 	max-width: 600px;
 	line-height: 1.6;
+	display: block;
 }
 .subtitle strong {
 	color: var(--new-green-light);
 	font-weight: var(--font-weight-semibold);
 	text-shadow: 1px 1px 2px var(--black-transparent-30);
 }
+.subtitle.hidden {
+	display: none !important;
+}
 
 /* Form Container */
 .form-container {
-	display: flex;
+	display: none;
 	flex-direction: column;
 	gap: 30px;
 	min-width: 320px;
@@ -121,10 +125,15 @@ body.landing-page-full-bg .landing-page-container {
 	justify-content: center;
 	transition: all 0.5s cubic-bezier(.77,0,.18,1);
 	flex: 1 1 420px;
+	opacity: 0;
+	transform: translateY(20px);
 }
-.form-container.show {
+.form-container.active {
+	display: flex;
 	min-width: 340px;
 	max-width: 420px;
+	opacity: 1;
+	transform: translateY(0);
 }
 
 /* Form */
@@ -141,6 +150,10 @@ body.landing-page-full-bg .landing-page-container {
 	border: 2px solid #3bbf6c;
 	backdrop-filter: blur(0px);
 	transition: box-shadow 0.3s, border 0.3s;
+	display: none;
+}
+.form.active {
+	display: block;
 }
 .form .title {
 	font-size: 1.6rem;
@@ -155,7 +168,7 @@ body.landing-page-full-bg .landing-page-container {
 	font-weight: 500;
 	font-size: 1rem;
 }
-.form-container.show .form {
+.form-container.active .form {
 	max-width: 420px;
 	font-size: 1.08rem;
 }
@@ -414,8 +427,6 @@ main { background: transparent !important; border: none !important; box-shadow: 
 	from { opacity: 0; transform: translateY(20px); }
 	to { opacity: 1; transform: translateY(0); }
 }
-.form-container.animated,
-.logo-container.form-active,
-.title.form-active { animation: fadeInSlide 0.5s ease forwards; }
-#formContainer { opacity: 0; transform: translateY(20px); transition: all 0.4s ease; }
-#formContainer.show { opacity: 1; transform: translateY(0); }
+.landing-page-container.active .form-container,
+.landing-page-container.active .logo-container,
+.landing-page-container.active .title { animation: fadeInSlide 0.5s ease forwards; }
