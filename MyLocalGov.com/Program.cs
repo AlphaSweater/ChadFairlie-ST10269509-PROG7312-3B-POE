@@ -84,7 +84,8 @@ namespace MyLocalGov.com
 				}
 
 				// Seed Test Data (Users & Issues)
-				await TestDataSeeder.SeedAsync(db, userManager);
+				var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+				await TestDataSeeder.SeedAsync(unitOfWork, userManager);
 			}
 
 			// ============================================

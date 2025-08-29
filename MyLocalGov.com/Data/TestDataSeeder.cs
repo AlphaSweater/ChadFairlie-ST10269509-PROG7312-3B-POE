@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using MyLocalGov.com.Models;
+using MyLocalGov.com.Repositories.Interfaces;
 
 namespace MyLocalGov.com.Data
 {
     public static class TestDataSeeder
     {
         public static async Task SeedAsync(
-            MyLocalGovDbContext db,
+            IUnitOfWork unitOfWork,
             UserManager<IdentityUser> userManager)
         {
             // Seed admin user
@@ -30,8 +31,8 @@ namespace MyLocalGov.com.Data
                     PreferencesJson = "{}",
                     User = adminUser
                 };
-                db.UserProfiles.Add(adminProfile);
-                await db.SaveChangesAsync();
+                await unitOfWork.UserProfiles.CreateProfileForUserAsync(adminProfile);
+                await unitOfWork.SaveAsync();
             }
 
             // Seed themed citizen user: Hiccup Haddock
@@ -61,8 +62,8 @@ namespace MyLocalGov.com.Data
                     PreferencesJson = "{\"dragon\":\"Toothless\"}",
                     User = hiccupUser
                 };
-                db.UserProfiles.Add(hiccupProfile);
-                await db.SaveChangesAsync();
+                await unitOfWork.UserProfiles.CreateProfileForUserAsync(hiccupProfile);
+                await unitOfWork.SaveAsync();
 
                 // Seed 3 themed issues for Hiccup
                 var issues = new List<IssueModel>
@@ -108,8 +109,11 @@ namespace MyLocalGov.com.Data
                     }
                 };
 
-                db.Issues.AddRange(issues);
-                await db.SaveChangesAsync();
+                foreach (var issue in issues)
+                {
+                    await unitOfWork.Issues.AddAsync(issue);
+                }
+                await unitOfWork.SaveAsync();
             }
         }
     }
