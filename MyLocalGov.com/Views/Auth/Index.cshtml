@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Identity
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Landing Page";
@@ -93,9 +94,9 @@
             enterButton.addEventListener("click", () => {
                 landingPageContainer.classList.add("active");
                 subtitle.classList.add("hidden");
-                formContainer.classList.add("active", "slide-in-left");
-                loginForm.classList.add("active", "grow-in");
-                signUpForm.classList.remove("active", "grow-in");
+                formContainer.classList.add("active", "slide-in-left", "animated");
+                loginForm.classList.add("active", "grow-in", "animated");
+                signUpForm.classList.remove("active", "grow-in", "animated");
                 enterButton.classList.add("hidden");
             });
         }
@@ -119,5 +120,5 @@
 </script>
 
 <link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
-<link rel="stylesheet" href="/css/Shared/animations.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Shared/animations.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

@@ -16,20 +16,31 @@
 }
 
 /* --- Useful Component Animations --- */
-.slide-in-left {
-	animation: slideInLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+.slide-in-left, .slide-in-right, .slide-in-up, .grow-in, .fade-in {
+	opacity: 0;
+	transform: none;
+	transition: none;
 }
+
+.slide-in-left.animated { animation: slideInLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
+.slide-in-right.animated { animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
+.slide-in-up.animated { animation: slideInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
+.grow-in.animated { animation: growIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
+.fade-in.animated { animation: fadeIn 0.5s ease forwards; opacity: 1; }
+
 @keyframes slideInLeft {
 	from { opacity: 0; transform: translateX(-40px); }
 	to   { opacity: 1; transform: translateX(0); }
 }
 
-.slide-in-right {
-	animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
 @keyframes slideInRight {
 	from { opacity: 0; transform: translateX(40px); }
 	to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInUp {
+	from { opacity: 0; transform: translateY(40px); }
+	to { opacity: 1; transform: translateY(0); }
 }
 
 .grow-in {
