@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 		},
 
-		slideLeft: function (selector, delay = 0) {
+		slideRight: function (selector, delay = 0) {
 			anime({
 				targets: selector,
 				translateX: [-80, 0],
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 		},
 
-		slideRight: function (selector, delay = 0) {
+		slideLeft: function (selector, delay = 0) {
 			anime({
 				targets: selector,
 				translateX: [80, 0],
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			setTimeout(() => {
 				document.body.classList.remove("page-exit");
 			}, 600);
-		}
+		},
 	};
 
 	// ===============================
