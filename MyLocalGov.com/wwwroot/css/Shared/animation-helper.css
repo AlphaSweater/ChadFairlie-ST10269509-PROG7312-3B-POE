@@ -1,27 +1,62 @@
 ﻿/* animation-helper.css */
 
-/* Page transitions */
+/* Smooth page transition */
 body.page-exit {
 	opacity: 0;
-	transition: opacity 0.4s ease-in-out;
+	transform: scale(0.98);
+	transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
-/* Utility classes */
+/* Base "hidden" state classes (to combine with JS presets) */
 .animate-fade {
 	opacity: 0;
 }
 
 .animate-slide-up {
-	transform: translateY(40px);
 	opacity: 0;
+	transform: translateY(60px);
 }
 
 .animate-slide-left {
-	transform: translateX(-40px);
 	opacity: 0;
+	transform: translateX(-80px);
+}
+
+.animate-slide-right {
+	opacity: 0;
+	transform: translateX(80px);
 }
 
 .animate-scale-in {
-	transform: scale(0.9);
 	opacity: 0;
+	transform: scale(0.5);
+}
+
+.animate-zoom-in {
+	opacity: 0;
+	transform: scale(1.2);
+}
+
+.animate-rotate-in {
+	opacity: 0;
+	transform: rotate(-15deg);
+}
+
+.animate-bounce-in {
+	opacity: 0;
+	transform: scale(0.3);
+}
+
+.animate-shake {
+	opacity: 0;
+}
+
+/* Hide main content while loading */
+.body-anim-loading .custom-container,
+.body-anim-loading header,
+.body-anim-loading .layout-footer {
+	opacity: 0 !important;
+	pointer-events: none;
+	user-select: none;
+	transition: opacity 0.2s;
 }

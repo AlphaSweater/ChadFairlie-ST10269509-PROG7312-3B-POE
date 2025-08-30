@@ -1,0 +1,47 @@
+﻿/* Page Loading Overlay (with Spinner) */
+.page-loading-overlay {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--primary-blue-dark, #1a237e), var(--primary-blue-medium, #3949ab), var(--primary-blue-light, #90caf9));
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh !important;
+    height: 100vh !important;
+    display: none; /* Initially hidden, shown by JS if loading is slow */
+    opacity: 0;    /* Fade in/out controlled by JS */
+    transition: opacity 0.3s;
+}
+
+/* Spinner Icon (inside loading overlay) */
+.spinner-icon {
+    width: 56px;
+    height: 56px;
+    border: 6px solid var(--accent-green-light, rgba(0,122,61,0.2));
+    border-top: 6px solid var(--new-green, #198754);
+    border-right: 6px solid var(--sa-green, #09a213);
+    border-radius: 50%;
+    box-shadow: 0 0 16px 2px var(--accent-green-light, rgba(0,122,61,0.2));
+    animation: spinner-rotate 1s linear infinite;
+    background: rgba(255,255,255,0.08);
+    position: relative;
+}
+
+.spinner-icon::after {
+    content: "🏛️";
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: var(--new-green, #198754);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+@keyframes spinner-rotate {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+}

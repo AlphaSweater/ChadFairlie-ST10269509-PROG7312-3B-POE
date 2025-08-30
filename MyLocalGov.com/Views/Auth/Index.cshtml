@@ -13,21 +13,24 @@
 <main class="landing-page-bg" id="landingPageContainer">
     <section class="landing-page-row">
         <header class="logo-container">
-            <div class="logo">
+            <div class="logo animate-scale-in" id="logo">
                 <span class="logo-icon">🏛️</span>
             </div>
-            <h1 class="title">Civic Connect</h1>
-            <p class="subtitle @(formActive ? "hidden" : "")" id="subtitle">
+            <h1 class="title animate-slide-up" id="mainTitle">Civic Connect</h1>
+            <p class="subtitle animate-fade @(formActive ? "hidden" : "")" id="subtitle">
                 Your South African municipal services portal.<br>
                 <strong>Report issues • Request services • Stay informed</strong>
             </p>
-            <button id="enterButton" class="btn btn-primary mt-3 @(formActive ? "hidden" : "")">
+            <button id="enterButton" class="btn btn-primary mt-3 animate-bounce-in @(formActive ? "hidden" : "")">
                 Get Started →
             </button>
+            <a href="/Home/AnimationsDemo" class="btn btn-outline-primary mt-2 animate-slide-right @(formActive ? "hidden" : "") page-link" id="animationsDemoButton">
+                Animations Demo
+            </a>
         </header>
 
-        <section class="form-container @(formActive ? "active" : "")" id="formContainer">
-            <form id="loginForm" class="form @(showForm == "login" ? "active" : "")" method="post" action="/Account/Login">
+        <section class="form-container @(formActive ? "active" : "") animate-fade" id="formContainer">
+            <form id="loginForm" class="form @(showForm == "login" ? "active" : "") animate-slide-up" method="post" action="/Account/Login">
                 <div class="title">
                     Welcome,<br><span class="text-muted">login to continue</span>
                 </div>
@@ -48,7 +51,7 @@
                 </p>
             </form>
 
-            <form id="signUpForm" class="form @(showForm == "register" ? "active" : "")" method="post" action="/Account/Register">
+            <form id="signUpForm" class="form @(showForm == "register" ? "active" : "") animate-slide-up" method="post" action="/Account/Register">
                 <div class="title">
                     Welcome,<br><span class="text-muted">create an account</span>
                 </div>
@@ -79,8 +82,17 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
+@section Scripts {
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    window.onPageReady(function () {
+        // Initial page load animations
+        Animations.scaleIn("#logo");
+        Animations.slideUp("#mainTitle", 100);
+        Animations.fadeIn("#subtitle", 200);
+        Animations.bounceIn("#enterButton", 300);
+        Animations.slideRight("#animationsDemoButton", 400);
+
         const enterButton = document.getElementById("enterButton");
         const subtitle = document.getElementById("subtitle");
         const formContainer = document.getElementById("formContainer");
@@ -96,6 +108,10 @@
                 loginForm.classList.add("active");
                 signUpForm.classList.remove("active");
                 enterButton.classList.add("hidden");
+
+                // Animate form container and login form
+                Animations.fadeIn("#formContainer");
+                Animations.slideUp("#loginForm", 100);
             });
         }
 
@@ -104,6 +120,9 @@
                 e.preventDefault();
                 loginForm.classList.remove("active");
                 signUpForm.classList.add("active");
+
+                // Animate sign up form
+                Animations.slideRight("#signUpForm");
             });
         }
 
@@ -112,10 +131,14 @@
                 e.preventDefault();
                 signUpForm.classList.remove("active");
                 loginForm.classList.add("active");
+
+                // Animate login form
+                Animations.slideLeft("#loginForm");
             });
         }
     });
 </script>
+}
 
 <link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

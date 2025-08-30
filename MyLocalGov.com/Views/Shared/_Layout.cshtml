@@ -13,17 +13,11 @@
 	<!-- AOS CSS -->
 	<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-	<!-- Anime.js -->
-	<script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-
-	<!-- AOS JS -->
-	<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-
-	<!-- Your custom helper -->
-	<script src="~/js/Shared/animation-helper.js"></script>
+	<!-- Animation helper CSS -->
 	<link href="~/css/Shared/animation-helper.css" rel="stylesheet">
 
-
+	<!-- Page Spinner CSS -->
+	<link href="~/css/Shared/page-spinner.css" rel="stylesheet">
     <style>
         .layout-container {
             background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
@@ -106,7 +100,12 @@
     var bodyClass = $"layout-container {(hideNavbar ? "no-navbar" : "has-navbar")} {(hideNavbar ? "landing-page-full-bg" : string.Empty)}";
 }
 
-<body class="@bodyClass">
+<body class="@bodyClass body-anim-loading">
+    <!-- Page Loading Overlay -->
+    <div id="pageLoadingOverlay" class="page-loading-overlay">
+      <div class="spinner-icon"></div>
+    </div>
+
     <header>
         @if (!hideNavbar)
         {
@@ -178,7 +177,18 @@
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
+    <!-- Anime.js -->
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" defer></script>
+
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js" defer></script>
+
+    <!-- Animation helper JS -->
+    <script src="~/js/Shared/animation-helper.js" defer></script>
+
     <script>
         // Show coming soon alerts for features under development
         function showComingSoon(feature) {
@@ -225,12 +235,25 @@
                     item.style.opacity = '0.6';
                 }
             });
+        });
 
-            // Add page loaded animation
-            document.body.classList.add('page-loaded');
+        // Global utility: run callback after page is ready
+        window.onPageReady = function(callback) {
+            if (window._pageReady || document.body.classList.contains("page-loaded")) {
+                callback();
+            } else {
+                document.addEventListener("pageReady", function handler() {
+                    window._pageReady = true;
+                    callback();
+                    document.removeEventListener("pageReady", handler);
+                });
+            }
+        };
+        document.addEventListener("pageReady", function() {
+            window._pageReady = true;
         });
     </script>
-    @await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>
