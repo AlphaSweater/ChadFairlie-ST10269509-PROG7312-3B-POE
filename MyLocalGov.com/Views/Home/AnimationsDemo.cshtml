@@ -1,0 +1,98 @@
+﻿@* ===============================
+   Animation Demo Playground
+   =============================== *@
+
+<div class="container mt-5">
+
+	<!-- HERO SECTION -->
+	<section class="mb-5 text-center">
+		<h1 data-aos="fade-up">🚀 Welcome to Animations Demo</h1>
+		<p data-aos="fade-up" data-aos-delay="200">
+			This text fades up after the heading
+		</p>
+		<button data-aos="zoom-in" data-aos-delay="400" class="btn btn-primary">
+			Zoom In Button
+		</button>
+	</section>
+
+	<hr />
+
+	<!-- AOS DEMO -->
+	<section class="mb-5">
+		<h2 class="mb-4">AOS Scroll Animations</h2>
+		<div class="row">
+			<div class="col-md-3" data-aos="fade-left">Fade Left</div>
+			<div class="col-md-3" data-aos="fade-right">Fade Right</div>
+			<div class="col-md-3" data-aos="flip-left">Flip Left</div>
+			<div class="col-md-3" data-aos="zoom-in">Zoom In</div>
+		</div>
+	</section>
+
+	<hr />
+
+	<!-- ANIME.JS HELPERS -->
+	<section class="mb-5">
+		<h2 class="mb-4">Anime.js Presets</h2>
+
+		<div id="animeFade" class="animate-fade mb-3">I will fade in</div>
+		<div id="animeSlideUp" class="animate-slide-up mb-3">I will slide up</div>
+		<div id="animeSlideLeft" class="animate-slide-left mb-3">I will slide left</div>
+		<div id="animeScale" class="animate-scale-in mb-3">I will scale in</div>
+	</section>
+
+	<hr />
+
+	<!-- STAGGER DEMO -->
+	<section class="mb-5">
+		<h2 class="mb-4">Staggered List</h2>
+		<ul id="staggerList" class="list-group">
+			<li class="list-group-item">Item 1</li>
+			<li class="list-group-item">Item 2</li>
+			<li class="list-group-item">Item 3</li>
+		</ul>
+	</section>
+
+	<hr />
+
+	<!-- PAGE TRANSITIONS DEMO -->
+	<section class="mb-5">
+		<h2 class="mb-4">Page Transitions</h2>
+		<p>Click a link to see the fade-out transition:</p>
+		<a href="/Home/Index" class="page-link btn btn-outline-secondary">Home</a>
+		<a href="/Home/About" class="page-link btn btn-outline-secondary">About</a>
+	</section>
+
+</div>
+
+@section Scripts {
+	<script>
+		console.log("Section script loaded");
+
+		function runAnimationsWhenReady() {
+			if (window.Animations) {
+				console.log("Animations object is available, running animations...");
+				console.log("Before fadeIn:", document.querySelector("#animeFade").style.opacity);
+				Animations.fadeIn("#animeFade");
+				setTimeout(() => {
+					console.log("After fadeIn:", document.querySelector("#animeFade").style.opacity);
+				}, 1200);
+				Animations.slideUp("#animeSlideUp");
+				Animations.slideLeft("#animeSlideLeft");
+				Animations.scaleIn("#animeScale");
+
+				anime({
+					targets: "#staggerList li",
+					translateY: [40, 0],
+					opacity: [0, 1],
+					delay: anime.stagger(200),
+					duration: 800,
+					easing: "easeOutCubic"
+				});
+			} else {
+				console.log("Animations object not yet available, retrying...");
+				setTimeout(runAnimationsWhenReady, 50);
+			}
+		}
+		runAnimationsWhenReady();
+	</script>
+}

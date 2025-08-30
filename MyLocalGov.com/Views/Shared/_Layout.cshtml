@@ -10,14 +10,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="~/css/Shared/navbar.css" rel="stylesheet" />
 
-	<!-- Anime.js -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
-			integrity="sha512-MKknv7i63Jz6bmyw7k3Uy1o0v7Qw1vQZPk9XCuMZAwqtWBuCeQ9YrR2cbU1x8zXG8OdNO0NOZ2apZj+xJYhYvw=="
-			crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<!-- AOS CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-	<!-- AOS (Animate On Scroll) -->
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+	<!-- Anime.js -->
+	<script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+
+	<!-- AOS JS -->
+	<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+	<!-- Your custom helper -->
+	<script src="~/js/Shared/animation-helper.js"></script>
+	<link href="~/css/Shared/animation-helper.css" rel="stylesheet">
+
 
     <style>
         .layout-container {
@@ -175,13 +180,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-		// Init AOS globally
-        AOS.init({
-            duration: 800,   // ms
-            once: true,      // only animate once
-            offset: 120      // trigger point
-        });
-
         // Show coming soon alerts for features under development
         function showComingSoon(feature) {
             alert(`🚧 ${feature} feature coming soon!\n\nThis feature is currently under development and will be available in a future update.`);

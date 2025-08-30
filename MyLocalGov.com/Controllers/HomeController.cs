@@ -123,6 +123,12 @@ namespace MyLocalGov.com.Controllers
 			return View(viewModel);
 		}
 
+		[AllowAnonymous]
+		public IActionResult AnimationsDemo()
+		{
+			return View();
+		}
+
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{

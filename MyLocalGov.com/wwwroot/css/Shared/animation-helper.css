@@ -1,0 +1,27 @@
+﻿/* animation-helper.css */
+
+/* Page transitions */
+body.page-exit {
+	opacity: 0;
+	transition: opacity 0.4s ease-in-out;
+}
+
+/* Utility classes */
+.animate-fade {
+	opacity: 0;
+}
+
+.animate-slide-up {
+	transform: translateY(40px);
+	opacity: 0;
+}
+
+.animate-slide-left {
+	transform: translateX(-40px);
+	opacity: 0;
+}
+
+.animate-scale-in {
+	transform: scale(0.9);
+	opacity: 0;
+}
