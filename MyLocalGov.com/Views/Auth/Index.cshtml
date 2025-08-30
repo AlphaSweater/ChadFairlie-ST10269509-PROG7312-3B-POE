@@ -92,44 +92,38 @@
         const showLogin = document.getElementById("showLogin");
 
         if (formContainer.classList.contains("active")) {
-            // Only run form-active animations
-            subtitle?.classList.add("hidden");
-            enterButton?.classList.add("hidden");
-            Animations.slideLeft("#logo", 100);
-            Animations.slideLeft("#mainTitle", 200);
-            Animations.fadeIn("#formContainer");
+            // Animate logo and title moving out
+			Animations.slideInFromRight("#logo", 100);
+			Animations.slideInFromRight("#mainTitle", 200);
+
+            // Animate form container and active form in
+            Animations.fadeIn("#formContainer", 300);
             if (loginForm.classList.contains("active")) {
-                Animations.fadeIn("#formContainer");
-                Animations.slideUp("#loginForm", 200);
+                Animations.slideUp("#loginForm", 400);
             }
             if (signUpForm.classList.contains("active")) {
-                Animations.fadeIn("#formContainer");
-                Animations.slideUp("#signUpForm", 200);
+                Animations.slideUp("#signUpForm", 400);
             }
         } else {
-            // Only run landing animations
-            Animations.scaleIn("#logo");
-            Animations.slideUp("#mainTitle", 100);
-            Animations.fadeIn("#subtitle", 200);
-            Animations.bounceIn("#enterButton", 300);
-            Animations.slideRight("#animationsDemoButton", 400);
+            // Stagger landing page animations for impact
+            Animations.scaleIn("#logo", 100);
+            Animations.slideUp("#mainTitle", 400);
+            Animations.fadeIn("#subtitle", 700);
+            Animations.bounceIn("#enterButton", 1000);
         }
 
         if (enterButton) {
             enterButton.addEventListener("click", () => {
-                subtitle.classList.add("hidden");
                 formContainer.classList.add("active");
                 loginForm.classList.add("active");
                 signUpForm.classList.remove("active");
                 enterButton.classList.add("hidden");
+                subtitle.classList.add("hidden");
 
-                // Animate logo and title moving
-                Animations.slideLeft("#logo", 100);
-                Animations.slideLeft("#mainTitle", 200);
-
-                // Animate form container and login form appearing
-                Animations.fadeIn("#formContainer");
-                Animations.slideUp("#loginForm", 200);
+				Animations.slideInFromRight("#logo", 100);
+				Animations.slideInFromRight("#mainTitle", 200);
+                Animations.fadeIn("#formContainer", 300);
+                Animations.slideUp("#loginForm", 400);
             });
         }
 
@@ -138,9 +132,7 @@
                 e.preventDefault();
                 loginForm.classList.remove("active");
                 signUpForm.classList.add("active");
-
-                // Animate sign up form
-                Animations.slideRight("#signUpForm");
+                Animations.slideRight("#signUpForm", 200);
             });
         }
 
@@ -149,9 +141,7 @@
                 e.preventDefault();
                 signUpForm.classList.remove("active");
                 loginForm.classList.add("active");
-
-                // Animate login form
-                Animations.slideLeft("#loginForm");
+                Animations.slideLeft("#loginForm", 200);
             });
         }
     });

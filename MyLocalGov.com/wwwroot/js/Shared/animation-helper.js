@@ -5,118 +5,163 @@ document.addEventListener("DOMContentLoaded", function () {
 	// AOS Initialization
 	// ===============================
 	AOS.init({
-		duration: 900,      // base duration
+		duration: 900,
 		easing: "ease-in-out-cubic",
-		once: true,         // animate only once per element
-		offset: 80          // trigger a bit before element enters view
+		once: true,
+		offset: 80
 	});
 
 	// ===============================
 	// Anime.js Presets
 	// ===============================
+	function animateWithClass(selector, animationFn, delay = 0) {
+		const elements = typeof selector === "string"
+			? document.querySelectorAll(selector)
+			: [selector];
+		elements.forEach(el => {
+			if (!el) return;
+			setTimeout(() => {
+				el.classList.add("animated");
+				animationFn(el);
+			}, delay);
+		});
+	}
+
 	window.Animations = {
 		fadeIn: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				opacity: [0, 1],
-				easing: "easeOutCubic",
-				duration: 800,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible"; // prevent layout shift
+				anime({
+					targets: el,
+					opacity: [0, 1],
+					easing: "easeOutCubic",
+					duration: 800
+				});
+			}, delay);
 		},
 
 		slideUp: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				translateY: [60, 0],
-				opacity: [0, 1],
-				easing: "easeOutExpo",
-				duration: 1000,
-				delay: delay
-			});
-		},
-
-		slideRight: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				translateX: [-80, 0],
-				opacity: [0, 1],
-				easing: "easeOutExpo",
-				duration: 1000,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					translateY: [60, 0], // only visual, not layout
+					opacity: [0, 1],
+					easing: "easeOutExpo",
+					duration: 1000
+				});
+			}, delay);
 		},
 
 		slideLeft: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				translateX: [80, 0],
-				opacity: [0, 1],
-				easing: "easeOutExpo",
-				duration: 1000,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					translateX: [80, 0],
+					opacity: [0, 1],
+					easing: "easeOutExpo",
+					duration: 1000
+				});
+			}, delay);
+		},
+
+		slideInFromRight: function (selector, delay = 0) {
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					translateX: [200, 0], // starts offscreen to the right, moves left
+					opacity: [0, 1],
+					easing: "easeOutExpo",
+					duration: 1000,
+					delay: delay
+				});
+			}, delay);
+		},
+
+
+		slideRight: function (selector, delay = 0) {
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					translateX: [-80, 0],
+					opacity: [0, 1],
+					easing: "easeOutExpo",
+					duration: 1000
+				});
+			}, delay);
 		},
 
 		scaleIn: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				scale: [0.5, 1],   // smaller start, bigger end
-				opacity: [0, 1],
-				easing: "easeOutBack",
-				duration: 800,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					scale: [0.5, 1],
+					opacity: [0, 1],
+					easing: "easeOutBack",
+					duration: 800
+				});
+			}, delay);
 		},
 
 		zoomIn: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				scale: [1.2, 1],   // zoom from bigger down to normal
-				opacity: [0, 1],
-				easing: "easeOutCubic",
-				duration: 800,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					scale: [1.2, 1],
+					opacity: [0, 1],
+					easing: "easeOutCubic",
+					duration: 800
+				});
+			}, delay);
 		},
 
 		rotateIn: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				rotate: [-15, 0],
-				opacity: [0, 1],
-				easing: "easeOutExpo",
-				duration: 900,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					rotate: [-15, 0],
+					opacity: [0, 1],
+					easing: "easeOutExpo",
+					duration: 900
+				});
+			}, delay);
 		},
 
 		bounceIn: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				scale: [0.3, 1.1, 0.9, 1], // squash & stretch
-				opacity: [0, 1],
-				easing: "easeOutElastic(1, .6)",
-				duration: 1200,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					scale: [0.3, 1.1, 0.9, 1],
+					opacity: [0, 1],
+					easing: "easeOutElastic(1, .6)",
+					duration: 1200
+				});
+			}, delay);
 		},
 
 		shake: function (selector, delay = 0) {
-			anime({
-				targets: selector,
-				translateX: [
-					{ value: -10 }, { value: 10 },
-					{ value: -10 }, { value: 10 },
-					{ value: 0 }
-				],
-				easing: "easeInOutQuad",
-				duration: 600,
-				delay: delay
-			});
+			animateWithClass(selector, el => {
+				el.style.visibility = "visible";
+				anime({
+					targets: el,
+					translateX: [
+						{ value: -10 }, { value: 10 },
+						{ value: -10 }, { value: 10 },
+						{ value: 0 }
+					],
+					easing: "easeInOutQuad",
+					duration: 600
+				});
+			}, delay);
 		},
 
-		// Page transition (fade body out before navigation)
 		pageTransition: function () {
 			document.body.classList.add("page-exit");
 			setTimeout(() => {
