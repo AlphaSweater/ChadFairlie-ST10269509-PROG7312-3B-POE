@@ -1,95 +1,39 @@
-﻿/* --- Default Page Transitions --- */
-.page-fade-in {
-	animation: pageFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.page-fade-out {
-	animation: pageFadeOut 0.5s cubic-bezier(0.55, 0, 0.55, 0.2) forwards;
-}
-
-@keyframes pageFadeIn {
-	from { opacity: 0; transform: translateY(30px) scale(0.98); }
-	to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes pageFadeOut {
-	from { opacity: 1; transform: translateY(0) scale(1); }
-	to   { opacity: 0; transform: translateY(-20px) scale(0.98); }
-}
-
-/* --- Useful Component Animations --- */
-.slide-in-left, .slide-in-right, .slide-in-up, .grow-in, .fade-in {
-	opacity: 0;
-	transform: none;
-	transition: none;
-}
-
-.slide-in-left.animated { animation: slideInLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
-.slide-in-right.animated { animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
-.slide-in-up.animated { animation: slideInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
-.grow-in.animated { animation: growIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 1; }
-.fade-in.animated { animation: fadeIn 0.5s ease forwards; opacity: 1; }
-
-@keyframes slideInLeft {
-	from { opacity: 0; transform: translateX(-40px); }
-	to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInRight {
-	from { opacity: 0; transform: translateX(40px); }
-	to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInUp {
-	from { opacity: 0; transform: translateY(40px); }
-	to { opacity: 1; transform: translateY(0); }
-}
-
-.grow-in {
-	animation: growIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-@keyframes growIn {
-	from { opacity: 0; transform: scale(0.95); }
-	to   { opacity: 1; transform: scale(1); }
-}
-
+﻿/* === Base Animations === */
 .fade-in {
-	animation: fadeIn 0.5s ease forwards;
-}
-@keyframes fadeIn {
-	from { opacity: 0; }
-	to   { opacity: 1; }
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-.fade-out {
-	animation: fadeOut 0.4s ease forwards;
-}
-@keyframes fadeOut {
-	from { opacity: 1; }
-	to   { opacity: 0; }
+	.fade-in.appear {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+.slide-in-left {
+	opacity: 0;
+	transform: translateX(-50px);
+	transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-/* --- Attention Animations --- */
-.pulse {
-	animation: subtlePulse 1.2s infinite;
-}
-@keyframes subtlePulse {
-	0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(9, 162, 19, 0.2);}
-	50% { transform: scale(1.04); box-shadow: 0 8px 24px rgba(9, 162, 19, 0.3);}
+	.slide-in-left.appear {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+.scale-up {
+	opacity: 0;
+	transform: scale(0.9);
+	transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.ripple-effect {
-	position: relative;
-	overflow: hidden;
-}
-.ripple-effect:active::after {
-	content: '';
-	position: absolute;
-	left: 50%; top: 50%;
-	width: 20px; height: 20px;
-	background: rgba(59,191,108,0.3);
-	border-radius: 50%;
-	transform: translate(-50%, -50%) scale(1);
-	animation: ripple 0.6s linear;
-}
-@keyframes ripple {
-	to { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+	.scale-up.appear {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+/* Example: global hover animation */
+.hover-bounce:hover {
+	transform: scale(1.05);
+	transition: transform 0.3s ease;
 }
