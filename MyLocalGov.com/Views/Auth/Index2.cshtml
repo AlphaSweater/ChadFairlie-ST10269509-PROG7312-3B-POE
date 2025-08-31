@@ -117,19 +117,15 @@ window.onPageReady(function () {
     const showSignUp = document.getElementById("showSignUp");
     const showLogin = document.getElementById("showLogin");
 
+    // Helper to toggle forms
     function showForm(type) {
-        if (type === "login") {
-            loginForm.classList.add("active");
-            signUpForm.classList.remove("active");
-        } else if (type === "register") {
-            signUpForm.classList.add("active");
-            loginForm.classList.remove("active");
-        }
+        loginForm.classList.toggle("active", type === "login");
+        signUpForm.classList.toggle("active", type === "register");
         formContainer.classList.add("active");
         formContainer.classList.remove("flex-hidden");
     }
 
-    // Initial state
+    // Initial state based on Razor context
     if (formContainer.classList.contains("active")) {
         formContainer.classList.remove("flex-hidden");
     } else {
@@ -140,10 +136,7 @@ window.onPageReady(function () {
     enterButton.addEventListener("click", () => {
         enterButton.classList.add("hidden");
         subtitle.classList.add("hidden");
-        loginForm.classList.add("active");
-        signUpForm.classList.remove("active");
-        formContainer.classList.add("active");
-        formContainer.classList.remove("flex-hidden");
+        showForm("login");
     });
 
     showSignUp.addEventListener("click", (e) => {
