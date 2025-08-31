@@ -225,11 +225,18 @@
 	max-width: 370px;
 	border: 2px solid #3bbf6c;
 	display: none;
+	visibility: visible; 
 }
 
 	.form.active {
 		display: block;
+		visibility: visible;
 	}
+
+		.form.active.hidden-visibility {
+			display: block;
+			visibility: hidden;
+		}
 
 	.form .title {
 		font-size: 1.2rem;
