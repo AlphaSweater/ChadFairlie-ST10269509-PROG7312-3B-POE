@@ -17,6 +17,83 @@
 	padding: 0
 }
 
+/* Grid Layout */
+.landing-page-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr auto auto 1fr;
+	grid-template-areas:
+		"top top"
+		"logo forms"
+		"subtitle forms"
+		"bottom bottom";
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	min-height: 100vh;
+	align-items: stretch;
+	gap: 0; /* No gaps */
+	position: relative;
+	z-index: 1;
+}
+
+/* New areas for testing */
+.grid-top {
+	grid-area: top;
+	background: rgb(255,255,0); /* Yellow for testing */
+}
+.grid-bottom {
+	grid-area: bottom;
+	background: rgb(0,255,255); /* Cyan for testing */
+}
+
+/* Existing areas */
+.logo-title {
+	grid-area: logo;
+	background: rgb(255,0,0);
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	justify-content: flex-end;
+	width: fit-content;
+}
+.logo-title > .logo,
+.logo-title > .title {
+	align-self: center; 
+}
+.subtitle-container {
+	grid-area: subtitle;
+	background: rgb(0,255,0);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: fit-content;
+}
+.form-col {
+	grid-area: forms;
+	background: rgb(0,0,255);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+	.landing-page-grid {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto auto auto;
+		grid-template-areas:
+			"logo"
+			"subtitle"
+			"forms";
+	}
+
+	.form-col {
+		margin-top: 2rem;
+	}
+}
+
+
 /* Background */
 .landing-page-bg {
 	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
@@ -214,22 +291,22 @@
 		text-decoration: none;
 	}
 
-#enterButton {
-	font-size: 1.125rem;
-	font-weight: 700;
-	padding: 16px 28px;
-	border-radius: 12px;
-	background: linear-gradient(45deg, var(--new-green), var(--new-green-light));
-	color: var(--white);
-	border: 2px solid var(--white-transparent-20);
-	box-shadow: 0 6px 20px rgba(9,162,19,.3);
-	text-transform: uppercase;
-	letter-spacing: 1px;
-	position: relative;
-	overflow: hidden;
-	min-width: 200px;
-	transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
+	#enterButton {
+		font-size: 1.125rem;
+		font-weight: 700;
+		padding: 16px 28px;
+		border-radius: 12px;
+		background: linear-gradient(45deg, var(--new-green), var(--new-green-light));
+		color: var(--white);
+		border: 2px solid var(--white-transparent-20);
+		box-shadow: 0 6px 20px rgba(9,162,19,.3);
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		position: relative;
+		overflow: hidden;
+		min-width: 200px;
+		transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+	}
 
 	#enterButton::before {
 		content: '';
