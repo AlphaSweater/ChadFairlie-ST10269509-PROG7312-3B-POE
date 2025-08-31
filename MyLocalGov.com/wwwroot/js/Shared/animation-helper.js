@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	window.Animations = {
 		fadeIn: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible"; // prevent layout shift
 				anime({
 					targets: el,
 					opacity: [0, 1],
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		slideUp: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					translateY: [60, 0], // only visual, not layout
@@ -55,11 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		slideLeft: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					translateX: [80, 0],
-					opacity: [0, 1],
 					easing: "easeOutExpo",
 					duration: 1000
 				});
@@ -68,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		slideInFromRight: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					translateX: [200, 0], // starts offscreen to the right, moves left
@@ -80,14 +75,24 @@ document.addEventListener("DOMContentLoaded", function () {
 			}, delay);
 		},
 
+		slideInFromRightNoOpacity: function (selector, delay = 0) {
+			function animationFn(el) {
+				anime({
+					targets: el,
+					translateX: [200, 0], // Only move, do not fade
+					easing: "easeOutExpo",
+					duration: 1000,
+					delay: delay
+				});
+			}
+			animateWithClass(selector, animationFn, delay);
+		},
 
 		slideRight: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					translateX: [-80, 0],
-					opacity: [0, 1],
 					easing: "easeOutExpo",
 					duration: 1000
 				});
@@ -96,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		scaleIn: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					scale: [0.5, 1],
@@ -109,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		zoomIn: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					scale: [1.2, 1],
@@ -122,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		rotateIn: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					rotate: [-15, 0],
@@ -135,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		bounceIn: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					scale: [0.3, 1.1, 0.9, 1],
@@ -148,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		shake: function (selector, delay = 0) {
 			animateWithClass(selector, el => {
-				el.style.visibility = "visible";
 				anime({
 					targets: el,
 					translateX: [
@@ -168,6 +168,27 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.body.classList.remove("page-exit");
 			}, 600);
 		},
+
+		// --- Added FLIP animation helper ---
+		moveToNewSpot: function (target, layoutChangeFn, {
+			duration = 800,
+			easing = "easeInOutQuad"
+		} = {}) {
+			const element = typeof target === "string" ? document.querySelector(target) : target;
+			const firstRect = element.getBoundingClientRect();
+			layoutChangeFn();
+			element.offsetWidth; 
+			const lastRect = element.getBoundingClientRect();
+			const deltaX = firstRect.left - lastRect.left;
+			const deltaY = firstRect.top - lastRect.top;
+			anime({
+				targets: element,
+				translateX: [deltaX, 0],
+				translateY: [deltaY, 0],
+				duration: duration,
+				easing: easing
+			});
+		}
 	};
 
 	// ===============================

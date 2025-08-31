@@ -10,97 +10,79 @@ body.page-exit {
 /* Fade */
 .animate-fade {
 	opacity: 0;
-	visibility: hidden;
 	will-change: opacity;
 }
 
 	.animate-fade.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Slide Up */
 .animate-slide-up {
 	opacity: 0;
-	visibility: hidden;
 	will-change: opacity, transform;
 }
 
 	.animate-slide-up.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Slide Left */
 .animate-slide-left {
-	opacity: 0;
-	visibility: hidden;
-	will-change: opacity, transform;
+	will-change: transform;
 }
 
 	.animate-slide-left.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Slide Right */
 .animate-slide-right {
-	opacity: 0;
-	visibility: hidden;
-	will-change: opacity, transform;
+	will-change: transform;
 }
 
 	.animate-slide-right.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Scale In */
 .animate-scale-in {
 	opacity: 0;
-	visibility: hidden;
 	will-change: opacity, transform;
 }
 
 	.animate-scale-in.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Zoom In */
 .animate-zoom-in {
 	opacity: 0;
-	visibility: hidden;
 	will-change: opacity, transform;
 }
 
 	.animate-zoom-in.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Rotate In */
 .animate-rotate-in {
 	opacity: 0;
-	visibility: hidden;
 	will-change: opacity, transform;
 }
 
 	.animate-rotate-in.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Bounce In */
 .animate-bounce-in {
 	opacity: 0;
-	visibility: hidden;
 	will-change: opacity, transform;
 }
 
 	.animate-bounce-in.animated {
 		opacity: 1;
-		visibility: visible;
 	}
 
 /* Shake */
