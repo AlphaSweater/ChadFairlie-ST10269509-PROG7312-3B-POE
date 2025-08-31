@@ -1,8 +1,24 @@
-/* ===========================================
-   DASHBOARD PAGE STYLES
-   =========================================== */
+/*=============================================================================
+    CIVIC CONNECT DASHBOARD CSS
+=============================================================================*/
 
-/* --- Layout Overrides --- */
+/*=============================================================================
+    TABLE OF CONTENTS
+    1. Base Layout & Container Styles
+    2. Background & Animation Effects
+    3. Dashboard Components
+    4. User Interface Elements
+    5. Cards & Content Blocks
+    6. Status Indicators
+    7. Responsive Layouts
+    8. Utility Classes & Helpers
+=============================================================================*/
+
+/*=============================================================================
+    1. BASE LAYOUT & CONTAINER STYLES
+=============================================================================*/
+
+/* Layout Overrides */
 .layout-container {
     background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
     min-height: 100vh;
@@ -24,7 +40,7 @@
     display: none !important;
 }
 
-/* --- Dashboard Container --- */
+/* Dashboard Container */
 .dashboard-container {
     background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
     min-height: 100vh;
@@ -33,13 +49,35 @@
     margin-top: 0;
 }
 
-/* --- Dashboard Header --- */
-.dashboard-header {
-    background: var(--white-transparent-10);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+/*=============================================================================
+    2. BACKGROUND & ANIMATION EFFECTS
+=============================================================================*/
+
+/* Glassmorphism Effects */
+.dashboard-header,
+.action-card,
+.stat-card,
+.recent-activity,
+.announcements {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--white-transparent-20);
     border-radius: var(--border-radius-lg);
+}
+
+/* Enhanced Glassmorphism for Header */
+.dashboard-header {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+/*=============================================================================
+    3. DASHBOARD COMPONENTS
+=============================================================================*/
+
+/* Dashboard Header */
+.dashboard-header {
+    background: var(--white-transparent-10);
     box-shadow: var(--shadow-md);
     margin: var(--spacing-xl) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
     padding: var(--spacing-lg) var(--spacing-xl);
@@ -65,7 +103,51 @@
     margin: var(--spacing-sm) 0 0 0;
 }
 
-/* --- User Info --- */
+/* Section Titles */
+.section-title {
+    align-items: center;
+    color: var(--white);
+    display: flex;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin: 0 var(--spacing-xl) var(--spacing-2xl) var(--spacing-xl);
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin: 0 var(--spacing-xl) var(--spacing-2xl) var(--spacing-xl);
+}
+
+/* Actions Grid */
+.actions-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/*=============================================================================
+    4. USER INTERFACE ELEMENTS
+=============================================================================*/
+
+/* User Info */
+.user-info {
+    align-items: center;
+    color: var(--white-transparent-90);
+    display: flex;
+    font-size: var(--font-size-base);
+    gap: var(--spacing-md);
+}
+
 .user-avatar {
     align-items: center;
     background: var(--sa-green);
@@ -78,43 +160,9 @@
     width: 40px;
 }
 
-.user-info {
-    align-items: center;
-    color: var(--white-transparent-90);
-    display: flex;
-    font-size: var(--font-size-base);
-    gap: var(--spacing-md);
-}
-
-/* --- Quick Actions --- */
-.quick-actions {
-    margin: 0 var(--spacing-xl) var(--spacing-2xl) var(--spacing-xl);
-}
-
-.section-title {
-    align-items: center;
-    color: var(--white);
-    display: flex;
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-semibold);
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
-}
-
-/* --- Actions Grid --- */
-.actions-grid {
-    display: grid;
-    gap: var(--spacing-lg);
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
+/* Action Card */
 .action-card {
     background: var(--white-transparent-10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--white-transparent-20);
-    border-radius: var(--border-radius-lg);
     cursor: pointer;
     overflow: hidden;
     padding: var(--spacing-xl);
@@ -122,22 +170,16 @@
     text-align: center;
     transition: all var(--transition-normal);
 }
+
 .action-card:hover {
     background: var(--white-transparent-15);
     border-color: var(--white-transparent-40);
     box-shadow: var(--shadow-lg);
     transform: translateY(-5px);
 }
+
 .action-card:active {
     transform: translateY(-2px);
-}
-
-.action-description {
-    color: var(--white-transparent-90);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
 }
 
 .action-icon {
@@ -154,27 +196,37 @@
     margin-bottom: var(--spacing-sm);
 }
 
-/* --- Dashboard Stats --- */
-.dashboard-stats {
-    display: grid;
-    gap: var(--spacing-lg);
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    margin: 0 var(--spacing-xl) var(--spacing-2xl) var(--spacing-xl);
+.action-description {
+    color: var(--white-transparent-90);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
 }
 
+/*=============================================================================
+    5. CARDS & CONTENT BLOCKS
+=============================================================================*/
+
+/* Stat Card */
 .stat-card {
     background: var(--white-transparent-10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--white-transparent-20);
-    border-radius: var(--border-radius-lg);
     padding: var(--spacing-lg);
     text-align: center;
     transition: all var(--transition-normal);
 }
+
 .stat-card:hover {
     background: var(--white-transparent-15);
     transform: translateY(-3px);
+}
+
+.stat-number {
+    color: var(--sa-gold);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-xs);
 }
 
 .stat-label {
@@ -186,35 +238,29 @@
     text-transform: uppercase;
 }
 
-.stat-number {
-    color: var(--sa-gold);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--spacing-xs);
-}
-
-/* --- Recent Activity --- */
+/* Recent Activity */
 .recent-activity {
     background: var(--white-transparent-10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--white-transparent-20);
-    border-radius: var(--border-radius-lg);
     margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
     padding: var(--spacing-xl);
 }
 
-.activity-content {
-    flex: 1;
+.activity-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-.activity-description {
-    color: var(--white-transparent-90);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-normal);
-    margin-bottom: var(--spacing-xs);
+.activity-item {
+    align-items: flex-start;
+    border-bottom: 1px solid var(--white-transparent-20);
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) 0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
 }
 
 .activity-icon {
@@ -229,28 +275,8 @@
     width: 40px;
 }
 
-.activity-item {
-    align-items: flex-start;
-    border-bottom: 1px solid var(--white-transparent-20);
-    display: flex;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md) 0;
-}
-.activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.activity-time {
-    color: var(--white-transparent-80);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-normal);
+.activity-content {
+    flex: 1;
 }
 
 .activity-title {
@@ -261,7 +287,68 @@
     margin-bottom: var(--spacing-xs);
 }
 
-/* --- Status Badges --- */
+.activity-description {
+    color: var(--white-transparent-90);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    margin-bottom: var(--spacing-xs);
+}
+
+.activity-time {
+    color: var(--white-transparent-80);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+}
+
+/* Announcements */
+.announcements {
+    background: var(--white-transparent-10);
+    margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+    padding: var(--spacing-xl);
+}
+
+.announcement-item {
+    background: var(--white-transparent-10);
+    border-left: 4px solid var(--sa-gold);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+.announcement-item:last-child {
+    margin-bottom: 0;
+}
+
+.announcement-title {
+    color: var(--white);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-xs);
+}
+
+.announcement-content {
+    color: var(--white-transparent-90);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    margin-bottom: var(--spacing-xs);
+}
+
+.announcement-date {
+    color: var(--white-transparent-80);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+}
+
+/*=============================================================================
+    6. STATUS INDICATORS
+=============================================================================*/
+
+/* Status Badges */
 .status-badge {
     border-radius: var(--border-radius-full);
     display: inline-block;
@@ -292,66 +379,71 @@
     color: var(--white);
 }
 
-/* --- Announcements --- */
-.announcements {
-    background: var(--white-transparent-10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--white-transparent-20);
-    border-radius: var(--border-radius-lg);
-    margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
-    padding: var(--spacing-xl);
-}
+/*=============================================================================
+    7. RESPONSIVE LAYOUTS
+=============================================================================*/
 
-.announcement-content {
-    color: var(--white-transparent-90);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-normal);
-    margin-bottom: var(--spacing-xs);
-}
-
-.announcement-date {
-    color: var(--white-transparent-80);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-normal);
-}
-
-.announcement-item {
-    background: var(--white-transparent-10);
-    border-left: 4px solid var(--sa-gold);
-    border-radius: var(--border-radius-sm);
-    margin-bottom: var(--spacing-md);
-    padding: var(--spacing-md);
-}
-.announcement-item:last-child {
-    margin-bottom: 0;
-}
-
-.announcement-title {
-    color: var(--white);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--spacing-xs);
-}
-
-/* --- Responsive Design --- */
 @media (max-width: 768px) {
-    .dashboard-container { padding: 0; }
-    .dashboard-header { padding: var(--spacing-md); margin: var(--spacing-md); }
-    .dashboard-title { font-size: var(--font-size-2xl); flex-direction: column; text-align: center; gap: var(--spacing-sm); }
-    .actions-grid { grid-template-columns: 1fr; }
-    .dashboard-stats { grid-template-columns: repeat(2, 1fr); margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md); }
-    .quick-actions { margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md); }
-    .recent-activity { margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md); }
-    .announcements { margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md); }
-    .user-info { justify-content: center; margin-top: var(--spacing-md); }
+    .dashboard-container { 
+        padding: 0; 
+    }
+    
+    .dashboard-header { 
+        padding: var(--spacing-md); 
+        margin: var(--spacing-md); 
+    }
+    
+    .dashboard-title { 
+        font-size: var(--font-size-2xl); 
+        flex-direction: column; 
+        text-align: center; 
+        gap: var(--spacing-sm); 
+    }
+    
+    .actions-grid { 
+        grid-template-columns: 1fr; 
+    }
+    
+    .dashboard-stats { 
+        grid-template-columns: repeat(2, 1fr); 
+        margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md); 
+    }
+    
+    .quick-actions { 
+        margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md); 
+    }
+    
+    .recent-activity { 
+        margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md); 
+    }
+    
+    .announcements { 
+        margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md); 
+    }
+    
+    .user-info { 
+        justify-content: center; 
+        margin-top: var(--spacing-md); 
+    }
 }
 
 @media (max-width: 480px) {
-    .dashboard-stats { grid-template-columns: 1fr; }
-    .activity-item { flex-direction: column; text-align: center; }
-    .activity-icon { align-self: center; }
+    .dashboard-stats { 
+        grid-template-columns: 1fr; 
+    }
+    
+    .activity-item { 
+        flex-direction: column; 
+        text-align: center; 
+    }
+    
+    .activity-icon { 
+        align-self: center; 
+    }
 }
+
+/*=============================================================================
+    8. UTILITY CLASSES & HELPERS
+=============================================================================*/
+
+/* No specific utility classes for dashboard.css yet */
