@@ -153,24 +153,23 @@
 			}
 
 			enterButton.addEventListener("click", async () => {
-				await Animations.runSequence([
-					// Step 1: fade out subtitle & button (parallel)
-					() => Promise.all([
-						Animations.animate("fadeOut", enterButton, { duration: 50 })
-					]),
-					// Step 2: move logo/title and slide in login form (parallel)
-					() => Promise.all([
-						Animations.animate("moveFLIP", logoTitleWrapper, {
-							duration: 800,
-							layoutChangeFn: showFormContainer
-						}),
-						Animations.animate("slideIn", loginForm, {
-							direction: "down",
-							distance: 180,
-							duration: 800,
-							layoutChangeFn: showForm("login")
-						})
-					])
+				// Step 1: fade out subtitle & button (parallel, CSS-based)
+				await Promise.all([
+					Animations.animate("fadeOut", enterButton, { duration: 50 })
+				]);
+
+				// Step 2: move logo/title and slide in login form (parallel, Anime.js)
+				await Promise.all([
+					Animations.animate("moveFLIP", logoTitleWrapper, {
+						duration: 800,
+						layoutChangeFn: showFormContainer
+					}),
+					Animations.animate("slideIn", loginForm, {
+						direction: "down",
+						distance: 180,
+						duration: 800,
+						layoutChangeFn: showForm("login")
+					})
 				]);
 			});
 
