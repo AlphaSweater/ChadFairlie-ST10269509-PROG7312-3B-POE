@@ -1,174 +1,642 @@
-﻿/* ==========================
-   Global reusable animations
-   ========================== */
+﻿/* ================================
+   micro-animations.css
+   Modern, configurable micro-interactions
+   ================================ */
+
+/* ---------------------------
+   Theme & animation variables
+   --------------------------- */
 :root {
+	/* timing */
 	--anim-duration: 500ms;
+	--anim-ease: cubic-bezier(.2,.8,.2,1);
+	--anim-ease-out: cubic-bezier(.22,.9,.12,1);
+	--anim-ease-back: cubic-bezier(.36,1.6,.17,1);
+	--anim-delay: 0ms;
+	--anim-iterations: 1;
+	--anim-direction: normal;
+	--anim-fill: both;
+	/* geometry / intensity */
+	--anim-distance: 20px; /* slides */
+	--anim-scale: 0.95; /* scale in/out */
+	--wiggle-deg: 6deg;
+	/* colors (override to match theme) */
+	--accent: #06f;
+	--shine-color: rgba(255,255,255,0.5);
+	--glimmer-color: rgba(255,255,255,0.08);
+	--skeleton-bg: #e6e9ee;
+	--skeleton-shine: rgba(255,255,255,0.7);
+	--ripple-color: rgba(255,255,255,0.45);
+	--focus-ring: rgba(0,150,255,0.35);
 }
 
-/* Fade In */
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-
-	to {
-		opacity: 1;
-	}
+/* base helper for all animation classes */
+.anim {
+	animation-duration: var(--anim-duration);
+	animation-timing-function: var(--anim-ease);
+	animation-delay: var(--anim-delay);
+	animation-iteration-count: var(--anim-iterations);
+	animation-direction: var(--anim-direction);
+	animation-fill-mode: var(--anim-fill);
+	will-change: transform, opacity;
+	/* keep pointer-events unaffected */
 }
 
-.anim-fadeIn {
-	animation: fadeIn var(--anim-duration) ease forwards;
-}
-
-/* Fade Out */
-@keyframes fadeOut {
-	from {
-		opacity: 1;
-	}
-
-	to {
-		opacity: 0;
-	}
-}
-
-.anim-fadeOut {
-	animation: fadeOut var(--anim-duration) ease forwards;
-}
-
-/* Scale In (pop) */
-@keyframes scaleIn {
-	from {
-		transform: scale(0.95);
-		opacity: 0;
-	}
-
-	to {
-		transform: scale(1);
-		opacity: 1;
-	}
-}
-
-.anim-scaleIn {
-	animation: scaleIn var(--anim-duration) ease forwards;
-}
-
-/* Scale Out */
-@keyframes scaleOut {
-	from {
-		transform: scale(1);
-		opacity: 1;
-	}
-
-	to {
-		transform: scale(0.95);
-		opacity: 0;
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+	.anim,
+	.anim-infinite,
+	.anim-shine,
+	.skeleton,
+	.marquee,
+	.text-typing {
+		animation: none !important;
+		transition: none !important;
 	}
 }
 
-.anim-scaleOut {
-	animation: scaleOut var(--anim-duration) ease forwards;
-}
+/* ---------------------------
+   Keyframes & classes
+   --------------------------- */
+@media (prefers-reduced-motion: no-preference) {
 
-/* Slide In Up */
-@keyframes slideInUp {
-	from {
-		transform: translateY(20px);
-		opacity: 0;
+	/* --- fade --- */
+	@keyframes fadeIn {
+		from {
+			opacity: 0
+		}
+
+		to {
+			opacity: 1
+		}
 	}
 
-	to {
-		transform: translateY(0);
-		opacity: 1;
-	}
-}
+	@keyframes fadeOut {
+		from {
+			opacity: 1
+		}
 
-.anim-slideInUp {
-	animation: slideInUp var(--anim-duration) ease forwards;
-}
-
-/* Slide Out Down */
-@keyframes slideOutDown {
-	from {
-		transform: translateY(0);
-		opacity: 1;
+		to {
+			opacity: 0
+		}
 	}
 
-	to {
-		transform: translateY(20px);
-		opacity: 0;
-	}
-}
-
-.anim-slideOutDown {
-	animation: slideOutDown var(--anim-duration) ease forwards;
-}
-
-/* Shake (error feedback) */
-@keyframes shake {
-	0%, 100% {
-		transform: translateX(0);
+	.anim-fadeIn {
+		animation-name: fadeIn;
 	}
 
-	20%, 60% {
-		transform: translateX(-6px);
+	.anim-fadeOut {
+		animation-name: fadeOut;
 	}
 
-	40%, 80% {
-		transform: translateX(6px);
-	}
-}
+	/* --- scale / pop --- */
+	@keyframes scaleIn {
+		from {
+			transform: scale(var(--anim-scale));
+			opacity: 0
+		}
 
-.anim-shake {
-	animation: shake var(--anim-duration) ease;
-}
+		60% {
+			transform: scale(1.03);
+			opacity: 1
+		}
 
-/* Subtle bounce */
-@keyframes bounce {
-	0%, 20%, 50%, 80%, 100% {
-		transform: translateY(0);
-	}
-
-	40% {
-		transform: translateY(-8px);
-	}
-
-	60% {
-		transform: translateY(-4px);
-	}
-}
-
-.anim-bounce {
-	animation: bounce var(--anim-duration) ease;
-}
-
-/* Glow pulse (good for inputs / alerts) */
-@keyframes glow {
-	0%, 100% {
-		box-shadow: 0 0 0 rgba(0, 150, 255, 0);
+		to {
+			transform: scale(1);
+			opacity: 1
+		}
 	}
 
-	50% {
-		box-shadow: 0 0 12px rgba(0, 150, 255, 0.6);
-	}
-}
+	@keyframes scaleOut {
+		from {
+			transform: scale(1);
+			opacity: 1
+		}
 
-.anim-glow {
-	animation: glow var(--anim-duration) ease-in-out infinite;
-}
-
-/* Shine sweep (for buttons/cards) */
-@keyframes shine {
-	0% {
-		background-position: -200% 0;
+		to {
+			transform: scale(var(--anim-scale));
+			opacity: 0
+		}
 	}
 
-	100% {
-		background-position: 200% 0;
+	.anim-scaleIn {
+		animation-name: scaleIn;
+		animation-timing-function: var(--anim-ease-back);
 	}
-}
 
-.anim-shine {
-	background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-	background-size: 200% auto;
-	animation: shine 2s infinite linear;
+	.anim-scaleOut {
+		animation-name: scaleOut;
+	}
+
+	/* subtle pop for hover states */
+	@keyframes softPop {
+		from {
+			transform: translateY(0) scale(1);
+			box-shadow: none
+		}
+
+		40% {
+			transform: translateY(-6px) scale(1.02);
+			box-shadow: 0 12px 30px rgba(0,0,0,0.08)
+		}
+
+		to {
+			transform: translateY(0) scale(1);
+			box-shadow: 0 6px 18px rgba(0,0,0,0.06)
+		}
+	}
+
+	.anim-softPop {
+		animation-name: softPop;
+	}
+
+	/* --- slide (directions) --- */
+	@keyframes slideInUp {
+		from {
+			transform: translateY(var(--anim-distance));
+			opacity: 0
+		}
+
+		to {
+			transform: translateY(0);
+			opacity: 1
+		}
+	}
+
+	@keyframes slideOutDown {
+		from {
+			transform: translateY(0);
+			opacity: 1
+		}
+
+		to {
+			transform: translateY(var(--anim-distance));
+			opacity: 0
+		}
+	}
+
+	@keyframes slideInLeft {
+		from {
+			transform: translateX(calc(-1 * var(--anim-distance)));
+			opacity: 0
+		}
+
+		to {
+			transform: translateX(0);
+			opacity: 1
+		}
+	}
+
+	@keyframes slideInRight {
+		from {
+			transform: translateX(var(--anim-distance));
+			opacity: 0
+		}
+
+		to {
+			transform: translateX(0);
+			opacity: 1
+		}
+	}
+
+	.anim-slideInUp {
+		animation-name: slideInUp
+	}
+
+	.anim-slideOutDown {
+		animation-name: slideOutDown
+	}
+
+	.anim-slideInLeft {
+		animation-name: slideInLeft
+	}
+
+	.anim-slideInRight {
+		animation-name: slideInRight
+	}
+
+	/* --- wiggle / shake / vibrate --- */
+	@keyframes wiggle {
+		0% {
+			transform: rotate(0)
+		}
+
+		15% {
+			transform: rotate(calc(-1 * var(--wiggle-deg)))
+		}
+
+		30% {
+			transform: rotate(var(--wiggle-deg))
+		}
+
+		45% {
+			transform: rotate(calc(-1 * var(--wiggle-deg) / 2))
+		}
+
+		60% {
+			transform: rotate(calc(var(--wiggle-deg) / 2))
+		}
+
+		100% {
+			transform: rotate(0)
+		}
+	}
+
+	.anim-wiggle {
+		animation-name: wiggle;
+		animation-timing-function: cubic-bezier(.36,.07,.19,.97)
+	}
+
+	@keyframes shakeX {
+		0%,100% {
+			transform: translateX(0)
+		}
+
+		20%,60% {
+			transform: translateX(-8px)
+		}
+
+		40%,80% {
+			transform: translateX(8px)
+		}
+	}
+
+	.anim-shake {
+		animation-name: shakeX
+	}
+
+	/* --- glow / pulse ring (use pseudo-element) --- */
+	@keyframes pulseRing {
+		0% {
+			transform: scale(.9);
+			opacity: 1
+		}
+
+		70% {
+			transform: scale(1.6);
+			opacity: 0
+		}
+
+		100% {
+			transform: scale(1.8);
+			opacity: 0
+		}
+	}
+
+	.pulse-ring {
+		position: relative;
+	}
+
+		.pulse-ring::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			box-shadow: 0 0 0 2px var(--focus-ring);
+			transform: scale(.9);
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.pulse-ring.anim { /* trigger with .anim or toggle .anim class */
+			/* small helper: animate pseudo via CSS custom property */
+		}
+
+			.pulse-ring.anim::after {
+				animation: pulseRing 900ms var(--anim-ease);
+			}
+
+	/* --- glow (box-shadow pulse) - inexpensive variant: use small blur --- */
+	@keyframes glowSoft {
+		0% {
+			box-shadow: 0 0 0 rgba(0,150,255,0)
+		}
+
+		50% {
+			box-shadow: 0 0 14px rgba(0,150,255,.18)
+		}
+
+		100% {
+			box-shadow: 0 0 0 rgba(0,150,255,0)
+		}
+	}
+
+	.anim-glow {
+		animation-name: glowSoft;
+		animation-iteration-count: infinite;
+		animation-timing-function: ease-in-out
+	}
+
+	/* --- shimmer / skeleton (loading) --- */
+	@keyframes shimmer {
+		0% {
+			transform: translateX(-120%)
+		}
+
+		100% {
+			transform: translateX(120%)
+		}
+	}
+
+	.skeleton {
+		background-color: var(--skeleton-bg);
+		position: relative;
+		overflow: hidden;
+	}
+
+		.skeleton::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			transform: translateX(-120%);
+			background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--skeleton-shine) 50%, rgba(255,255,255,0) 100%);
+			background-size: 80% 100%;
+			animation: shimmer 1.6s var(--anim-ease) infinite;
+			pointer-events: none;
+		}
+
+	/* --- shine / glint sweep for buttons/cards (continuous or on-hover) --- */
+	@keyframes glint {
+		0% {
+			background-position: -200% 0
+		}
+
+		100% {
+			background-position: 200% 0
+		}
+	}
+
+	.anim-shine {
+		background: linear-gradient(120deg, rgba(255,255,255,0) 0%, var(--shine-color) 50%, rgba(255,255,255,0) 100%);
+		background-size: 200% 100%;
+		animation: glint 1.8s linear infinite;
+		-webkit-background-clip: padding-box;
+	}
+	/* hover-only variant: starts on hover */
+	.hover-shine {
+		position: relative;
+		overflow: hidden;
+	}
+
+		.hover-shine::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(120deg, rgba(255,255,255,0) 0%, var(--shine-color) 50%, rgba(255,255,255,0) 100%);
+			background-size: 200% 100%;
+			transform: translateX(-30%);
+			opacity: 0;
+			pointer-events: none;
+			transition: transform var(--anim-duration) var(--anim-ease), opacity calc(var(--anim-duration)/2) var(--anim-ease);
+		}
+
+		.hover-shine:hover::after {
+			transform: translateX(120%);
+			opacity: 1;
+		}
+
+	/* --- text glint / gradient text shimmer --- */
+	@keyframes textShimmer {
+		0% {
+			background-position: -200% 0
+		}
+
+		100% {
+			background-position: 200% 0
+		}
+	}
+
+	.text-shimmer {
+		background: linear-gradient(90deg, currentColor 30%, var(--shine-color) 50%, currentColor 70%);
+		background-size: 200% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		animation: textShimmer 1.6s linear infinite;
+	}
+
+	/* --- underline sweep --- */
+	.underline-sweep {
+		position: relative;
+		display: inline-block;
+	}
+
+		.underline-sweep::after {
+			content: "";
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: -2px;
+			height: 2px;
+			transform-origin: left;
+			transform: scaleX(0);
+			background: linear-gradient(90deg,var(--accent), transparent);
+			transition: transform var(--anim-duration) var(--anim-ease);
+		}
+
+		.underline-sweep:hover::after,
+		.underline-sweep:focus::after {
+			transform: scaleX(1);
+		}
+
+	/* --- typewriter --- */
+	@keyframes typing {
+		from {
+			width: 0
+		}
+
+		to {
+			width: 100%
+		}
+	}
+
+	@keyframes blinkCaret {
+		50% {
+			border-color: transparent
+		}
+	}
+
+	.text-typing {
+		display: inline-block;
+		white-space: nowrap;
+		overflow: hidden;
+		border-right: 2px solid currentColor;
+		box-sizing: content-box;
+		width: 0;
+		animation: typing calc(var(--typewriter-chars,20) * var(--typewriter-speed,60ms)) steps(var(--typewriter-chars,20)) forwards, blinkCaret 700ms step-end infinite;
+	}
+
+	/* --- flip (3D) --- */
+	@keyframes flipInY {
+		from {
+			transform: perspective(600px) rotateY(-90deg);
+			opacity: 0
+		}
+
+		60% {
+			transform: perspective(600px) rotateY(10deg);
+			opacity: 1
+		}
+
+		to {
+			transform: perspective(600px) rotateY(0deg);
+			opacity: 1
+		}
+	}
+
+	.anim-flipIn {
+		transform-style: preserve-3d;
+		animation-name: flipInY;
+		animation-timing-function: var(--anim-ease-back)
+	}
+
+	/* --- marquee (looping inline scroll) --- */
+	@keyframes marquee {
+		0% {
+			transform: translateX(0)
+		}
+
+		100% {
+			transform: translateX(-50%)
+		}
+		/* content duplicates */
+	}
+
+	.marquee {
+		overflow: hidden;
+	}
+
+		.marquee > .marquee-track {
+			display: inline-block;
+			white-space: nowrap;
+			animation: marquee 12s linear infinite;
+		}
+
+	/* --- loaders --- */
+	@keyframes spin {
+		to {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-spinner {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 3px solid rgba(0,0,0,0.1);
+		border-top-color: var(--accent);
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes dots {
+		0% {
+			transform: translateY(0);
+			opacity: .6
+		}
+
+		50% {
+			transform: translateY(-6px);
+			opacity: 1
+		}
+
+		100% {
+			transform: translateY(0);
+			opacity: .6
+		}
+	}
+
+	.loader-dots span {
+		display: inline-block;
+		animation: dots 900ms var(--anim-ease) infinite;
+		margin-right: 6px
+	}
+
+		.loader-dots span:nth-child(2) {
+			animation-delay: 120ms
+		}
+
+		.loader-dots span:nth-child(3) {
+			animation-delay: 240ms
+		}
+
+	/* --- ripple (basic center-origin pure CSS active ripple) --- */
+	.ripple {
+		position: relative;
+		overflow: hidden;
+	}
+
+		.ripple::after {
+			content: "";
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: 8px;
+			height: 8px;
+			background: var(--ripple-color);
+			border-radius: 50%;
+			transform: translate(-50%,-50%) scale(0);
+			opacity: 0.6;
+			pointer-events: none;
+			transition: transform 600ms var(--anim-ease), opacity 600ms linear;
+		}
+
+		.ripple:active::after {
+			transform: translate(-50%,-50%) scale(20);
+			opacity: 0;
+		}
+
+	/* --- tilt hover (simple CSS-only hover tilt) --- */
+	.tilt-hover {
+		transform-style: preserve-3d;
+		transition: transform 320ms var(--anim-ease), box-shadow 320ms var(--anim-ease);
+		will-change: transform;
+		backface-visibility: hidden;
+	}
+
+		.tilt-hover:hover {
+			transform: rotateX(6deg) rotateY(-6deg) translateZ(6px);
+			box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+		}
+
+	/* --- small utility modifiers --- */
+	.anim-infinite {
+		animation-iteration-count: infinite !important;
+	}
+
+	.anim-reverse {
+		animation-direction: reverse !important;
+	}
+
+	.anim-alt {
+		animation-direction: alternate !important;
+	}
+
+	/* small ready-made delay helpers (useful; add more if needed) */
+	.delay-0 {
+		--anim-delay: 0ms
+	}
+
+	.delay-75 {
+		--anim-delay: 75ms
+	}
+
+	.delay-150 {
+		--anim-delay: 150ms
+	}
+
+	.delay-300 {
+		--anim-delay: 300ms
+	}
+
+	.duration-200 {
+		--anim-duration: 200ms
+	}
+
+	.duration-400 {
+		--anim-duration: 400ms
+	}
+
+	.duration-800 {
+		--anim-duration: 800ms
+	}
 }

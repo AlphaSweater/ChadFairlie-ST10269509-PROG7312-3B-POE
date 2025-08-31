@@ -16,12 +16,29 @@
 
 		return new Promise(resolve => {
 			const className = `anim-${type}`;
-			const duration = opts.duration || 500; // fallback
-			el.style.setProperty("--anim-duration", duration + "ms");
 
-			// restart if already applied
+			// set custom vars (extensible)
+			const vars = {
+				duration: "--anim-duration",
+				ease: "--anim-ease",
+				delay: "--anim-delay",
+				iterations: "--anim-iteration",
+				distance: "--anim-distance",
+				scale: "--anim-scale",
+				rotate: "--anim-rotate",
+				opacity: "--anim-opacity",
+				color: "--anim-color"
+			};
+
+			for (const key in opts) {
+				if (vars[key]) {
+					el.style.setProperty(vars[key], typeof opts[key] === "number" ? opts[key] + "" : opts[key]);
+				}
+			}
+
+			// restart animation
 			el.classList.remove(className);
-			void el.offsetWidth; // reflow
+			void el.offsetWidth; // force reflow
 			el.classList.add(className);
 
 			function cleanup() {
