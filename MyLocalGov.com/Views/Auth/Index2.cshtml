@@ -94,79 +94,81 @@
 
 @section Scripts {
 <script>
-    window.onPageReady(function () {
-        const enterButton = document.getElementById("enterButton");
-        const subtitle = document.getElementById("subtitle");
-        const formContainer = document.getElementById("cell-forms-area");
-        const loginForm = document.getElementById("loginForm");
-        const signUpForm = document.getElementById("signUpForm");
-        const showSignUp = document.getElementById("showSignUp");
-        const showLogin = document.getElementById("showLogin");
+window.onPageReady(function () {
+    const enterButton = document.getElementById("enterButton");
+    const subtitle = document.getElementById("subtitle");
+    const formContainer = document.getElementById("cell-forms-area");
+    const loginForm = document.getElementById("loginForm");
+    const signUpForm = document.getElementById("signUpForm");
+    const showSignUp = document.getElementById("showSignUp");
+    const showLogin = document.getElementById("showLogin");
 
-        function showFormsSequence() {
-            // 1. Logo animation
-            Animations.slideInFromRight("#logo", 100);
+    function showFormsSequence() {
+        // 1. Logo animation
+        Animations.slideInFromRight("#logo", 100);
 
-            // 2. Title animation after logo starts (e.g. 200ms later)
-            setTimeout(() => {
-                Animations.slideInFromRight("#mainTitle", 200);
-            }, 200);
+        // 2. Title animation after logo starts
+        setTimeout(() => {
+            Animations.slideInFromRight("#mainTitle", 200);
+        }, 200);
 
-            // 3. Fade in forms area during logo/title animation (e.g. 300ms after logo)
-            setTimeout(() => {
-                formContainer.classList.remove("flex-hidden");
-                formContainer.classList.add("active", "animate-fade");
-            }, 300);
+        // 3. Fade in forms area during logo/title animation
+        setTimeout(() => {
+            formContainer.classList.remove("flex-hidden");
+            formContainer.classList.add("flex-fade-in");
+        }, 300);
 
-            // 4. Slide up the active form after forms area is visible (e.g. 600ms after logo)
-            setTimeout(() => {
-                if (loginForm.classList.contains("active")) {
-                    Animations.slideUp("#loginForm", 400);
-                }
-                if (signUpForm.classList.contains("active")) {
-                    Animations.slideUp("#signUpForm", 400);
-                }
-            }, 600);
-        }
+        // 4. Slide up the active form after forms area is visible
+        setTimeout(() => {
+            if (loginForm.classList.contains("active")) {
+                Animations.slideUp("#loginForm", 400);
+            }
+            if (signUpForm.classList.contains("active")) {
+                Animations.slideUp("#signUpForm", 400);
+            }
+        }, 600);
+    }
 
-        if (formContainer.classList.contains("active")) {
+    // Initial state
+    if (formContainer.classList.contains("active")) {
+        showFormsSequence();
+    } else {
+        formContainer.classList.add("flex-hidden");
+        formContainer.classList.remove("flex-fade-in");
+        Animations.scaleIn("#logo", 100);
+        Animations.slideUp("#mainTitle", 400);
+        Animations.fadeIn("#subtitle", 700);
+        Animations.bounceIn("#enterButton", 1000);
+    }
+
+    if (enterButton) {
+        enterButton.addEventListener("click", () => {
+            enterButton.classList.add("hidden");
+            subtitle.classList.add("hidden");
+            loginForm.classList.add("active");
+            signUpForm.classList.remove("active");
             showFormsSequence();
-        } else {
-            formContainer.classList.add("flex-hidden");
-            Animations.scaleIn("#logo", 100);
-            Animations.slideUp("#mainTitle", 400);
-            Animations.fadeIn("#subtitle", 700);
-            Animations.bounceIn("#enterButton", 1000);
-        }
+        });
+    }
 
-        if (enterButton) {
-            enterButton.addEventListener("click", () => {
-                enterButton.classList.add("hidden");
-                subtitle.classList.add("hidden");
-                loginForm.classList.add("active");
-                signUpForm.classList.remove("active");
-                showFormsSequence();
-            });
-        }
+    if (showSignUp) {
+        showSignUp.addEventListener("click", (e) => {
+            e.preventDefault();
+            loginForm.classList.remove("active");
+            signUpForm.classList.add("active");
+            Animations.slideRight("#signUpForm", 200);
+        });
+    }
 
-        if (showSignUp) {
-            showSignUp.addEventListener("click", (e) => {
-                e.preventDefault();
-                loginForm.classList.remove("active");
-                signUpForm.classList.add("active");
-                Animations.slideRight("#signUpForm", 200);
-            });
-        }
-
-        if (showLogin) {
-            showLogin.addEventListener("click", (e) => {
-                e.preventDefault();
-                signUpForm.classList.remove("active");
-                loginForm.classList.add("active");
-                Animations.slideLeft("#loginForm", 200);
-            });
-        }
-    });
+    if (showLogin) {
+        showLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            signUpForm.classList.remove("active");
+            loginForm.classList.add("active");
+            Animations.slideLeft("#loginForm", 200);
+        });
+    }
+});
 </script>
 }
 
