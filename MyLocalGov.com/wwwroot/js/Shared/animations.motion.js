@@ -61,6 +61,24 @@
 					easing: cfg.easing
 				}).finished;
 
+			case "slideOut":
+				const slideOpts = cfg;
+				const { direction: slideDirection = "left", distance: slideDistance = cfg.distance } = slideOpts;
+				let targetX = 0, targetY = 0;
+				if (slideDirection === "left") targetX = -slideDistance;
+				if (slideDirection === "right") targetX = slideDistance;
+				if (slideDirection === "up") targetY = -slideDistance;
+				if (slideDirection === "down") targetY = slideDistance;
+				window.anime.set(el, { translateX: 0, translateY: 0, opacity: 1 });
+				return window.anime({
+					targets: el,
+					translateX: targetX,
+					translateY: targetY,
+					opacity: 0,
+					duration: cfg.duration,
+					easing: cfg.easing
+				}).finished;
+
 			case "moveFLIP":
 				const first = el.getBoundingClientRect();
 				const clone = el.cloneNode(true);

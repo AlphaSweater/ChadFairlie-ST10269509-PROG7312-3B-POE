@@ -41,12 +41,6 @@
 	transition: opacity 0.3s;
 }
 
-.flex-fade-in {
-	display: flex !important;
-	opacity: 1 !important;
-	transition: opacity 0.3s;
-}
-
 /* Content alignment helpers */
 /*
     Alignment helpers (main/cross axis)
