@@ -29,9 +29,6 @@ namespace MyLocalGov.com.Controllers
 		[HttpGet]
 		public IActionResult Index() => View("~/Views/Auth/Index.cshtml");
 
-		[HttpGet]
-		public IActionResult Index2() => View("~/Views/Auth/Index2.cshtml");
-
 		/// <summary>
 		/// Redirect to registration form.
 		/// </summary>

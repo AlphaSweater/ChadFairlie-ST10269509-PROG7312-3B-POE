@@ -117,7 +117,7 @@ namespace MyLocalGov.com
 			// ============================================
 			app.MapControllerRoute(
 				name: "default",
-				pattern: "{controller=Account}/{action=Index2}/{id?}");
+				pattern: "{controller=Account}/{action=Index}/{id?}");
 
 			// ============================================
 			// 6. Run Application

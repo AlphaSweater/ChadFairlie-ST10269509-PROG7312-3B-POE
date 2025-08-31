@@ -1,39 +1,49 @@
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Landing Page";
-    ViewData["HideNavbar"] = true;
-    var showForm = Context.Request.Query["showForm"].ToString();
-    var email = Context.Request.Query["email"].ToString();
-    var loginError = Context.Request.Query["loginError"].ToString();
-    var registerError = Context.Request.Query["registerError"].ToString();
-    bool formActive = !string.IsNullOrEmpty(showForm);
+	Layout = "_Layout";
+	ViewData["Title"] = "Landing Page (Flex)";
+	ViewData["HideNavbar"] = true;
+	var showForm = Context.Request.Query["showForm"].ToString();
+	var email = Context.Request.Query["email"].ToString();
+	var loginError = Context.Request.Query["loginError"].ToString();
+	var registerError = Context.Request.Query["registerError"].ToString();
+	bool formActive = !string.IsNullOrEmpty(showForm);
 }
 
 <main class="landing-page-bg" id="landingPageContainer">
-	<section class="landing-page-grid">
-        <div class="grid-top"></div>
-		<div class="logo-title">
-			<div class="logo animate-scale-in" id="logo">
-				<span class="logo-icon">🏛️</span>
+	<div class="flex-col h-full w-full" style="min-height:100vh;" id="flex-main-container">
+
+		<!-- Top spacer -->
+		<div id="cell-top-spacer" class="flex-cell" style="max-height: 20vh; min-height: 20vh;"></div>
+
+		<!-- Middle Row -->
+		<div id="row-middle" class="flex-row flex-2 w-full">
+			<!-- Left Spacer -->
+			<div id="cell-left-spacer" class="flex-cell flex-1"></div>
+
+			<!-- Info Area -->
+			<div id="cell-info-area" class="flex-cell w-fit flex-main-start flex-cross-center">
+				<!-- Logo + Title -->
+				<div class="logo" id="logo">
+					<span class="logo-icon">🏛️</span>
+				</div>
+				<h1 class="title" id="mainTitle">Civic Connect</h1>
+				<!-- Subtitle + Button Group -->
+				<div id="subtitle-btn-group" class="flex-cell flex-cross-center">
+					<p class="subtitle text-center @(formActive ? "hidden" : "")" id="subtitle">
+						Your South African municipal services portal.<br>
+						<strong>Report issues • Request services • Stay informed</strong>
+					</p>
+					<button id="enterButton" class="btn btn-primary mt-3 @(formActive ? "hidden" : "")">
+						Get Started →
+					</button>
+				</div>
 			</div>
-			<h1 class="title animate-slide-up" id="mainTitle">Civic Connect</h1>
-		</div>
 
-		<div class="subtitle-container">
-			<p class="subtitle animate-fade @(formActive ? "hidden" : "")" id="subtitle">
-				Your South African municipal services portal.<br>
-				<strong>Report issues • Request services • Stay informed</strong>
-			</p>
-			<button id="enterButton" class="btn btn-primary mt-3 animate-bounce-in @(formActive ? "hidden" : "")">
-				Get Started →
-			</button>
-		</div>
-
-		<div class="form-col">
-			<section class="form-container @(formActive ? "active" : "") animate-fade" id="formContainer">
+			<!-- Form Area (merged with form-container) -->
+			<div id="cell-forms-area" class="flex-cell w-fit flex-main-start flex-cross-center @(formActive ? "active" : "flex-hidden")">
 				<!-- Login Form -->
-				<form id="loginForm" class="form @(showForm == "login" ? "active" : "") animate-slide-up"
+				<form id="loginForm" class="form @(showForm == "login" ? "active" : "")"
 					  method="post" action="/Account/Login">
 					<div class="title">
 						Welcome,<br><span class="text-muted">login to continue</span>
@@ -56,7 +66,7 @@
 				</form>
 
 				<!-- Register Form -->
-				<form id="signUpForm" class="form @(showForm == "register" ? "active" : "") animate-slide-up"
+				<form id="signUpForm" class="form @(showForm == "register" ? "active" : "")"
 					  method="post" action="/Account/Register">
 					<div class="title">
 						Welcome,<br><span class="text-muted">create an account</span>
@@ -83,82 +93,148 @@
 						<a href="#" id="showLogin" class="switch-link">Already have an account? Log In</a>
 					</p>
 				</form>
-			</section>
-		</div>
-        <div class="grid-bottom"></div>
-	</section>
-</main>
+			</div>
 
+			<!-- Right Spacer -->
+			<div id="cell-right-spacer" class="flex-cell flex-1"></div>
+		</div>
+
+		<!-- Bottom Spacer -->
+		<div id="cell-bottom-spacer" class="flex-cell flex-1"></div>
+	</div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 
 @section Scripts {
-<script>
-    window.onPageReady(function () {
-        const enterButton = document.getElementById("enterButton");
-        const subtitle = document.getElementById("subtitle");
-        const formContainer = document.getElementById("formContainer");
-        const loginForm = document.getElementById("loginForm");
-        const signUpForm = document.getElementById("signUpForm");
-        const showSignUp = document.getElementById("showSignUp");
-        const showLogin = document.getElementById("showLogin");
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			document.body.classList.add("page-loaded");
+			document.dispatchEvent(new Event("pageReady"));
 
-        if (formContainer.classList.contains("active")) {
-            // Animate logo and title moving out
-			Animations.slideInFromRight("#logo", 100);
-			Animations.slideInFromRight("#mainTitle", 200);
+			// Landing animations for logo, title, and button
+			const logo = document.getElementById("logo");
+			const mainTitle = document.getElementById("mainTitle");
+			const subtitle = document.getElementById("subtitle");
+			const enterButton = document.getElementById("enterButton");
 
-            // Animate form container and active form in
-            Animations.fadeIn("#formContainer", 300);
-            if (loginForm.classList.contains("active")) {
-                Animations.slideUp("#loginForm", 400);
-            }
-            if (signUpForm.classList.contains("active")) {
-                Animations.slideUp("#signUpForm", 400);
-            }
-        } else {
-            // Stagger landing page animations for impact
-            Animations.scaleIn("#logo", 100);
-            Animations.slideUp("#mainTitle", 400);
-            Animations.fadeIn("#subtitle", 700);
-            Animations.bounceIn("#enterButton", 1000);
-        }
+			if (logo) {
+				Animations.animateCSS("scaleIn", logo, { duration: 1200 });
+			}
+			if (mainTitle) {
+				Animations.animateCSS("fadeIn", mainTitle, { duration: 900 });
+			}
+			if (subtitle) {
+				Animations.animateCSS("fadeIn", subtitle, { duration: 1500, delay: 300 });
+			}
+			if (enterButton) {
+				Animations.animateCSS("scaleIn", enterButton, { duration: 700, delay: 300  });
 
-        if (enterButton) {
-            enterButton.addEventListener("click", () => {
-                formContainer.classList.add("active");
-                loginForm.classList.add("active");
-                signUpForm.classList.remove("active");
-                enterButton.classList.add("hidden");
-                subtitle.classList.add("hidden");
+				// Hover glow effect for enterButton
+				enterButton.addEventListener("mouseenter", () => {
+					enterButton.classList.add("anim-glow");
+				});
+				enterButton.addEventListener("mouseleave", () => {
+					enterButton.classList.remove("anim-glow");
+				});
+			}
+		});
 
-				Animations.slideInFromRight("#logo", 100);
-				Animations.slideInFromRight("#mainTitle", 200);
-                Animations.fadeIn("#formContainer", 300);
-                Animations.slideUp("#loginForm", 400);
-            });
-        }
+		window.onPageReady(function () {
+			const enterButton = document.getElementById("enterButton");
+			const subtitle = document.getElementById("subtitle");
+			const formContainer = document.getElementById("cell-forms-area");
+			const loginForm = document.getElementById("loginForm");
+			const signUpForm = document.getElementById("signUpForm");
+			const showSignUp = document.getElementById("showSignUp");
+			const showLogin = document.getElementById("showLogin");
+			const logo = document.getElementById("logo");
+			const mainTitle = document.getElementById("mainTitle");
+			const logoTitleWrapper = document.getElementById("logo-title-wrapper") || logo.parentElement;
 
-        if (showSignUp) {
-            showSignUp.addEventListener("click", (e) => {
-                e.preventDefault();
-                loginForm.classList.remove("active");
-                signUpForm.classList.add("active");
-                Animations.slideRight("#signUpForm", 200);
-            });
-        }
+			// Helper: Show only the form container, hide both forms
+			function showFormContainer() {
+				formContainer.classList.add("active");
+				formContainer.classList.remove("flex-hidden");
+				loginForm.classList.add("active", "hidden-visibility");
+				signUpForm.classList.remove("active");
+			}
 
-        if (showLogin) {
-            showLogin.addEventListener("click", (e) => {
-                e.preventDefault();
-                signUpForm.classList.remove("active");
-                loginForm.classList.add("active");
-                Animations.slideLeft("#loginForm", 200);
-            });
-        }
-    });
-</script>
+			// Helper: Show the requested form (assumes container is visible)
+			function showForm(type) {
+				// Always remove hidden-visibility from both forms first
+				loginForm.classList.remove("hidden-visibility");
+				signUpForm.classList.remove("hidden-visibility");
+
+				// Toggle active class based on type
+				loginForm.classList.toggle("active", type === "login");
+				signUpForm.classList.toggle("active", type === "register");
+			}
+
+			// Initial state based on Razor context
+			if (formContainer.classList.contains("active")) {
+				formContainer.classList.remove("flex-hidden");
+			} else {
+				formContainer.classList.add("flex-hidden");
+				formContainer.classList.remove("active");
+			}
+
+			enterButton.addEventListener("click", async () => {
+				// Step 1: fade out subtitle & button (parallel, CSS-based)
+				await Promise.all([
+					Animations.animate("fadeOut", enterButton, { duration: 50 })
+				]);
+
+				// Step 2: move logo/title and slide in login form (parallel, Anime.js)
+				await Promise.all([
+					Animations.animate("moveFLIP", logoTitleWrapper, {
+						duration: 800,
+						layoutChangeFn: showFormContainer
+					}),
+					Animations.animate("slideIn", loginForm, {
+						direction: "down",
+						distance: 180,
+						duration: 800,
+						layoutChangeFn: showForm("login")
+					})
+				]);
+			});
+
+			showSignUp.addEventListener("click", async (e) => {
+				e.preventDefault();
+				await Promise.all([
+					Animations.animate("fadeOut", loginForm, {
+						duration: 200,
+						layoutChangeFn: () => loginForm.classList.remove("active")
+					}),
+					Animations.animate("slideIn", signUpForm, {
+						direction: "right",
+						distance: 80,
+						duration: 350,
+						layoutChangeFn: showForm("register")
+					})
+				]);
+			});
+
+			showLogin.addEventListener("click", async (e) => {
+				e.preventDefault();
+				await Promise.all([
+					Animations.animate("fadeOut", signUpForm, {
+						duration: 200,
+						layoutChangeFn: () => signUpForm.classList.remove("active")
+					}),
+					Animations.animate("slideIn", loginForm, {
+						direction: "left",
+						distance: 80,
+						duration: 350,
+						layoutChangeFn: showForm("login")
+					})
+				]);
+			});
+		});
+	</script>
 }
 
 <link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
+<link rel="stylesheet" href="/css/Shared/flex-grid.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
