@@ -107,6 +107,14 @@
 	justify-content: center;
 	position: relative;
 	overflow-x: hidden;
+	background-size: 200% 200%;
+	animation: bgShift 15s ease infinite;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 	.landing-page-bg::before {
@@ -161,6 +169,13 @@
 	box-shadow: var(--shadow-xl);
 	font-size: 110px;
 	transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+	animation: logoPulse 6s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  40% { transform: scale(1.05) rotate(2deg); }
+  60% { transform: scale(0.98) rotate(-2deg); }
 }
 
 	.logo:hover {
@@ -266,6 +281,8 @@
 		border-color: #218c4a;
 		outline: none;
 		background: #eafbe7;
+		box-shadow: 0 0 8px rgba(42, 82, 152, 0.5);
+		transition: 0.3s ease;
 	}
 
 /* Buttons */
@@ -279,12 +296,34 @@
 	color: #fff;
 	border: none;
 	box-shadow: 0 2px 8px rgba(59,191,108,0.15);
+	position: relative;
+	overflow: hidden;
 }
 
-	.btn-success:hover {
-		background: linear-gradient(90deg, #218c4a 60%, #3bbf6c 100%);
-		box-shadow: 0 4px 16px rgba(59,191,108,0.22);
-	}
+.btn-success::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.btn-success:hover {
+	background: linear-gradient(90deg, #218c4a 60%, #3bbf6c 100%);
+	box-shadow: 0 4px 16px rgba(59,191,108,0.22);
+}
+
+.btn-success:hover::after {
+  animation: shine 0.75s forwards;
+}
+
+@keyframes shine {
+  100% { left: 125%; }
+}
 
 .switch-link {
 	color: #218c4a;

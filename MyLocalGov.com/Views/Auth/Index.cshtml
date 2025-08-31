@@ -111,33 +111,6 @@
 		document.addEventListener("DOMContentLoaded", function() {
 			document.body.classList.add("page-loaded");
 			document.dispatchEvent(new Event("pageReady"));
-
-			// Landing animations for logo, title, and button
-			const logo = document.getElementById("logo");
-			const mainTitle = document.getElementById("mainTitle");
-			const subtitle = document.getElementById("subtitle");
-			const enterButton = document.getElementById("enterButton");
-
-			if (logo) {
-				Animations.animateCSS("scaleIn", logo, { duration: 1200 });
-			}
-			if (mainTitle) {
-				Animations.animateCSS("fadeIn", mainTitle, { duration: 900 });
-			}
-			if (subtitle) {
-				Animations.animateCSS("fadeIn", subtitle, { duration: 1500, delay: 300 });
-			}
-			if (enterButton) {
-				Animations.animateCSS("scaleIn", enterButton, { duration: 700, delay: 300  });
-
-				// Hover glow effect for enterButton
-				enterButton.addEventListener("mouseenter", () => {
-					enterButton.classList.add("anim-glow");
-				});
-				enterButton.addEventListener("mouseleave", () => {
-					enterButton.classList.remove("anim-glow");
-				});
-			}
 		});
 
 		window.onPageReady(function () {
