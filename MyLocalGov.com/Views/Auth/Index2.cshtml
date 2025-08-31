@@ -41,7 +41,7 @@
 			</div>
 
 			<!-- Form Area -->
-			<div id="cell-forms-area" class="flex-cell w-fit flex-main-start flex-cross-center bg-yellow" style="display: none;">
+			<div id="cell-forms-area" class="flex-cell w-fit flex-main-start flex-cross-center bg-yellow @(formActive ? "" : "flex-hidden")">
 				<!-- Forms Container -->
 				<section class="form-container @(formActive ? "active" : "") animate-fade" id="formContainer">
 					<!-- LOGIN FORM -->

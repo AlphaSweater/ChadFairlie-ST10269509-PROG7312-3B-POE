@@ -33,6 +33,11 @@
 	position: relative;
 }
 
+/* Utility: Hide element */
+.flex-hidden {
+	display: none !important;
+}
+
 /* Content alignment helpers */
 /*
     Alignment helpers (main/cross axis)
