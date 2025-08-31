@@ -41,7 +41,7 @@
 			</div>
 
 			<!-- Form Area (merged with form-container) -->
-			<div id="cell-forms-area" class="flex-cell flex-1 w-fit flex-main-start flex-cross-center @(formActive ? "active" : "flex-hidden")">
+			<div id="cell-forms-area" class="flex-cell w-fit flex-main-start flex-cross-center @(formActive ? "active" : "flex-hidden")">
 				<!-- Login Form -->
 				<form id="loginForm" class="form @(showForm == "login" ? "active" : "")"
 					  method="post" action="/Account/Login">
@@ -107,7 +107,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 
 @section Scripts {
-	<script defer>
+	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			document.body.classList.add("page-loaded");
 			document.dispatchEvent(new Event("pageReady"));
@@ -152,51 +152,56 @@
 				formContainer.classList.remove("active");
 			}
 
-			enterButton.addEventListener("click", () => {
-				Animations.runSequence([
-					// Step 1: fade out subtitle & button
+			enterButton.addEventListener("click", async () => {
+				await Animations.runSequence([
+					// Step 1: fade out subtitle & button (parallel)
 					() => Promise.all([
-						Animations.fadeOut(enterButton, { duration: 50 })
+						Animations.animate("fadeOut", enterButton, { duration: 50 })
 					]),
-
-					// Step 2: move logo/title and slide in login form simultaneously
-					() => {
-						return Promise.all([
-							Animations.groupMoveWithClone(logoTitleWrapper, () => {
-								showFormContainer();
-							}, { duration: 800 }),
-							Animations.slideInFrom(loginForm, "down", {
-								distance: 180,
-								duration: 800,
-								layoutChangeFn: () => showForm("login")
-							})
-						]);
-					}
+					// Step 2: move logo/title and slide in login form (parallel)
+					() => Promise.all([
+						Animations.animate("moveFLIP", logoTitleWrapper, {
+							duration: 800,
+							layoutChangeFn: showFormContainer
+						}),
+						Animations.animate("slideIn", loginForm, {
+							direction: "down",
+							distance: 180,
+							duration: 800,
+							layoutChangeFn: showForm("login")
+						})
+					])
 				]);
 			});
 
-			showSignUp.addEventListener("click", (e) => {
+			showSignUp.addEventListener("click", async (e) => {
 				e.preventDefault();
-				// Animate login form out to left, sign-up form in from right
-				Promise.all([
-					Animations.fadeOut(loginForm, { duration: 200, layoutChangeFn: () => loginForm.classList.remove("active") }),
-					Animations.slideInFrom(signUpForm, "right", {
+				await Promise.all([
+					Animations.animate("fadeOut", loginForm, {
+						duration: 200,
+						layoutChangeFn: () => loginForm.classList.remove("active")
+					}),
+					Animations.animate("slideIn", signUpForm, {
+						direction: "right",
 						distance: 80,
 						duration: 350,
-						layoutChangeFn: () => showForm("register")
+						layoutChangeFn: showForm("register")
 					})
 				]);
 			});
 
-			showLogin.addEventListener("click", (e) => {
+			showLogin.addEventListener("click", async (e) => {
 				e.preventDefault();
-				// Animate sign-up form out to right, login form in from left
-				Promise.all([
-					Animations.fadeOut(signUpForm, { duration: 200, layoutChangeFn: () => signUpForm.classList.remove("active") }),
-					Animations.slideInFrom(loginForm, "left", {
+				await Promise.all([
+					Animations.animate("fadeOut", signUpForm, {
+						duration: 200,
+						layoutChangeFn: () => signUpForm.classList.remove("active")
+					}),
+					Animations.animate("slideIn", loginForm, {
+						direction: "left",
 						distance: 80,
 						duration: 350,
-						layoutChangeFn: () => showForm("login")
+						layoutChangeFn: showForm("login")
 					})
 				]);
 			});
