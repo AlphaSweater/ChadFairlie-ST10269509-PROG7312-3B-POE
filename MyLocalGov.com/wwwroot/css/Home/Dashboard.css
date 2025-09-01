@@ -52,48 +52,36 @@
     2. BACKGROUND & ANIMATION EFFECTS
 =============================================================================*/
 
-/*.dash-page-bg {
-	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
-	min-height: 100vh;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	position: relative;
-	overflow-x: hidden;
-	background-size: 200% 200%;
-	animation: bgShift 15s ease infinite;
-}
-
-	.dash-page-bg::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		background-image: radial-gradient(circle at 25% 25%, rgba(59,191,108,0.7) 2px, transparent 2px), radial-gradient(circle at 75% 75%, rgba(59,191,108,0.5) 1px, transparent 1px);
-		background-size: 50px 50px;
-		pointer-events: none;
-	}*/
-
 /* Glassmorphism Effects */
 .dashboard-header,
 .action-card,
 .stat-card,
 .recent-activity,
 .announcements {
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	border: 1px solid var(--white-transparent-20);
-	border-radius: var(--border-radius-lg);
-}
-
-/* Enhanced Glassmorphism for Header */
-.dashboard-header {
 	backdrop-filter: blur(15px);
 	-webkit-backdrop-filter: blur(15px);
+	border: 1px solid var(--white-transparent-30);
+	border-radius: var(--border-radius-lg);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+	position: relative;
+	overflow: hidden;
+}
+
+/* Enhanced Card Effects */
+.dashboard-header::before,
+.action-card::before,
+.stat-card::before,
+.recent-activity::before,
+.announcements::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: linear-gradient(90deg, var(--sa-green-light), var(--sa-gold));
+	border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+	opacity: 0.8;
 }
 
 /*=============================================================================
@@ -187,20 +175,20 @@
 
 /* Action Card */
 .action-card {
-	background: var(--white-transparent-10);
-	cursor: pointer;
-	overflow: hidden;
+	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
 	padding: var(--spacing-xl);
 	position: relative;
 	text-align: center;
 	transition: all var(--transition-normal);
+	overflow: hidden;
+	border-bottom: 3px solid var(--white-transparent-10);
 }
 
 	.action-card:hover {
-		background: var(--white-transparent-15);
-		border-color: var(--white-transparent-40);
-		box-shadow: var(--shadow-lg);
-		transform: translateY(-5px);
+		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
+		border-color: var(--sa-green-light);
+		transform: translateY(-7px);
+		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	.action-card:active {
@@ -229,21 +217,32 @@
 	line-height: 1.5;
 }
 
+.action-card:nth-child(odd)::before {
+	background: linear-gradient(90deg, var(--sa-green), var(--sa-green-light));
+}
+
+.action-card:nth-child(even)::before {
+	background: linear-gradient(90deg, var(--primary-blue-accent), var(--sa-gold));
+}
+
 /*=============================================================================
     5. CARDS & CONTENT BLOCKS
 =============================================================================*/
 
 /* Stat Card */
 .stat-card {
-	background: var(--white-transparent-10);
+	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
 	padding: var(--spacing-lg);
 	text-align: center;
 	transition: all var(--transition-normal);
+	border-bottom: 3px solid var(--white-transparent-20);
 }
 
 	.stat-card:hover {
-		background: var(--white-transparent-15);
-		transform: translateY(-3px);
+		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
+		border-color: var(--sa-gold);
+		transform: translateY(-5px);
+		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
 	}
 
 .stat-number {
@@ -263,9 +262,25 @@
 	text-transform: uppercase;
 }
 
+.stat-card:nth-child(1)::before {
+	background: linear-gradient(90deg, var(--primary-blue-light), var(--primary-blue-accent));
+}
+
+.stat-card:nth-child(2)::before {
+	background: linear-gradient(90deg, var(--sa-green), var(--sa-green-light));
+}
+
+.stat-card:nth-child(3)::before {
+	background: linear-gradient(90deg, var(--sa-gold), var(--primary-blue-light));
+}
+
+.stat-card:nth-child(4)::before {
+	background: linear-gradient(90deg, var(--sa-red), var(--sa-gold));
+}
+
 /* Recent Activity */
 .recent-activity {
-	background: var(--white-transparent-10);
+	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
 	margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
 	padding: var(--spacing-xl);
 }
@@ -290,7 +305,7 @@
 
 .activity-icon {
 	align-items: center;
-	background: var(--sa-green-light);
+	background: linear-gradient(145deg, var(--sa-green-light), var(--sa-green));
 	border-radius: var(--border-radius-circle);
 	display: flex;
 	flex-shrink: 0;
@@ -329,18 +344,24 @@
 
 /* Announcements */
 .announcements {
-	background: var(--white-transparent-10);
+	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
 	margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
 	padding: var(--spacing-xl);
 }
 
 .announcement-item {
-	background: var(--white-transparent-10);
+	background: var(--white-transparent-15);
 	border-left: 4px solid var(--sa-gold);
 	border-radius: var(--border-radius-sm);
 	margin-bottom: var(--spacing-md);
 	padding: var(--spacing-md);
+	transition: all var(--transition-normal);
 }
+
+	.announcement-item:hover {
+		background: var(--white-transparent-20);
+		transform: translateX(3px);
+	}
 
 	.announcement-item:last-child {
 		margin-bottom: 0;
@@ -439,11 +460,11 @@
 	}
 
 	.recent-activity {
-		margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-md) var (--spacing-md);
 	}
 
 	.announcements {
-		margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-md) var --spacing-md);
 	}
 
 	.user-info {
