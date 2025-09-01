@@ -284,11 +284,6 @@
 	border-top: none;
 }
 
-.recent-activity:hover::before {
-	height: 6px;
-	opacity: 1;
-}
-
 .activity-list {
 	list-style: none;
 	margin: 0;
@@ -309,19 +304,7 @@
 
 .activity-icon {
 	align-items: center;
-	background: linear-gradient(145deg, var(--sa-green), var(--sa-gold));
-	border-radius: var(--border-radius-circle);
-	display: flex;
-	flex-shrink: 0;
-	font-size: 18px;
-	height: 40px;
-	justify-content: center;
-	width: 40px;
-}
-
-.activity-icon {
-	align-items: center;
-	background: var(--sa-green);
+	background: var(--white-transparent-15);
 	border-radius: var(--border-radius-circle);
 	display: flex;
 	flex-shrink: 0;
@@ -360,9 +343,12 @@
 
 /* Announcements */
 .announcements {
-	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
+	background: var(--white-transparent-10);
 	margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
 	padding: var(--spacing-xl);
+	transition: all var(--transition-normal);
+	border: 1px solid var(--white-transparent-30);
+	border-top: none;
 }
 
 .announcement-item {
@@ -376,7 +362,8 @@
 
 	.announcement-item:hover {
 		background: var(--white-transparent-20);
-		transform: translateX(3px);
+		transform: translateX(5px);
+		border-left-width: 6px;
 	}
 
 	.announcement-item:last-child {
@@ -468,19 +455,19 @@
 
 	.dashboard-stats {
 		grid-template-columns: repeat(2, 1fr);
-		margin: 0 var(--spacing-md) var(--spacing-xl) var (--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md);
 	}
 
 	.quick-actions {
-		margin: 0 var(--spacing-md) var(--spacing-xl) var (--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md);
 	}
 
 	.recent-activity {
-		margin: 0 var(--spacing-md) var(--spacing-md) var (--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
 	}
 
 	.announcements {
-		margin: 0 var(--spacing-md) var(--spacing-md) var --spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
 	}
 
 	.user-info {
