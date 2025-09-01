@@ -18,7 +18,6 @@
     1. BASE LAYOUT & CONTAINER STYLES
 =============================================================================*/
 
-/* Layout Overrides */
 .layout-container {
 	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
 	min-height: 100vh;
@@ -40,11 +39,9 @@
 	display: none !important;
 }
 
-/* Dashboard Container */
 .dashboard-container {
 	min-height: 100vh;
 	padding: 0;
-	padding-top: 0;
 	margin-top: 0;
 }
 
@@ -52,7 +49,6 @@
     2. BACKGROUND & ANIMATION EFFECTS
 =============================================================================*/
 
-/* Glassmorphism Effects */
 .dashboard-header,
 .action-card,
 .stat-card,
@@ -60,88 +56,93 @@
 .announcements {
 	backdrop-filter: blur(15px);
 	-webkit-backdrop-filter: blur(15px);
-	border: 1px solid var(--white-transparent-30);
+	border: 1px solid var(--sa-green);
 	border-radius: var(--border-radius-lg);
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 	position: relative;
 	overflow: hidden;
 }
 
-/* Enhanced Card Effects */
-.dashboard-header::before,
-.action-card::before,
-.stat-card::before,
-.recent-activity::before,
-.announcements::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 4px;
-	background: linear-gradient(90deg, var(--sa-gold), var(--sa-green), var(--sa-gold));
-	border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-	opacity: 0.8;
-}
+	.dashboard-header::before,
+	.action-card::before,
+	.stat-card::before,
+	.recent-activity::before,
+	.announcements::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background: var(--sa-green);
+		border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+		transition: background var(--transition-fast);
+	}
+
+	.dashboard-header:hover::before,
+	.action-card:hover::before,
+	.stat-card:hover::before,
+	.recent-activity:hover::before,
+	.announcements:hover::before {
+		background: var(--sa-gold);
+	}
 
 /*=============================================================================
     3. DASHBOARD COMPONENTS
 =============================================================================*/
 
-/* Dashboard Header */
 .dashboard-header {
 	background: var(--white-transparent-10);
 	box-shadow: var(--shadow-md);
-	margin: var(--spacing-xl) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+	margin: var(--spacing-xl);
 	padding: var(--spacing-lg) var(--spacing-xl);
-	margin-top: var(--spacing-lg);
 }
+	.dashboard-header:hover {
+		border-color: var(--sa-gold);
+		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+	}
 
 .dashboard-title {
-	align-items: center;
-	color: var(--white);
 	display: flex;
+	align-items: center;
+	gap: var(--spacing-md);
+	margin: 0;
+	color: var(--white);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-3xl);
 	font-weight: var(--font-weight-bold);
-	gap: var(--spacing-md);
-	margin: 0;
 }
 
 .dashboard-subtitle {
+	margin: var(--spacing-sm) 0 0 0;
 	color: var(--white-transparent-90);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-lg);
 	font-weight: var(--font-weight-normal);
-	margin: var(--spacing-sm) 0 0 0;
 }
 
-/* Section Titles */
 .section-title {
-	align-items: center;
-	color: var(--white);
 	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	margin-bottom: var(--spacing-lg);
+	color: var(--white);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-2xl);
 	font-weight: var(--font-weight-semibold);
-	gap: var(--spacing-sm);
-	margin-bottom: var(--spacing-lg);
 }
 
-/* Dashboard Stats */
 .dashboard-stats {
 	display: grid;
 	gap: var(--spacing-lg);
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	margin: 0 var(--spacing-xl) var(--spacing-2xl) var(--spacing-xl);
+	margin: 0 var(--spacing-xl) var(--spacing-2xl);
 }
 
-/* Quick Actions */
 .quick-actions {
-	margin: 0 var(--spacing-xl) var(--spacing-2xl) var(--spacing-xl);
+	margin: 0 var(--spacing-xl) var(--spacing-2xl);
 }
 
-/* Actions Grid */
 .actions-grid {
 	display: grid;
 	gap: var(--spacing-lg);
@@ -152,41 +153,45 @@
     4. USER INTERFACE ELEMENTS
 =============================================================================*/
 
-/* User Info */
 .user-info {
-	align-items: center;
-	color: var(--white-transparent-90);
 	display: flex;
-	font-size: var(--font-size-base);
+	align-items: center;
 	gap: var(--spacing-md);
+	color: var(--white-transparent-90);
+	font-size: var(--font-size-base);
 }
 
 .user-avatar {
-	align-items: center;
-	background: var(--sa-green);
-	border-radius: var(--border-radius-circle);
-	color: var(--white);
 	display: flex;
-	font-weight: var(--font-weight-bold);
-	height: 40px;
+	align-items: center;
 	justify-content: center;
 	width: 40px;
+	height: 40px;
+	border-radius: var(--border-radius-circle);
+	background: var(--sa-green);
+	color: var(--white);
+	font-weight: var(--font-weight-bold);
 }
+
+/*=============================================================================
+    5. CARDS & CONTENT BLOCKS
+=============================================================================*/
 
 /* Action Card */
 .action-card {
 	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
 	padding: var(--spacing-xl);
-	position: relative;
 	text-align: center;
 	transition: all var(--transition-normal);
 	overflow: hidden;
-	border-bottom: 3px solid var(--sa-green-light);
+	border: 1px solid var(--sa-green);
+	border-bottom: 3px solid var(--sa-green);
 }
 
 	.action-card:hover {
 		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
 		border-color: var(--sa-gold);
+		border-bottom-color: var(--sa-gold);
 		transform: translateY(-7px);
 		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 	}
@@ -198,11 +203,11 @@
 }
 
 .action-title {
+	margin-bottom: var(--spacing-sm);
 	color: var(--white);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-xl);
 	font-weight: var(--font-weight-semibold);
-	margin-bottom: var(--spacing-sm);
 }
 
 .action-description {
@@ -213,26 +218,13 @@
 	line-height: 1.5;
 }
 
-.action-card:nth-child(odd)::before {
-	background: linear-gradient(90deg, var(--sa-green), var(--sa-gold), var(--sa-green));
-}
-
-.action-card:nth-child(even)::before {
-	background: linear-gradient(90deg, var(--sa-green), var(--sa-gold), var(--sa-green));
-}
-
-/*=============================================================================
-    5. CARDS & CONTENT BLOCKS
-=============================================================================*/
-
 /* Stat Card */
 .stat-card {
 	background: var(--white-transparent-10);
 	padding: var(--spacing-lg);
 	text-align: center;
 	transition: all var(--transition-normal);
-	border: 1px solid var(--white-transparent-30);
-	border-top: none;
+	border: 1px solid var(--sa-green);
 }
 
 	.stat-card:hover {
@@ -242,17 +234,16 @@
 		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
 	}
 
-		.stat-card:hover::before {
-			height: 100%;
-			opacity: 0.05;
-		}
-
 .stat-number {
-	color: var(--sa-gold);
+	margin-bottom: var(--spacing-xs);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-4xl);
 	font-weight: var(--font-weight-bold);
-	margin-bottom: var(--spacing-xs);
+	transition: color var(--transition-fast);
+}
+
+.stat-card:hover .stat-number {
+	color: var(--sa-gold);
 }
 
 .stat-label {
@@ -264,25 +255,19 @@
 	text-transform: uppercase;
 }
 
-.stat-card:nth-child(1)::before,
-.stat-card:nth-child(3)::before {
-	background: var(--sa-green);
-}
-
-.stat-card:nth-child(2)::before,
-.stat-card:nth-child(4)::before {
-	background: var(--sa-gold);
-}
-
 /* Recent Activity */
 .recent-activity {
 	background: var(--white-transparent-10);
-	margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+	margin: 0 var(--spacing-xl) var(--spacing-xl);
 	padding: var(--spacing-xl);
 	transition: all var(--transition-normal);
-	border: 1px solid var(--white-transparent-30);
-	border-top: none;
+	border: 1px solid var(--sa-green);
 }
+
+	.recent-activity:hover {
+		border-color: var(--sa-gold);
+		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+	}
 
 .activity-list {
 	list-style: none;
@@ -291,11 +276,11 @@
 }
 
 .activity-item {
-	align-items: flex-start;
-	border-bottom: 1px solid var(--white-transparent-20);
 	display: flex;
+	align-items: flex-start;
 	gap: var(--spacing-md);
 	padding: var(--spacing-md) 0;
+	border-bottom: 1px solid var(--white-transparent-20);
 }
 
 	.activity-item:last-child {
@@ -303,15 +288,15 @@
 	}
 
 .activity-icon {
-	align-items: center;
-	background: var(--white-transparent-15);
-	border-radius: var(--border-radius-circle);
 	display: flex;
-	flex-shrink: 0;
-	font-size: 18px;
-	height: 40px;
+	align-items: center;
 	justify-content: center;
+	flex-shrink: 0;
 	width: 40px;
+	height: 40px;
+	border-radius: var(--border-radius-circle);
+	background: var(--white-transparent-15);
+	font-size: 18px;
 }
 
 .activity-content {
@@ -319,19 +304,19 @@
 }
 
 .activity-title {
+	margin-bottom: var(--spacing-xs);
 	color: var(--white);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-base);
 	font-weight: var(--font-weight-medium);
-	margin-bottom: var(--spacing-xs);
 }
 
 .activity-description {
+	margin-bottom: var(--spacing-xs);
 	color: var(--white-transparent-90);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-sm);
 	font-weight: var(--font-weight-normal);
-	margin-bottom: var(--spacing-xs);
 }
 
 .activity-time {
@@ -344,16 +329,19 @@
 /* Announcements */
 .announcements {
 	background: var(--white-transparent-10);
-	margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+	margin: 0 var(--spacing-xl) var(--spacing-xl);
 	padding: var(--spacing-xl);
 	transition: all var(--transition-normal);
-	border: 1px solid var(--white-transparent-30);
-	border-top: none;
+	border: 1px solid var(--sa-green);
 }
+	.announcements:hover {
+		border-color: var(--sa-gold);
+		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+	}
 
 .announcement-item {
 	background: var(--white-transparent-15);
-	border-left: 4px solid var(--sa-gold);
+	border-left: 4px solid var(--sa-green);
 	border-radius: var(--border-radius-sm);
 	margin-bottom: var(--spacing-md);
 	padding: var(--spacing-md);
@@ -362,6 +350,7 @@
 
 	.announcement-item:hover {
 		background: var(--white-transparent-20);
+		border-left-color: var(--sa-gold);
 		transform: translateX(5px);
 		border-left-width: 6px;
 	}
@@ -371,19 +360,19 @@
 	}
 
 .announcement-title {
+	margin-bottom: var(--spacing-xs);
 	color: var(--white);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-base);
 	font-weight: var(--font-weight-semibold);
-	margin-bottom: var(--spacing-xs);
 }
 
 .announcement-content {
+	margin-bottom: var(--spacing-xs);
 	color: var(--white-transparent-90);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-sm);
 	font-weight: var(--font-weight-normal);
-	margin-bottom: var(--spacing-xs);
 }
 
 .announcement-date {
@@ -397,14 +386,13 @@
     6. STATUS INDICATORS
 =============================================================================*/
 
-/* Status Badges */
 .status-badge {
-	border-radius: var(--border-radius-full);
 	display: inline-block;
+	padding: var(--spacing-xs) var(--spacing-sm);
+	border-radius: var(--border-radius-full);
 	font-size: var(--font-size-xs);
 	font-weight: var(--font-weight-medium);
 	letter-spacing: 0.5px;
-	padding: var(--spacing-xs) var(--spacing-sm);
 	text-transform: uppercase;
 }
 
@@ -414,9 +402,17 @@
 }
 
 .status-pending {
-	background: var(--sa-gold);
-	color: var(--sa-black);
+	background: var(--white-transparent-15);
+	border: 1px solid var(--sa-green);
+	color: var(--sa-green);
+	transition: all var(--transition-fast);
 }
+
+	.status-pending:hover {
+		background: var(--sa-gold);
+		border-color: var(--sa-gold);
+		color: var(--sa-black);
+	}
 
 .status-progress {
 	background: var(--primary-blue-light);
@@ -455,19 +451,15 @@
 
 	.dashboard-stats {
 		grid-template-columns: repeat(2, 1fr);
-		margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-xl);
 	}
 
 	.quick-actions {
-		margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-xl);
 	}
 
-	.recent-activity {
-		margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
-	}
-
-	.announcements {
-		margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+	.recent-activity, .announcements {
+		margin: 0 var(--spacing-md) var(--spacing-md);
 	}
 
 	.user-info {
@@ -495,4 +487,4 @@
     8. UTILITY CLASSES & HELPERS
 =============================================================================*/
 
-/* No specific utility classes for dashboard.css yet */
+/* (Reserved for future dashboard utilities) */
