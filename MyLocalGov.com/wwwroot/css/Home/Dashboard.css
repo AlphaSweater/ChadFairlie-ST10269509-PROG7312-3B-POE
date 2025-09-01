@@ -84,7 +84,8 @@
 	.stat-card:hover::before,
 	.recent-activity:hover::before,
 	.announcements:hover::before {
-		background: var(--sa-gold);
+		background: var(--sa-green);
+		box-shadow: 0 0 10px rgba(0, 200, 100, 0.6);
 	}
 
 /*=============================================================================
@@ -96,10 +97,12 @@
 	box-shadow: var(--shadow-md);
 	margin: var(--spacing-xl);
 	padding: var(--spacing-lg) var(--spacing-xl);
+	transition: all var(--transition-normal);
 }
+
 	.dashboard-header:hover {
-		border-color: var(--sa-gold);
-		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+		border-color: var(--sa-green);
+		box-shadow: 0 0 15px rgba(0, 200, 100, 0.6);
 	}
 
 .dashboard-title {
@@ -190,10 +193,10 @@
 
 	.action-card:hover {
 		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
-		border-color: var(--sa-gold);
-		border-bottom-color: var(--sa-gold);
+		border-color: var(--sa-green);
+		border-bottom-color: var(--sa-green);
 		transform: translateY(-7px);
-		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 0 15px rgba(0, 200, 100, 0.6);
 	}
 
 .action-icon {
@@ -229,9 +232,9 @@
 
 	.stat-card:hover {
 		background: var(--white-transparent-15);
-		border-color: var(--sa-gold);
+		border-color: var(--sa-green);
 		transform: translateY(-5px);
-		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 0 12px rgba(0, 200, 100, 0.6);
 	}
 
 .stat-number {
@@ -243,7 +246,7 @@
 }
 
 .stat-card:hover .stat-number {
-	color: var(--sa-gold);
+	color: var(--sa-green);
 }
 
 .stat-label {
@@ -265,8 +268,8 @@
 }
 
 	.recent-activity:hover {
-		border-color: var(--sa-gold);
-		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+		border-color: var(--sa-green);
+		box-shadow: 0 0 12px rgba(0, 200, 100, 0.6);
 	}
 
 .activity-list {
@@ -334,9 +337,10 @@
 	transition: all var(--transition-normal);
 	border: 1px solid var(--sa-green);
 }
+
 	.announcements:hover {
-		border-color: var(--sa-gold);
-		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+		border-color: var(--sa-green);
+		box-shadow: 0 0 12px rgba(0, 200, 100, 0.6);
 	}
 
 .announcement-item {
@@ -350,9 +354,9 @@
 
 	.announcement-item:hover {
 		background: var(--white-transparent-20);
-		border-left-color: var(--sa-gold);
-		transform: translateX(5px);
+		border-left-color: var(--sa-green);
 		border-left-width: 6px;
+		box-shadow: 0 0 10px rgba(0, 200, 100, 0.5);
 	}
 
 	.announcement-item:last-child {
@@ -402,17 +406,9 @@
 }
 
 .status-pending {
-	background: var(--white-transparent-15);
-	border: 1px solid var(--sa-green);
-	color: var(--sa-green);
-	transition: all var(--transition-fast);
+	background: var(--sa-gold);
+	color: var(--white);
 }
-
-	.status-pending:hover {
-		background: var(--sa-gold);
-		border-color: var(--sa-gold);
-		color: var(--sa-black);
-	}
 
 .status-progress {
 	background: var(--primary-blue-light);
@@ -487,4 +483,11 @@
     8. UTILITY CLASSES & HELPERS
 =============================================================================*/
 
-/* (Reserved for future dashboard utilities) */
+/* Subtle green hover */
+.action-card:hover, 
+.stat-card:hover, 
+.announcement-item:hover {
+    border-color: var(--sa-green);
+    box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2); /* faint green glow */
+    transform: translateY(-3px);
+}
