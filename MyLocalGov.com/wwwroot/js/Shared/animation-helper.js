@@ -5,7 +5,6 @@
 //        window.Animations.moveWithClone(...)
 
 (function () {
-
 	if (typeof window === "undefined") throw new Error("Animations requires a browser environment");
 	if (!window.anime) {
 		console.warn("Anime.js not detected (window.anime). Animations will not work.");

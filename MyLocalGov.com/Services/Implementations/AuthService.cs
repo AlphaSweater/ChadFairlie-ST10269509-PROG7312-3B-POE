@@ -18,6 +18,7 @@ namespace MyLocalGov.com.Services.Implementations
 		// Dependencies
 		// =============================================
 		private readonly UserManager<IdentityUser> _userManager;
+
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly IUnitOfWork _unitOfWork;
 

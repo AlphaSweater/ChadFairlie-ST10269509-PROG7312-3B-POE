@@ -15,7 +15,7 @@
 	--secondary-blue-pale: #dbeafe;
 	/* South African Accent Colors */
 	--new-green: #198754;
-	--new-green-dark: #11603c; 
+	--new-green-dark: #11603c;
 	--new-green-light: #28a869;
 	--sa-green: #09a213;
 	--sa-green-dark: #078310;
@@ -85,23 +85,53 @@
 }
 
 /* ===========================================
+   BACKGROUNDS
+   =========================================== */
+
+.blueGreenDots-page-bg {
+	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
+	min-height: 100vh;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow-x: hidden;
+	background-size: 200% 200%;
+	animation: bgShift 15s ease infinite;
+}
+
+	.blueGreenDots-page-bg::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		background-image: radial-gradient(circle at 25% 25%, rgba(59,191,108,0.7) 2px, transparent 2px), radial-gradient(circle at 75% 75%, rgba(59,191,108,0.5) 1px, transparent 1px);
+		background-size: 50px 50px;
+		pointer-events: none;
+	}
+
+/* ===========================================
    GRADIENTS
    =========================================== */
 
 .gradient-primary {
-  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
+	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
 }
 
 .gradient-button {
-  background: linear-gradient(45deg, var(--primary-blue-accent), var(--primary-blue-hover));
+	background: linear-gradient(45deg, var(--primary-blue-accent), var(--primary-blue-hover));
 }
 
 .gradient-button-hover {
-  background: linear-gradient(45deg, var(--primary-blue-medium), var(--primary-blue-light));
+	background: linear-gradient(45deg, var(--primary-blue-medium), var(--primary-blue-light));
 }
 
 .gradient-logo {
-  background: linear-gradient(45deg, var(--primary-blue-accent), var(--primary-blue-hover));
+	background: linear-gradient(45deg, var(--primary-blue-accent), var(--primary-blue-hover));
 }
 
 /* ===========================================
@@ -109,48 +139,48 @@
    =========================================== */
 
 .text-title-xl {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-bold);
-  font-size: 42px;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
-  text-shadow: 2px 2px 4px var(--black-transparent-30);
+	font-family: var(--font-family-primary);
+	font-weight: var(--font-weight-bold);
+	font-size: 42px;
+	line-height: 1.2;
+	letter-spacing: -0.5px;
+	text-shadow: 2px 2px 4px var(--black-transparent-30);
 }
 
 .text-title-lg {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-4xl);
-  line-height: 1.2;
+	font-family: var(--font-family-primary);
+	font-weight: var(--font-weight-bold);
+	font-size: var(--font-size-4xl);
+	line-height: 1.2;
 }
 
 .text-title-md {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-lg);
-  line-height: 1.3;
+	font-family: var(--font-family-primary);
+	font-weight: var(--font-weight-semibold);
+	font-size: var(--font-size-lg);
+	line-height: 1.3;
 }
 
 .text-subtitle {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-normal);
-  font-size: var(--font-size-lg);
-  color: var(--white-transparent-90);
-  line-height: 1.6;
+	font-family: var(--font-family-primary);
+	font-weight: var(--font-weight-normal);
+	font-size: var(--font-size-lg);
+	color: var(--white-transparent-90);
+	line-height: 1.6;
 }
 
 .text-body {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-normal);
-  font-size: var(--font-size-base);
-  line-height: 1.5;
+	font-family: var(--font-family-primary);
+	font-weight: var(--font-weight-normal);
+	font-size: var(--font-size-base);
+	line-height: 1.5;
 }
 
 .text-small {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-normal);
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
+	font-family: var(--font-family-primary);
+	font-weight: var(--font-weight-normal);
+	font-size: var(--font-size-sm);
+	line-height: 1.4;
 }
 
 /* ===========================================
@@ -158,66 +188,66 @@
    =========================================== */
 
 .btn-primary-gov {
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-md) var(--spacing-2xl);
-  border-radius: var(--border-radius-md);
-  border: 2px solid var(--white-transparent-20);
-  color: var(--white);
-  background: var(--gradient-button);
-  box-shadow: var(--shadow-md);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all var(--transition-normal);
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
+	font-family: var(--font-family-primary);
+	font-size: var(--font-size-lg);
+	font-weight: var(--font-weight-semibold);
+	padding: var(--spacing-md) var(--spacing-2xl);
+	border-radius: var(--border-radius-md);
+	border: 2px solid var(--white-transparent-20);
+	color: var(--white);
+	background: var(--gradient-button);
+	box-shadow: var(--shadow-md);
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	transition: all var(--transition-normal);
+	position: relative;
+	overflow: hidden;
+	cursor: pointer;
 }
 
-.btn-primary-gov:hover {
-  background: linear-gradient(45deg, var(--primary-blue-medium), var(--primary-blue-light));
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--white-transparent-40);
-}
+	.btn-primary-gov:hover {
+		background: linear-gradient(45deg, var(--primary-blue-medium), var(--primary-blue-light));
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-lg);
+		border-color: var(--white-transparent-40);
+	}
 
-.btn-primary-gov:active {
-  transform: translateY(0);
-}
+	.btn-primary-gov:active {
+		transform: translateY(0);
+	}
 
 /* ===========================================
    CARD STYLES
    =========================================== */
 
 .card-glass {
-  background: var(--white-transparent-10);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--white-transparent-20);
-  border-radius: var(--border-radius-lg);
-  transition: all var(--transition-normal);
+	background: var(--white-transparent-10);
+	backdrop-filter: blur(10px);
+	border: 1px solid var(--white-transparent-20);
+	border-radius: var(--border-radius-lg);
+	transition: all var(--transition-normal);
 }
 
-.card-glass:hover {
-  background: var(--white-transparent-15);
-  transform: translateY(-5px);
-}
+	.card-glass:hover {
+		background: var(--white-transparent-15);
+		transform: translateY(-5px);
+	}
 
 /* ===========================================
    BADGE STYLES
    =========================================== */
 
 .badge-official {
-  background: var(--white-transparent-15);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--white-transparent-20);
-  border-radius: var(--border-radius-full);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--white);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+	background: var(--white-transparent-15);
+	backdrop-filter: blur(10px);
+	border: 1px solid var(--white-transparent-20);
+	border-radius: var(--border-radius-full);
+	padding: var(--spacing-sm) var(--spacing-lg);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-medium);
+	color: var(--white);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 /* ===========================================
@@ -225,18 +255,18 @@
    =========================================== */
 
 .container-full-height {
-  min-height: 100vh;
+	min-height: 100vh;
 }
 
 .container-centered {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 .container-spaced {
-  padding: var(--spacing-lg);
+	padding: var(--spacing-lg);
 }
 
 /* ===========================================
@@ -244,27 +274,33 @@
    =========================================== */
 
 .fade-in {
-  animation: fadeIn var(--transition-very-slow) ease-out;
+	animation: fadeIn var(--transition-very-slow) ease-out;
 }
 
 .slide-up {
-  animation: slideUp var(--transition-very-slow) ease-out;
+	animation: slideUp var(--transition-very-slow) ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 /* ===========================================
@@ -272,14 +308,14 @@
    =========================================== */
 
 @media (max-width: 768px) {
-  .text-title-xl {
-    font-size: var(--font-size-3xl);
-  }
+	.text-title-xl {
+		font-size: var(--font-size-3xl);
+	}
 
-  .text-subtitle {
-    font-size: var(--font-size-base);
-    padding: 0 var(--spacing-lg);
-  }
+	.text-subtitle {
+		font-size: var(--font-size-base);
+		padding: 0 var(--spacing-lg);
+	}
 }
 
 /* ===========================================
@@ -287,17 +323,17 @@
    =========================================== */
 
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: var(--font-family-primary);
-  color: var(--white);
-  overflow-x: hidden;
+	margin: 0;
+	font-family: var(--font-family-primary);
+	color: var(--white);
+	overflow-x: hidden;
 }
 
 /* Smooth transitions for all elements */
 *, *::before, *::after {
-  transition: inherit;
+	transition: inherit;
 }

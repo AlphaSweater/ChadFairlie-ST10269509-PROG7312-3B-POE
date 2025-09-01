@@ -17,6 +17,7 @@ namespace MyLocalGov.com.Repositories.Implementations
 
 		// Exposed repositories (injected via DI)
 		public IUserProfileRepository UserProfiles { get; }
+
 		public IIssueRepository Issues { get; }
 		public IIssueAttachmentRepository IssueAttachments { get; }
 
@@ -44,7 +45,7 @@ namespace MyLocalGov.com.Repositories.Implementations
 		}
 
 		/// <summary>
-		/// Manually begin a transaction. 
+		/// Manually begin a transaction.
 		/// Useful when you want to group multiple SaveAsync() calls together.
 		/// Example: Create an Issue, add Attachments, and update Reporter points in one transaction.
 		/// </summary>

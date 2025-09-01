@@ -1,206 +1,208 @@
 @model MyLocalGov.com.ViewModels.DashboardViewModel
 @{
+	Layout = "_Layout";
     ViewData["Title"] = "Dashboard";
     ViewData["HideNavbar"] = false;
 }
+<main class="dash-page-bg" id="dashPageContainer">
+	<div class="dashboard-container">
+		<header class="dashboard-header animate-slide-up" id="dashboardHeader">
+			<div class="d-flex justify-content-between align-items-start flex-wrap">
+				<div>
+					<h1 class="dashboard-title animate-scale-in" id="dashboardTitle">📊 Dashboard Overview</h1>
+					<p class="dashboard-subtitle animate-fade" id="dashboardSubtitle">
+						Welcome to your municipal services portal
+					</p>
+				</div>
+				<div class="user-info animate-slide-right" id="userInfo">
+					<div class="user-avatar">@Model.User.Avatar</div>
+					<div>
+						<div style="font-weight: 600;">@Model.User.Name</div>
+						<div style="font-size: 14px;">ID: @Model.User.IdNumber</div>
+						<div style="font-size: 12px; color: var(--white-transparent-80);">@Model.User.Municipality - @Model.User.Ward</div>
+					</div>
+				</div>
+			</div>
+		</header>
 
-<div class="dashboard-container">
-    <header class="dashboard-header animate-slide-up" id="dashboardHeader">
-        <div class="d-flex justify-content-between align-items-start flex-wrap">
-            <div>
-                <h1 class="dashboard-title animate-scale-in" id="dashboardTitle">📊 Dashboard Overview</h1>
-                <p class="dashboard-subtitle animate-fade" id="dashboardSubtitle">
-                    Welcome to your municipal services portal
-                </p>
-            </div>
-            <div class="user-info animate-slide-right" id="userInfo">
-                <div class="user-avatar">@Model.User.Avatar</div>
-                <div>
-                    <div style="font-weight: 600;">@Model.User.Name</div>
-                    <div style="font-size: 14px;">ID: @Model.User.IdNumber</div>
-                    <div style="font-size: 12px; color: var(--white-transparent-80);">@Model.User.Municipality - @Model.User.Ward</div>
-                </div>
-            </div>
-        </div>
-    </header>
+		<!-- Dashboard Statistics -->
+		<section class="dashboard-stats animate-fade" id="dashboardStats">
+			<div class="stat-card animate-slide-up" id="statActiveRequests">
+				<div class="stat-number">@Model.Stats.ActiveRequests</div>
+				<div class="stat-label">Active Requests</div>
+			</div>
+			<div class="stat-card animate-slide-up" id="statCompletedIssues">
+				<div class="stat-number">@Model.Stats.CompletedIssues</div>
+				<div class="stat-label">Completed Issues</div>
+			</div>
+			<div class="stat-card animate-slide-up" id="statUpcomingEvents">
+				<div class="stat-number">@Model.Stats.UpcomingEvents</div>
+				<div class="stat-label">Upcoming Events</div>
+			</div>
+			<div class="stat-card animate-slide-up" id="statUrgentNotices">
+				<div class="stat-number">@Model.Stats.UrgentNotices</div>
+				<div class="stat-label">Urgent Notices</div>
+			</div>
+		</section>
 
-    <!-- Dashboard Statistics -->
-    <section class="dashboard-stats animate-fade" id="dashboardStats">
-        <div class="stat-card animate-slide-up" id="statActiveRequests">
-            <div class="stat-number">@Model.Stats.ActiveRequests</div>
-            <div class="stat-label">Active Requests</div>
-        </div>
-        <div class="stat-card animate-slide-up" id="statCompletedIssues">
-            <div class="stat-number">@Model.Stats.CompletedIssues</div>
-            <div class="stat-label">Completed Issues</div>
-        </div>
-        <div class="stat-card animate-slide-up" id="statUpcomingEvents">
-            <div class="stat-number">@Model.Stats.UpcomingEvents</div>
-            <div class="stat-label">Upcoming Events</div>
-        </div>
-        <div class="stat-card animate-slide-up" id="statUrgentNotices">
-            <div class="stat-number">@Model.Stats.UrgentNotices</div>
-            <div class="stat-label">Urgent Notices</div>
-        </div>
-    </section>
+		<!-- Quick Actions -->
+		<section class="quick-actions animate-fade" id="quickActions">
+			<h2 class="section-title animate-slide-up" id="quickActionsTitle">
+				🚀 Quick Actions
+			</h2>
+			<div class="actions-grid">
+				<div class="action-card animate-bounce-in" id="actionReportIssue" onclick="handleActionClick('report-issue', this)">
+					<span class="action-icon">📢</span>
+					<h3 class="action-title">Report an Issue</h3>
+					<p class="action-description">
+						Report municipal problems like potholes, water leaks, power outages, or waste collection issues to your local municipality.
+					</p>
+				</div>
 
-    <!-- Quick Actions -->
-    <section class="quick-actions animate-fade" id="quickActions">
-        <h2 class="section-title animate-slide-up" id="quickActionsTitle">
-            🚀 Quick Actions
-        </h2>
-        <div class="actions-grid">
-            <div class="action-card animate-bounce-in" id="actionReportIssue" onclick="handleActionClick('report-issue', this)">
-                <span class="action-icon">📢</span>
-                <h3 class="action-title">Report an Issue</h3>
-                <p class="action-description">
-                    Report municipal problems like potholes, water leaks, power outages, or waste collection issues to your local municipality.
-                </p>
-            </div>
-            
-            <div class="action-card animate-bounce-in" id="actionRequestService" onclick="handleActionClick('request-service', this)">
-                <span class="action-icon">📝</span>
-                <h3 class="action-title">Request Service</h3>
-                <p class="action-description">
-                    Submit requests for municipal services such as permits, certificates, waste collection schedules, or general maintenance.
-                </p>
-            </div>
-            
-            <div class="action-card animate-bounce-in" id="actionViewEvents" onclick="handleActionClick('view-events', this)">
-                <span class="action-icon">📅</span>
-                <h3 class="action-title">Local Events</h3>
-                <p class="action-description">
-                    Browse upcoming community events, council meetings, and important municipal announcements in your area.
-                </p>
-            </div>
-            
-            <div class="action-card animate-bounce-in" id="actionTrackRequests" onclick="handleActionClick('track-requests', this)">
-                <span class="action-icon">📊</span>
-                <h3 class="action-title">Track My Requests</h3>
-                <p class="action-description">
-                    Monitor the progress of your submitted issues and service requests with real-time status updates and notifications.
-                </p>
-            </div>
-        </div>
-    </section>
+				<div class="action-card animate-bounce-in" id="actionRequestService" onclick="handleActionClick('request-service', this)">
+					<span class="action-icon">📝</span>
+					<h3 class="action-title">Request Service</h3>
+					<p class="action-description">
+						Submit requests for municipal services such as permits, certificates, waste collection schedules, or general maintenance.
+					</p>
+				</div>
 
-    <!-- Recent Activity -->
-    <section class="recent-activity animate-fade" id="recentActivity">
-        <h2 class="section-title animate-slide-up" id="recentActivityTitle">
-            🕒 Recent Activity
-        </h2>
-        <ul class="activity-list">
-            @foreach (var activity in Model.RecentActivities)
-            {
-                <li class="activity-item animate-slide-up">
-                    <div class="activity-icon">@activity.Icon</div>
-                    <div class="activity-content">
-                        <div class="activity-title">@activity.Title</div>
-                        <div class="activity-description">@activity.Description</div>
-                        <div class="activity-time">@activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt")</div>
-                    </div>
-                    <span class="status-badge @activity.StatusClass">@activity.StatusText</span>
-                </li>
-            }
-        </ul>
-    </section>
+				<div class="action-card animate-bounce-in" id="actionViewEvents" onclick="handleActionClick('view-events', this)">
+					<span class="action-icon">📅</span>
+					<h3 class="action-title">Local Events</h3>
+					<p class="action-description">
+						Browse upcoming community events, council meetings, and important municipal announcements in your area.
+					</p>
+				</div>
 
-    <!-- Municipal Announcements -->
-    <section class="announcements animate-fade" id="announcements">
-        <h2 class="section-title animate-slide-up" id="announcementsTitle">
-            📢 Municipal Announcements
-        </h2>
-        @foreach (var announcement in Model.Announcements)
-        {
-            <div class="announcement-item animate-slide-up">
-                <div class="announcement-title">@announcement.Icon @announcement.Title</div>
-                <div class="announcement-content">
-                    @announcement.Content
-                </div>
-                <div class="announcement-date">Posted: @announcement.PostedDate.ToString("MMMM dd, yyyy")</div>
-            </div>
-        }
-    </section>
-</div>
+				<div class="action-card animate-bounce-in" id="actionTrackRequests" onclick="handleActionClick('track-requests', this)">
+					<span class="action-icon">📊</span>
+					<h3 class="action-title">Track My Requests</h3>
+					<p class="action-description">
+						Monitor the progress of your submitted issues and service requests with real-time status updates and notifications.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Recent Activity -->
+		<section class="recent-activity animate-fade" id="recentActivity">
+			<h2 class="section-title animate-slide-up" id="recentActivityTitle">
+				🕒 Recent Activity
+			</h2>
+			<ul class="activity-list">
+				@foreach (var activity in Model.RecentActivities)
+				{
+					<li class="activity-item animate-slide-up">
+						<div class="activity-icon">@activity.Icon</div>
+						<div class="activity-content">
+							<div class="activity-title">@activity.Title</div>
+							<div class="activity-description">@activity.Description</div>
+							<div class="activity-time">@activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt")</div>
+						</div>
+						<span class="status-badge @activity.StatusClass">@activity.StatusText</span>
+					</li>
+				}
+			</ul>
+		</section>
+
+		<!-- Municipal Announcements -->
+		<section class="announcements animate-fade" id="announcements">
+			<h2 class="section-title animate-slide-up" id="announcementsTitle">
+				📢 Municipal Announcements
+			</h2>
+			@foreach (var announcement in Model.Announcements)
+			{
+				<div class="announcement-item animate-slide-up">
+					<div class="announcement-title">@announcement.Icon @announcement.Title</div>
+					<div class="announcement-content">
+						@announcement.Content
+					</div>
+					<div class="announcement-date">Posted: @announcement.PostedDate.ToString("MMMM dd, yyyy")</div>
+				</div>
+			}
+		</section>
+	</div>
+</main>
 
 @section Scripts {
-<script src="~/js/Shared/animation-helper.js" asp-append-version="true"></script>
-<script>
-	window.onPageReady(function () {
-		// Header
-		Animations.slideUp("#dashboardHeader", 100);
-		Animations.scaleIn("#dashboardTitle", 200);
-		Animations.fadeIn("#dashboardSubtitle", 300);
-		Animations.slideRight("#userInfo", 400);
+	<script src="~/js/Shared/animation-helper.js" asp-append-version="true"></script>
+	<script>
+		window.onPageReady(function () {
+			// Header
+			Animations.slideUp("#dashboardHeader", 100);
+			Animations.scaleIn("#dashboardTitle", 200);
+			Animations.fadeIn("#dashboardSubtitle", 300);
+			Animations.slideRight("#userInfo", 400);
 
-		// Stats
-		Animations.fadeIn("#dashboardStats", 500);
-		Animations.slideUp("#statActiveRequests", 600);
-		Animations.slideUp("#statCompletedIssues", 700);
-		Animations.slideUp("#statUpcomingEvents", 800);
-		Animations.slideUp("#statUrgentNotices", 900);
+			// Stats
+			Animations.fadeIn("#dashboardStats", 500);
+			Animations.slideUp("#statActiveRequests", 600);
+			Animations.slideUp("#statCompletedIssues", 700);
+			Animations.slideUp("#statUpcomingEvents", 800);
+			Animations.slideUp("#statUrgentNotices", 900);
 
-		// Quick Actions
-		Animations.fadeIn("#quickActions", 1000);
-		Animations.slideUp("#quickActionsTitle", 1100);
-		Animations.bounceIn("#actionReportIssue", 1200);
-		Animations.bounceIn("#actionRequestService", 1300);
-		Animations.bounceIn("#actionViewEvents", 1400);
-		Animations.bounceIn("#actionTrackRequests", 1500);
+			// Quick Actions
+			Animations.fadeIn("#quickActions", 1000);
+			Animations.slideUp("#quickActionsTitle", 1100);
+			Animations.bounceIn("#actionReportIssue", 1200);
+			Animations.bounceIn("#actionRequestService", 1300);
+			Animations.bounceIn("#actionViewEvents", 1400);
+			Animations.bounceIn("#actionTrackRequests", 1500);
 
-		// Recent Activity
-		Animations.fadeIn("#recentActivity", 1600);
-		Animations.slideUp("#recentActivityTitle", 1700);
-		document.querySelectorAll(".activity-item").forEach((el, i) => {
-			Animations.slideUp(el, 1800 + i * 100);
+			// Recent Activity
+			Animations.fadeIn("#recentActivity", 1600);
+			Animations.slideUp("#recentActivityTitle", 1700);
+			document.querySelectorAll(".activity-item").forEach((el, i) => {
+				Animations.slideUp(el, 1800 + i * 100);
+			});
+
+			// Announcements
+			Animations.fadeIn("#announcements", 2000);
+			Animations.slideUp("#announcementsTitle", 2100);
+			document.querySelectorAll(".announcement-item").forEach((el, i) => {
+				Animations.slideUp(el, 2200 + i * 100);
+			});
 		});
 
-		// Announcements
-		Animations.fadeIn("#announcements", 2000);
-		Animations.slideUp("#announcementsTitle", 2100);
-		document.querySelectorAll(".announcement-item").forEach((el, i) => {
-			Animations.slideUp(el, 2200 + i * 100);
-		});
-	});
+		// Handle action card clicks
+		function handleActionClick(action, element) {
+			setTimeout(() => {
+				switch (action) {
+					case 'report-issue':
+						alert('🚧 Report Issue feature coming soon!\n\nThis will allow you to:\n• Report potholes, water leaks, power outages\n• Upload photos and location data\n• Track repair progress\n• Receive status notifications');
+						break;
+					case 'request-service':
+						alert('📋 Request Service feature coming soon!\n\nThis will allow you to:\n• Request municipal permits\n• Schedule waste collection\n• Apply for certificates\n• Book municipal facilities');
+						break;
+					case 'view-events':
+						alert('🎪 Local Events feature coming soon!\n\nThis will show you:\n• Upcoming community events\n• Council meetings\n• Public hearings\n• Municipal announcements\n• Event registration');
+						break;
+					case 'track-requests':
+						alert('📈 Track Requests feature coming soon!\n\nThis will provide:\n• Real-time status updates\n• Request history\n• Estimated completion times\n• Communication with municipal staff\n• Document downloads');
+						break;
+					default:
+						console.log('Unknown action:', action);
+				}
+			}, 300);
+		}
 
-    // Handle action card clicks
-    function handleActionClick(action, element) {
-        setTimeout(() => {
-            switch (action) {
-                case 'report-issue':
-                    alert('🚧 Report Issue feature coming soon!\n\nThis will allow you to:\n• Report potholes, water leaks, power outages\n• Upload photos and location data\n• Track repair progress\n• Receive status notifications');
-                    break;
-                case 'request-service':
-                    alert('📋 Request Service feature coming soon!\n\nThis will allow you to:\n• Request municipal permits\n• Schedule waste collection\n• Apply for certificates\n• Book municipal facilities');
-                    break;
-                case 'view-events':
-                    alert('🎪 Local Events feature coming soon!\n\nThis will show you:\n• Upcoming community events\n• Council meetings\n• Public hearings\n• Municipal announcements\n• Event registration');
-                    break;
-                case 'track-requests':
-                    alert('📈 Track Requests feature coming soon!\n\nThis will provide:\n• Real-time status updates\n• Request history\n• Estimated completion times\n• Communication with municipal staff\n• Document downloads');
-                    break;
-                default:
-                    console.log('Unknown action:', action);
-            }
-        }, 300);
-    }
+		// Auto-refresh data simulation
+		function updateDashboardData() {
+			// Simulate real-time updates (in a real app, this would fetch from an API)
+			console.log('Dashboard data refreshed at:', new Date().toLocaleTimeString());
+		}
 
-    // Auto-refresh data simulation
-    function updateDashboardData() {
-        // Simulate real-time updates (in a real app, this would fetch from an API)
-        console.log('Dashboard data refreshed at:', new Date().toLocaleTimeString());
-    }
+		// Refresh every 30 seconds
+		setInterval(updateDashboardData, 30000);
 
-    // Refresh every 30 seconds
-    setInterval(updateDashboardData, 30000);
-
-    // Service worker registration for offline functionality (future enhancement)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            console.log('Dashboard ready for service worker registration');
-        });
-    }
-</script>
+		// Service worker registration for offline functionality (future enhancement)
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function() {
+				console.log('Dashboard ready for service worker registration');
+			});
+		}
+	</script>
 }
 
 <link rel="stylesheet" href="~/css/Home/dashboard.css" asp-append-version="true" />

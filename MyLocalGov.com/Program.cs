@@ -60,7 +60,6 @@ namespace MyLocalGov.com
 			builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 			builder.Services.AddScoped<IIssueAttachmentRepository, IssueAttachmentRepository>();
 
-
 			// ============================================
 			// 2. Build Application
 			// ============================================
