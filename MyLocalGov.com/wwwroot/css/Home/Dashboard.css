@@ -42,7 +42,6 @@
 
 /* Dashboard Container */
 .dashboard-container {
-	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
 	min-height: 100vh;
 	padding: 0;
 	padding-top: 0;
@@ -53,7 +52,7 @@
     2. BACKGROUND & ANIMATION EFFECTS
 =============================================================================*/
 
-.dash-page-bg {
+/*.dash-page-bg {
 	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
 	min-height: 100vh;
 	width: 100%;
@@ -77,7 +76,7 @@
 		background-image: radial-gradient(circle at 25% 25%, rgba(59,191,108,0.7) 2px, transparent 2px), radial-gradient(circle at 75% 75%, rgba(59,191,108,0.5) 1px, transparent 1px);
 		background-size: 50px 50px;
 		pointer-events: none;
-	}
+	}*/
 
 /* Glassmorphism Effects */
 .dashboard-header,

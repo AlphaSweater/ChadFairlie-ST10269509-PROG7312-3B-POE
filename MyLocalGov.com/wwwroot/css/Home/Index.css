@@ -35,7 +35,6 @@
 }
 
 main {
-	background: transparent;
 	border: none;
 	box-shadow: none;
 }
@@ -44,7 +43,7 @@ main {
     2. BACKGROUND & ANIMATION EFFECTS
 =============================================================================*/
 
-.landing-page-bg {
+/*.landing-page-bg {
 	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
 	min-height: 100vh;
 	width: 100%;
@@ -68,7 +67,7 @@ main {
 		background-image: radial-gradient(circle at 25% 25%, rgba(59,191,108,0.7) 2px, transparent 2px), radial-gradient(circle at 75% 75%, rgba(59,191,108,0.5) 1px, transparent 1px);
 		background-size: 50px 50px;
 		pointer-events: none;
-	}
+	}*/
 
 /*=============================================================================
     3. RESPONSIVE LAYOUTS
@@ -326,7 +325,7 @@ main {
     9. ANIMATION KEYFRAMES
 =============================================================================*/
 
-@keyframes bgShift {
+/*@keyframes bgShift {
 	0% {
 		background-position: 0% 50%;
 	}
@@ -338,7 +337,7 @@ main {
 	100% {
 		background-position: 0% 50%;
 	}
-}
+}*/
 
 @keyframes logoPulse {
 	0%, 100% {
