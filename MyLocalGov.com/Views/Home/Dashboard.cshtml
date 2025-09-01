@@ -5,16 +5,16 @@
     ViewData["HideNavbar"] = false;
 }
 <main id="dashPageContainer">
-	<div class="dashboard-container">
+	<div class="dashboard-container fxg-u-container fxg-f-col fxg-u-gap-6">
 		<header class="dashboard-header animate-slide-up" id="dashboardHeader">
-			<div class="d-flex justify-content-between align-items-start flex-wrap">
+			<div class="fxg-f-row fxg-f-main-between fxg-f-cross-start fxg-f-wrap">
 				<div>
 					<h1 class="dashboard-title animate-scale-in" id="dashboardTitle">📊 Dashboard Overview</h1>
 					<p class="dashboard-subtitle animate-fade" id="dashboardSubtitle">
 						Welcome to your municipal services portal
 					</p>
 				</div>
-				<div class="user-info animate-slide-right" id="userInfo">
+				<div class="user-info animate-slide-right fxg-f-row fxg-f-cross-center fxg-u-gap-4" id="userInfo">
 					<div class="user-avatar">@Model.User.Avatar</div>
 					<div>
 						<div style="font-weight: 600;">@Model.User.Name</div>
@@ -26,7 +26,7 @@
 		</header>
 
 		<!-- Dashboard Statistics -->
-		<section class="dashboard-stats animate-fade" id="dashboardStats">
+		<section class="dashboard-stats animate-fade fxg-g-grid fxg-g-cols-1 fxg-g-sm-cols-2 fxg-g-lg-cols-4 fxg-u-gap-4" id="dashboardStats">
 			<div class="stat-card animate-slide-up" id="statActiveRequests">
 				<div class="stat-number">@Model.Stats.ActiveRequests</div>
 				<div class="stat-label">Active Requests</div>
@@ -50,7 +50,7 @@
 			<h2 class="section-title animate-slide-up" id="quickActionsTitle">
 				🚀 Quick Actions
 			</h2>
-			<div class="actions-grid">
+			<div class="actions-grid fxg-g-grid fxg-g-auto fxg-g-auto-250 fxg-u-gap-6">
 				<div class="action-card animate-bounce-in" id="actionReportIssue" onclick="handleActionClick('report-issue', this)">
 					<span class="action-icon">📢</span>
 					<h3 class="action-title">Report an Issue</h3>
@@ -90,10 +90,10 @@
 			<h2 class="section-title animate-slide-up" id="recentActivityTitle">
 				🕒 Recent Activity
 			</h2>
-			<ul class="activity-list">
+			<ul class="activity-list fxg-f-col fxg-u-gap-4">
 				@foreach (var activity in Model.RecentActivities)
 				{
-					<li class="activity-item animate-slide-up">
+					<li class="activity-item animate-slide-up fxg-f-row fxg-f-main-between fxg-f-cross-start">
 						<div class="activity-icon">@activity.Icon</div>
 						<div class="activity-content">
 							<div class="activity-title">@activity.Title</div>
@@ -107,7 +107,7 @@
 		</section>
 
 		<!-- Municipal Announcements -->
-		<section class="announcements animate-fade" id="announcements">
+		<section class="announcements animate-fade fxg-f-col fxg-u-gap-4" id="announcements">
 			<h2 class="section-title animate-slide-up" id="announcementsTitle">
 				📢 Municipal Announcements
 			</h2>
