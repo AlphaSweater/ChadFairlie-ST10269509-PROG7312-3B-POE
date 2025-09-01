@@ -1,0 +1,545 @@
+﻿/* ======================================
+   FlexyGrids v1.5 — Hybrid Flex + Grid
+   Lightweight, readable utilities for robust, controllable layouts
+   ====================================== */
+
+/* Tokens */
+:root {
+	--fxg-space-0: 0;
+	--fxg-space-1: 0.25rem;
+	--fxg-space-2: 0.5rem;
+	--fxg-space-3: 0.75rem;
+	--fxg-space-4: 1rem;
+	--fxg-space-6: 1.5rem;
+	--fxg-space-8: 2rem;
+	--fxg-gap: var(--fxg-space-4);
+	--fxg-radius: 8px;
+	--fxg-container: 80vw;
+}
+
+/* Container */
+.fxg-u-container {
+	max-width: var(--fxg-container);
+	margin-inline: auto;
+	padding-inline: var(--fxg-space-4);
+	box-sizing: border-box;
+}
+
+/* ----------------------
+   Flex primitives
+   ---------------------- */
+.fxg-f-row {
+	display: flex;
+	flex-direction: row;
+	gap: var(--fxg-gap);
+	min-width: 0; /* allow children to shrink */
+}
+
+.fxg-f-col {
+	display: flex;
+	flex-direction: column;
+	gap: var(--fxg-gap);
+	min-height: 0; /* allow children to shrink */
+}
+
+.fxg-f-cell {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	min-width: 0;
+	min-height: 0;
+	box-sizing: border-box;
+}
+
+/* Flex alignment */
+.fxg-f-main-start {
+	justify-content: flex-start !important;
+}
+
+.fxg-f-main-center {
+	justify-content: center !important;
+}
+
+.fxg-f-main-end {
+	justify-content: flex-end !important;
+}
+
+.fxg-f-main-between {
+	justify-content: space-between !important;
+}
+
+.fxg-f-main-around {
+	justify-content: space-around !important;
+}
+
+.fxg-f-main-evenly {
+	justify-content: space-evenly !important;
+}
+
+.fxg-f-cross-start {
+	align-items: flex-start !important;
+}
+
+.fxg-f-cross-center {
+	align-items: center !important;
+}
+
+.fxg-f-cross-end {
+	align-items: flex-end !important;
+}
+
+.fxg-f-cross-stretch {
+	align-items: stretch !important;
+}
+
+.fxg-f-wrap {
+	flex-wrap: wrap;
+}
+
+.fxg-f-nowrap {
+	flex-wrap: nowrap;
+}
+
+.fxg-f-grow-0 {
+	flex: 0 0 auto;
+}
+
+.fxg-f-grow-1 {
+	flex: 1 1 0;
+}
+
+.fxg-f-grow-2 {
+	flex: 2 1 0;
+}
+
+.fxg-f-grow-3 {
+	flex: 3 1 0;
+}
+
+.fxg-f-grow-4 {
+	flex: 4 1 0;
+}
+
+/* ----------------------
+   Grid primitives
+   ---------------------- */
+.fxg-g-grid {
+	display: grid;
+	gap: var(--fxg-gap);
+}
+
+.fxg-g-cols-1 {
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.fxg-g-cols-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fxg-g-cols-3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fxg-g-cols-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.fxg-g-cols-5 {
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.fxg-g-cols-6 {
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.fxg-g-cols-12 {
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+/* Auto-fit responsive cards */
+.fxg-g-auto {
+	grid-template-columns: repeat(auto-fit, minmax(var(--fxg-min, 240px), 1fr));
+}
+
+.fxg-g-auto-180 {
+	--fxg-min: 180px;
+}
+
+.fxg-g-auto-200 {
+	--fxg-min: 200px;
+}
+
+.fxg-g-auto-240 {
+	--fxg-min: 240px;
+}
+
+.fxg-g-auto-250 {
+	--fxg-min: 250px;
+}
+
+.fxg-g-auto-300 {
+	--fxg-min: 300px;
+}
+
+/* Grid alignment */
+.fxg-g-place-items-start {
+	place-items: start;
+}
+
+.fxg-g-place-items-center {
+	place-items: center;
+}
+
+.fxg-g-place-items-end {
+	place-items: end;
+}
+
+.fxg-g-place-content-center {
+	place-content: center;
+}
+
+.fxg-g-place-content-between {
+	place-content: space-between;
+}
+
+/* Grid spans */
+.fxg-g-col-span-1 {
+	grid-column: span 1 / span 1;
+}
+
+.fxg-g-col-span-2 {
+	grid-column: span 2 / span 2;
+}
+
+.fxg-g-col-span-3 {
+	grid-column: span 3 / span 3;
+}
+
+.fxg-g-col-span-4 {
+	grid-column: span 4 / span 4;
+}
+
+.fxg-g-col-span-6 {
+	grid-column: span 6 / span 6;
+}
+
+.fxg-g-col-span-12 {
+	grid-column: span 12 / span 12;
+}
+
+/* Named areas via custom properties */
+.fxg-g-areas {
+	display: grid;
+	gap: var(--fxg-gap);
+	grid-template-areas: var(--fxg-areas);
+	grid-template-columns: var(--fxg-columns, 1fr);
+	grid-template-rows: var(--fxg-rows, auto);
+}
+
+.fxg-g-area {
+	grid-area: var(--fxg-area);
+}
+
+/* ----------------------
+   Spacing & radius
+   ---------------------- */
+.fxg-u-gap-0 {
+	gap: var(--fxg-space-0) !important;
+}
+
+.fxg-u-gap-1 {
+	gap: var(--fxg-space-1) !important;
+}
+
+.fxg-u-gap-2 {
+	gap: var(--fxg-space-2) !important;
+}
+
+.fxg-u-gap-3 {
+	gap: var(--fxg-space-3) !important;
+}
+
+.fxg-u-gap-4 {
+	gap: var(--fxg-space-4) !important;
+}
+
+.fxg-u-gap-6 {
+	gap: var(--fxg-space-6) !important;
+}
+
+.fxg-u-gap-8 {
+	gap: var(--fxg-space-8) !important;
+}
+
+.fxg-u-p-0 {
+	padding: var(--fxg-space-0) !important;
+}
+
+.fxg-u-p-2 {
+	padding: var(--fxg-space-2) !important;
+}
+
+.fxg-u-p-4 {
+	padding: var(--fxg-space-4) !important;
+}
+
+.fxg-u-p-6 {
+	padding: var(--fxg-space-6) !important;
+}
+
+.fxg-u-mt-2 {
+	margin-top: var(--fxg-space-2) !important;
+}
+
+.fxg-u-mt-4 {
+	margin-top: var(--fxg-space-4) !important;
+}
+
+.fxg-u-rounded {
+	border-radius: var(--fxg-radius);
+}
+
+/* Helpers */
+.fxg-u-box {
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: var(--fxg-radius);
+	padding: var(--fxg-space-4);
+}
+
+.fxg-u-w-320 {
+	width: 320px !important;
+}
+
+.fxg-u-min-h-140 {
+	min-height: 140px !important;
+}
+
+.fxg-u-w-full {
+	width: 100%;
+}
+
+.fxg-u-h-full {
+	height: 100%;
+}
+
+.fxg-u-text-center {
+	text-align: center !important;
+}
+
+.fxg-u-min-w-280 {
+	min-width: 280px !important;
+}
+
+.fxg-u-w-fit {
+	width: fit-content !important;
+}
+
+.fxg-u-h-fit {
+	height: fit-content !important;
+}
+
+.fxg-u-min-h-100vh {
+	min-height: 100vh !important;
+}
+
+.fxg-u-min-h-20vh {
+	min-height: 20vh !important;
+}
+
+.fxg-u-max-h-20vh {
+	max-height: 20vh !important;
+}
+
+.flex-hidden {
+	display: none !important;
+}
+
+/* Responsive column utilities */
+@media (min-width: 640px) {
+	.fxg-sm-cols-1, .fxg-g-sm-cols-1 {
+		grid-template-columns: repeat(1, minmax(0, 1fr));
+	}
+
+	.fxg-sm-cols-2, .fxg-g-sm-cols-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.fxg-sm-cols-3, .fxg-g-sm-cols-3 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.fxg-sm-cols-4, .fxg-g-sm-cols-4 {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 768px) {
+	.fxg-md-cols-2, .fxg-g-md-cols-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.fxg-md-cols-3, .fxg-g-md-cols-3 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.fxg-md-cols-4, .fxg-g-md-cols-4 {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.fxg-lg-cols-2, .fxg-g-lg-cols-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.fxg-lg-cols-3, .fxg-g-lg-cols-3 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.fxg-lg-cols-4, .fxg-g-lg-cols-4 {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1280px) {
+	.fxg-xl-cols-4, .fxg-g-xl-cols-4 {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.fxg-xl-cols-6, .fxg-g-xl-cols-6 {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+	}
+}
+
+/* Debug overlay */
+.fxg-debug .fxg-row,
+.fxg-debug .fxg-col,
+.fxg-debug .fxg-cell {
+	outline: 2px dashed rgba(52, 152, 219, .35);
+	position: relative;
+}
+
+.fxg-debug .fxg-grid,
+.fxg-debug .fxg-areas {
+	outline: 2px dashed rgba(231, 76, 60, .35);
+	position: relative;
+}
+
+	.fxg-debug .fxg-grid > *,
+	.fxg-debug .fxg-row > *,
+	.fxg-debug .fxg-col > * {
+		outline: 2px dashed rgba(39, 174, 96, .35);
+		position: relative;
+	}
+
+		.fxg-debug .fxg-grid > *::before,
+		.fxg-debug .fxg-row > *::before,
+		.fxg-debug .fxg-col > *::before {
+			content: attr(id) " | " attr(class);
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 0.7rem;
+			font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			background: rgba(0,0,0,0.6);
+			color: #fff;
+			padding: 2px 4px;
+			z-index: 2;
+			pointer-events: none;
+		}
+
+/* Minimal color helpers for quick prototyping */
+.fxg-u-bg-red {
+	background: #fee2e2;
+}
+
+.fxg-u-bg-blue {
+	background: #dbeafe;
+}
+
+.fxg-u-bg-green {
+	background: #dcfce7;
+}
+
+.fxg-u-bg-yellow {
+	background: #fef9c3;
+}
+
+.fxg-u-bg-purple {
+	background: #ede9fe;
+}
+
+/* --------------------------------------
+   FlexyGrids Docs (quick reference)
+   --------------------------------------
+   Naming convention
+   - Flex classes:    fxg-f-*
+   - Grid classes:    fxg-g-*
+   - Utilities:       fxg-u-*
+   The original fxg-* forms still work (backward compatible). Use the
+   prefixed variants when you want explicit intent/compatibility at a glance.
+
+   Compatibility
+   - Flex (fxg-f-*) classes should be used on flex containers or items:
+     .fxg-f-row / .fxg-f-col / .fxg-f-cell, alignment .fxg-f-main-* / .fxg-f-cross-*,
+     growth .fxg-f-grow-*
+   - Grid (fxg-g-*) classes should be used on grid containers or items:
+     .fxg-g-grid, columns .fxg-g-cols-* or .fxg-g-auto + .fxg-g-auto-*,
+     spans .fxg-g-col-span-*, areas .fxg-g-areas + .fxg-g-area
+   - Utilities (fxg-u-*) are safe anywhere: spacing, sizes, colors, container.
+
+   Starter skeleton (HTML)
+   -------------------------------------------------
+   <body class="fxg-debug"> <!-- remove debug in prod -->
+     <header>
+       <div class="fxg-u-container fxg-f-row fxg-f-main-between fxg-f-cross-center fxg-gap-3">
+         <div>Brand</div>
+         <nav>...</nav>
+       </div>
+     </header>
+
+     <main class="fxg-u-container fxg-f-col fxg-gap-6 fxg-u-p-4">
+       <!-- hybrid header row -->
+       <section class="fxg-f-row fxg-f-cross-stretch">
+         <div class="fxg-f-cell fxg-f-grow-1 fxg-u-box">Left</div>
+         <div class="fxg-f-cell fxg-u-w-320 fxg-u-box">Right</div>
+       </section>
+
+       <!-- responsive stats -->
+       <section>
+         <div class="fxg-g-grid fxg-g-cols-1 fxg-g-sm-cols-2 fxg-g-lg-cols-4 fxg-gap-4">
+           <div class="fxg-u-box">1</div>
+           <div class="fxg-u-box">2</div>
+           <div class="fxg-u-box">3</div>
+           <div class="fxg-u-box">4</div>
+         </div>
+       </section>
+
+       <!-- quick actions (auto-fit cards) -->
+       <section>
+         <div class="fxg-g-grid fxg-g-auto fxg-g-auto-250 fxg-gap-6">
+           <div class="fxg-u-box">A</div>
+           <div class="fxg-u-box">B</div>
+           <div class="fxg-u-box">C</div>
+         </div>
+       </section>
+
+       <!-- named areas from a sketch -->
+       <section>
+         <div class="fxg-g-areas" style="--fxg-areas:'head head' 'main side' 'foot foot'; --fxg-columns:2fr 1fr;">
+           <div class="fxg-g-area" style="--fxg-area:head">Header</div>
+           <div class="fxg-g-area" style="--fxg-area:main">Main</div>
+           <div class="fxg-g-area" style="--fxg-area:side">Aside</div>
+           <div class="fxg-g-area" style="--fxg-area:foot">Footer</div>
+         </div>
+       </section>
+     </main>
+   </body>
+   -------------------------------------------------
+
+   Tip: Start with fxg-u-container + fxg-f-col on <main>, then compose
+   either fxg-f-row or fxg-g-grid sections as needed.
+*/

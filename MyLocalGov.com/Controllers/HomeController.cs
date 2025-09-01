@@ -30,6 +30,11 @@ namespace MyLocalGov.com.Controllers
 			return View();
 		}
 
+		public IActionResult test()
+		{
+			return View();
+		}
+
 		public IActionResult Dashboard()
 		{
 			// Get the logged-in user's ID

@@ -27,13 +27,6 @@
 
         .layout-main {
             padding: var(--spacing-xl);
-            background: var(--white-transparent-10);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: var(--border-radius-lg);
-            margin: var(--spacing-xl);
-            border: 1px solid var(--white-transparent-20);
-            box-shadow: var(--shadow-md);
         }
 
         .layout-footer {
@@ -59,7 +52,8 @@
         /* Container: top padding only when navbar is visible */
         .custom-container {
 			max-width: 80vw;
-            margin: 0 auto;
+			min-width: 80vw;
+			margin: 0 auto;
 			padding: 0 var(--spacing-lg);
         }
 

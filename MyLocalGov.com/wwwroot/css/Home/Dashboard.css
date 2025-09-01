@@ -18,27 +18,6 @@
     1. BASE LAYOUT & CONTAINER STYLES
 =============================================================================*/
 
-.layout-container {
-	background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue-medium), var(--primary-blue-light));
-	min-height: 100vh;
-	color: var(--white);
-	padding: 0 !important;
-}
-
-.layout-main {
-	padding: 0 !important;
-	background: none;
-	border: none !important;
-	box-shadow: none !important;
-	margin: 0 !important;
-	-webkit-backdrop-filter: none !important;
-	backdrop-filter: none !important;
-}
-
-.layout-footer {
-	display: none !important;
-}
-
 .dashboard-container {
 	min-height: 100vh;
 	padding: 0;
@@ -95,8 +74,8 @@
 .dashboard-header {
 	background: var(--white-transparent-10);
 	box-shadow: var(--shadow-md);
-	margin: var(--spacing-xl);
-	padding: var(--spacing-lg) var(--spacing-xl);
+	margin: 0 var(--spacing-xl) var(--spacing-xl);
+	padding: var(--spacing-xl) var(--spacing-xl);
 	transition: all var(--transition-normal);
 }
 

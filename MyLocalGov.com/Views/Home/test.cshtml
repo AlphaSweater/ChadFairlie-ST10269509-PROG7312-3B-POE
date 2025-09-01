@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>FlexyGrids Dashboard Mock</title>
+	<link rel="stylesheet" href="./flexygrids.css" />
+	<style>
+		body {
+			margin: 0;
+			font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+			background: #0e1f4f;
+		}
+
+		.page {
+			padding-block: 24px;
+		}
+
+		.title {
+			color: #ffffff;
+			margin: 0 0 8px 0;
+			font-size: 1.25rem;
+		}
+
+		.block {
+			border-radius: var(--fxg-radius);
+			padding: var(--fxg-space-4);
+			color: #0f172a;
+		}
+
+		.block-lg {
+			min-height: 110px;
+		}
+
+		.block-md {
+			min-height: 90px;
+		}
+
+		.block-sm {
+			min-height: 70px;
+		}
+
+		.chip {
+			display: inline-block;
+			background: #111827;
+			color: #fff;
+			padding: 2px 8px;
+			border-radius: 999px;
+			font-size: 12px;
+		}
+
+		header {
+			position: sticky;
+			top: 0;
+			background: rgba(14,31,79,0.9);
+			-webkit-backdrop-filter: blur(4px);
+			backdrop-filter: blur(4px);
+			z-index: 10;
+			border-bottom: 1px solid rgba(255,255,255,0.06);
+		}
+
+		.header-bar {
+			padding-block: 12px;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<div class="fxg-container fxg-row fxg-main-between fxg-cross-center fxg-gap-3 header-bar">
+			<div class="chip">FlexyGrids</div>
+			<div class="chip" id="dbg">Debug: OFF</div>
+		</div>
+	</header>
+
+	<main class="fxg-container fxg-col fxg-gap-6 page">
+		<!-- Header Row -->
+		<section class="fxg-row fxg-cross-stretch">
+			<div class="fxg-cell fxg-grow-1 block block-lg fxg-bg-blue"></div>
+			<div class="fxg-cell fxg-w-320 block block-lg fxg-bg-purple"></div>
+		</section>
+
+		<!-- Stats Grid -->
+		<section class="fxg-col fxg-gap-2">
+			<div class="fxg-grid fxg-cols-1 fxg-sm-cols-2 fxg-lg-cols-4 fxg-gap-4">
+				<div class="block block-md fxg-bg-yellow"></div>
+				<div class="block block-md fxg-bg-blue"></div>
+				<div class="block block-md fxg-bg-green"></div>
+				<div class="block block-md fxg-bg-purple"></div>
+			</div>
+		</section>
+
+		<!-- Quick Actions -->
+		<section class="fxg-col fxg-gap-2">
+			<h2 class="title">🚀 Quick Actions</h2>
+			<div class="fxg-grid fxg-cols-1 fxg-sm-cols-2 fxg-lg-cols-4 fxg-gap-6">
+				<div class="block block-lg fxg-bg-blue"></div>
+				<div class="block block-lg fxg-bg-purple"></div>
+				<div class="block block-lg fxg-bg-green"></div>
+				<div class="block block-lg fxg-bg-yellow"></div>
+			</div>
+		</section>
+
+		<!-- Recent Activity -->
+		<section class="fxg-col fxg-gap-2">
+			<h2 class="title">🕒 Recent Activity</h2>
+			<div class="fxg-col fxg-gap-3">
+				<div class="block block-sm fxg-bg-green"></div>
+				<div class="block block-sm fxg-bg-blue"></div>
+				<div class="block block-sm fxg-bg-purple"></div>
+			</div>
+		</section>
+
+		<!-- Announcements -->
+		<section class="fxg-col fxg-gap-2">
+			<h2 class="title">📢 Municipal Announcements</h2>
+			<div class="fxg-col fxg-gap-3">
+				<div class="block block-sm fxg-bg-yellow"></div>
+				<div class="block block-sm fxg-bg-green"></div>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		const dbg = document.getElementById('dbg');
+		dbg.addEventListener('click', () => {
+		  document.body.classList.toggle('fxg-debug');
+		  dbg.textContent = 'Debug: ' + (document.body.classList.contains('fxg-debug') ? 'ON' : 'OFF');
+		});
+	</script>
+</body>
+</html>
