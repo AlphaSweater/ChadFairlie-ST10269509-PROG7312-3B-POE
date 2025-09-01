@@ -79,7 +79,7 @@
 	left: 0;
 	right: 0;
 	height: 4px;
-	background: linear-gradient(90deg, var(--sa-green-light), var(--sa-gold));
+	background: linear-gradient(90deg, var(--sa-gold), var(--sa-green), var(--sa-gold));
 	border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 	opacity: 0.8;
 }
@@ -181,18 +181,14 @@
 	text-align: center;
 	transition: all var(--transition-normal);
 	overflow: hidden;
-	border-bottom: 3px solid var(--white-transparent-10);
+	border-bottom: 3px solid var(--sa-green-light);
 }
 
 	.action-card:hover {
 		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
-		border-color: var(--sa-green-light);
+		border-color: var(--sa-gold);
 		transform: translateY(-7px);
 		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-	}
-
-	.action-card:active {
-		transform: translateY(-2px);
 	}
 
 .action-icon {
@@ -218,11 +214,11 @@
 }
 
 .action-card:nth-child(odd)::before {
-	background: linear-gradient(90deg, var(--sa-green), var(--sa-green-light));
+	background: linear-gradient(90deg, var(--sa-green), var(--sa-gold), var(--sa-green));
 }
 
 .action-card:nth-child(even)::before {
-	background: linear-gradient(90deg, var(--primary-blue-accent), var(--sa-gold));
+	background: linear-gradient(90deg, var(--sa-green), var(--sa-gold), var(--sa-green));
 }
 
 /*=============================================================================
@@ -231,19 +227,25 @@
 
 /* Stat Card */
 .stat-card {
-	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
+	background: var(--white-transparent-10);
 	padding: var(--spacing-lg);
 	text-align: center;
 	transition: all var(--transition-normal);
-	border-bottom: 3px solid var(--white-transparent-20);
+	border: 1px solid var(--white-transparent-30);
+	border-top: none;
 }
 
 	.stat-card:hover {
-		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
+		background: var(--white-transparent-15);
 		border-color: var(--sa-gold);
 		transform: translateY(-5px);
 		box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
 	}
+
+		.stat-card:hover::before {
+			height: 100%;
+			opacity: 0.05;
+		}
 
 .stat-number {
 	color: var(--sa-gold);
@@ -262,27 +264,29 @@
 	text-transform: uppercase;
 }
 
-.stat-card:nth-child(1)::before {
-	background: linear-gradient(90deg, var(--primary-blue-light), var(--primary-blue-accent));
-}
-
-.stat-card:nth-child(2)::before {
-	background: linear-gradient(90deg, var(--sa-green), var(--sa-green-light));
-}
-
+.stat-card:nth-child(1)::before,
 .stat-card:nth-child(3)::before {
-	background: linear-gradient(90deg, var(--sa-gold), var(--primary-blue-light));
+	background: var(--sa-green);
 }
 
+.stat-card:nth-child(2)::before,
 .stat-card:nth-child(4)::before {
-	background: linear-gradient(90deg, var(--sa-red), var(--sa-gold));
+	background: var(--sa-gold);
 }
 
 /* Recent Activity */
 .recent-activity {
-	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
+	background: var(--white-transparent-10);
 	margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
 	padding: var(--spacing-xl);
+	transition: all var(--transition-normal);
+	border: 1px solid var(--white-transparent-30);
+	border-top: none;
+}
+
+.recent-activity:hover::before {
+	height: 6px;
+	opacity: 1;
 }
 
 .activity-list {
@@ -305,7 +309,19 @@
 
 .activity-icon {
 	align-items: center;
-	background: linear-gradient(145deg, var(--sa-green-light), var(--sa-green));
+	background: linear-gradient(145deg, var(--sa-green), var(--sa-gold));
+	border-radius: var(--border-radius-circle);
+	display: flex;
+	flex-shrink: 0;
+	font-size: 18px;
+	height: 40px;
+	justify-content: center;
+	width: 40px;
+}
+
+.activity-icon {
+	align-items: center;
+	background: var(--sa-green);
 	border-radius: var(--border-radius-circle);
 	display: flex;
 	flex-shrink: 0;
@@ -452,11 +468,11 @@
 
 	.dashboard-stats {
 		grid-template-columns: repeat(2, 1fr);
-		margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-xl) var (--spacing-md);
 	}
 
 	.quick-actions {
-		margin: 0 var(--spacing-md) var(--spacing-xl) var(--spacing-md);
+		margin: 0 var(--spacing-md) var(--spacing-xl) var (--spacing-md);
 	}
 
 	.recent-activity {
