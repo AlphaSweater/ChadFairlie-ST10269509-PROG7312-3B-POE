@@ -11,37 +11,37 @@
 }
 
 <main id="landingPageContainer">
-	<div class="flex-col h-full w-full" style="min-height:100vh;" id="flex-main-container">
+	<div class="fxg-f-col fxg-u-h-full fxg-u-w-full" style="min-height:100vh;" id="flex-main-container">
 
 		<!-- Top spacer -->
-		<div id="cell-top-spacer" class="flex-cell" style="max-height: 20vh; min-height: 20vh;"></div>
+		<div id="cell-top-spacer" class="fxg-f-cell fxg-u-max-h-20vh fxg-u-min-h-20vh"></div>
 
 		<!-- Middle Row -->
-		<div id="row-middle" class="flex-row flex-2 w-full">
+		<div id="row-middle" class="fxg-f-row fxg-f-grow-2 fxg-u-w-full">
 			<!-- Left Spacer -->
-			<div id="cell-left-spacer" class="flex-cell flex-1"></div>
+			<div id="cell-left-spacer" class="fxg-f-cell fxg-f-grow-1"></div>
 
 			<!-- Info Area -->
-			<div id="cell-info-area" class="flex-cell w-fit flex-main-start flex-cross-center">
+			<div id="cell-info-area" class="fxg-f-cell fxg-u-w-fit fxg-f-main-start fxg-f-cross-center">
 				<!-- Logo + Title -->
 				<div class="logo" id="logo">
 					<span class="logo-icon">🏛️</span>
 				</div>
 				<h1 class="title" id="mainTitle">Civic Connect</h1>
 				<!-- Subtitle + Button Group -->
-				<div id="subtitle-btn-group" class="flex-cell flex-cross-center">
-					<p class="subtitle text-center @(formActive ? "hidden" : "")" id="subtitle">
+				<div id="subtitle-btn-group" class="fxg-f-cell fxg-f-cross-center">
+					<p class="subtitle fxg-u-text-center @(formActive ? "hidden" : "")" id="subtitle">
 						Your South African municipal services portal.<br>
 						<strong>Report issues • Request services • Stay informed</strong>
 					</p>
-					<button id="enterButton" class="btn btn-primary mt-3 @(formActive ? "hidden" : "")">
+					<button id="enterButton" class="btn btn-primary fxg-u-mt-4 @(formActive ? "hidden" : "")">
 						Get Started →
 					</button>
 				</div>
 			</div>
 
 			<!-- Form Area (merged with form-container) -->
-			<div id="cell-forms-area" class="flex-cell w-fit flex-main-start flex-cross-center @(formActive ? "active" : "flex-hidden")">
+			<div id="cell-forms-area" class="fxg-f-cell fxg-u-w-fit fxg-f-main-start fxg-f-cross-center @(formActive ? "active" : "flex-hidden")">
 				<!-- Login Form -->
 				<form id="loginForm" class="form @(showForm == "login" ? "active" : "")"
 					  method="post" action="/Account/Login">
@@ -60,7 +60,7 @@
 					<input type="password" name="password" placeholder="Password"
 						   class="form-control" required />
 					<button type="submit" class="btn btn-success">Log In</button>
-					<p class="text-center">
+					<p class="fxg-u-text-center">
 						<a href="#" id="showSignUp" class="switch-link">Need an account? Sign Up Here!</a>
 					</p>
 				</form>
@@ -89,18 +89,18 @@
 					<input type="password" name="confirmPassword" placeholder="Confirm Password"
 						   class="form-control" required />
 					<button type="submit" class="btn btn-success">Sign Up</button>
-					<p class="text-center">
+					<p class="fxg-u-text-center">
 						<a href="#" id="showLogin" class="switch-link">Already have an account? Log In</a>
 					</p>
 				</form>
 			</div>
 
 			<!-- Right Spacer -->
-			<div id="cell-right-spacer" class="flex-cell flex-1"></div>
+			<div id="cell-right-spacer" class="fxg-f-cell fxg-f-grow-1"></div>
 		</div>
 
 		<!-- Bottom Spacer -->
-		<div id="cell-bottom-spacer" class="flex-cell flex-1"></div>
+		<div id="cell-bottom-spacer" class="fxg-f-cell fxg-f-grow-1"></div>
 	</div>
 </main>
 
@@ -209,5 +209,4 @@
 }
 
 <link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
-<link rel="stylesheet" href="/css/Shared/flex-grid.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
