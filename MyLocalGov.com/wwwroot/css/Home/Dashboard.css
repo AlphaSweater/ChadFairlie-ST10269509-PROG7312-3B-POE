@@ -102,7 +102,7 @@
 
 	.dashboard-header:hover {
 		border-color: var(--sa-green);
-		box-shadow: 0 0 15px rgba(0, 200, 100, 0.6);
+		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
 	}
 
 .dashboard-title {
@@ -195,8 +195,9 @@
 		background: linear-gradient(145deg, var(--white-transparent-20), var(--white-transparent-15));
 		border-color: var(--sa-green);
 		border-bottom-color: var(--sa-green);
-		transform: translateY(-7px);
-		box-shadow: 0 0 15px rgba(0, 200, 100, 0.6);
+		transform: translateY(-3px);
+		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
+		cursor: pointer;
 	}
 
 .action-icon {
@@ -233,24 +234,24 @@
 	.stat-card:hover {
 		background: var(--white-transparent-15);
 		border-color: var(--sa-green);
-		transform: translateY(-5px);
-		box-shadow: 0 0 12px rgba(0, 200, 100, 0.6);
+		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
 	}
 
 .stat-number {
 	margin-bottom: var(--spacing-xs);
+	color: var(--white-transparent-80);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-4xl);
 	font-weight: var(--font-weight-bold);
 	transition: color var(--transition-fast);
 }
 
-.stat-card:hover .stat-number {
-	color: var(--sa-green);
+.stat-card:hover .stat-number, .stat-card:hover .stat-label {
+	color: var(--white);
 }
 
 .stat-label {
-	color: var(--white-transparent-90);
+	color: var(--white-transparent-80);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-sm);
 	font-weight: var(--font-weight-medium);
@@ -269,7 +270,7 @@
 
 	.recent-activity:hover {
 		border-color: var(--sa-green);
-		box-shadow: 0 0 12px rgba(0, 200, 100, 0.6);
+		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
 	}
 
 .activity-list {
@@ -285,6 +286,11 @@
 	padding: var(--spacing-md) 0;
 	border-bottom: 1px solid var(--white-transparent-20);
 }
+
+	.activity-item:hover {
+		transform: translateY(-3px);
+		cursor: pointer;
+	}
 
 	.activity-item:last-child {
 		border-bottom: none;
@@ -340,7 +346,7 @@
 
 	.announcements:hover {
 		border-color: var(--sa-green);
-		box-shadow: 0 0 12px rgba(0, 200, 100, 0.6);
+		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
 	}
 
 .announcement-item {
@@ -356,7 +362,9 @@
 		background: var(--white-transparent-20);
 		border-left-color: var(--sa-green);
 		border-left-width: 6px;
-		box-shadow: 0 0 10px rgba(0, 200, 100, 0.5);
+		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
+		transform: translateY(-3px);
+		cursor: pointer;
 	}
 
 	.announcement-item:last-child {
@@ -454,7 +462,8 @@
 		margin: 0 var(--spacing-md) var(--spacing-xl);
 	}
 
-	.recent-activity, .announcements {
+	.recent-activity,
+	.announcements {
 		margin: 0 var(--spacing-md) var(--spacing-md);
 	}
 
@@ -483,11 +492,4 @@
     8. UTILITY CLASSES & HELPERS
 =============================================================================*/
 
-/* Subtle green hover */
-.action-card:hover, 
-.stat-card:hover, 
-.announcement-item:hover {
-    border-color: var(--sa-green);
-    box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2); /* faint green glow */
-    transform: translateY(-3px);
-}
+/* (Reserved for utility classes in future – hover states moved to their components) */
