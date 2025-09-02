@@ -9,6 +9,9 @@
 	var registerError = Context.Request.Query["registerError"].ToString();
 	bool formActive = !string.IsNullOrEmpty(showForm);
 }
+<head>
+	<link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
+</head>
 
 <main id="landingPageContainer">
 	<div class="fxg-f-col fxg-u-h-full fxg-u-w-full" style="min-height:100vh;" id="flex-main-container">
@@ -208,5 +211,4 @@
 	</script>
 }
 
-<link rel="stylesheet" href="/css/Home/index.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

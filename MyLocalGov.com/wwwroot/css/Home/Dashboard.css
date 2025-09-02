@@ -74,7 +74,8 @@
 .dashboard-header {
 	background: var(--white-transparent-10);
 	box-shadow: var(--shadow-md);
-	margin: 0 var(--spacing-xl) var(--spacing-xl);
+	/* Removed outer margins - spacing comes from parent gap */
+	margin: 0;
 	padding: var(--spacing-xl) var(--spacing-xl);
 	transition: all var(--transition-normal);
 }
@@ -107,7 +108,8 @@
 	display: flex;
 	align-items: center;
 	gap: var(--spacing-sm);
-	margin-bottom: var(--spacing-lg);
+	/* No bottom margin; sections use internal gap via FlexyGrids */
+	margin: 0;
 	color: var(--white);
 	font-family: var(--font-family-primary);
 	font-size: var(--font-size-2xl);
@@ -118,11 +120,13 @@
 	display: grid;
 	gap: var(--spacing-lg);
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	margin: 0 var(--spacing-xl) var(--spacing-2xl);
+	/* Removed outer margins - spacing comes from parent gap */
+	margin: 0;
 }
 
 .quick-actions {
-	margin: 0 var(--spacing-xl) var(--spacing-2xl);
+	/* Removed outer margins - spacing comes from parent gap */
+	margin: 0;
 }
 
 .actions-grid {
@@ -241,7 +245,8 @@
 /* Recent Activity */
 .recent-activity {
 	background: var(--white-transparent-10);
-	margin: 0 var(--spacing-xl) var(--spacing-xl);
+	/* Removed outer margins - spacing comes from parent gap */
+	margin: 0;
 	padding: var(--spacing-xl);
 	transition: all var(--transition-normal);
 	border: 1px solid var(--sa-green);
@@ -317,7 +322,8 @@
 /* Announcements */
 .announcements {
 	background: var(--white-transparent-10);
-	margin: 0 var(--spacing-xl) var(--spacing-xl);
+	/* Removed outer margins - spacing comes from parent gap */
+	margin: 0;
 	padding: var(--spacing-xl);
 	transition: all var(--transition-normal);
 	border: 1px solid var(--sa-green);
@@ -332,7 +338,8 @@
 	background: var(--white-transparent-15);
 	border-left: 4px solid var(--sa-green);
 	border-radius: var(--border-radius-sm);
-	margin-bottom: var(--spacing-md);
+	/* Removed per-item margins - parent section gap handles spacing */
+	margin: 0;
 	padding: var(--spacing-md);
 	transition: all var(--transition-normal);
 }
@@ -344,10 +351,6 @@
 		box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
 		transform: translateY(-3px);
 		cursor: pointer;
-	}
-
-	.announcement-item:last-child {
-		margin-bottom: 0;
 	}
 
 .announcement-title {
@@ -418,7 +421,8 @@
 
 	.dashboard-header {
 		padding: var(--spacing-md);
-		margin: var(--spacing-md);
+		/* Keep margins off; parent gap manages spacing */
+		margin: 0;
 	}
 
 	.dashboard-title {
@@ -434,16 +438,17 @@
 
 	.dashboard-stats {
 		grid-template-columns: repeat(2, 1fr);
-		margin: 0 var(--spacing-md) var(--spacing-xl);
+		/* No outer margins on mobile either */
+		margin: 0;
 	}
 
 	.quick-actions {
-		margin: 0 var(--spacing-md) var(--spacing-xl);
+		margin: 0;
 	}
 
 	.recent-activity,
 	.announcements {
-		margin: 0 var(--spacing-md) var(--spacing-md);
+		margin: 0;
 	}
 
 	.user-info {

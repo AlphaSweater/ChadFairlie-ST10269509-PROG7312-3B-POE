@@ -4,6 +4,10 @@
     ViewData["Title"] = "Dashboard";
     ViewData["HideNavbar"] = false;
 }
+<head>
+	<link rel="stylesheet" href="~/css/Home/dashboard.css" asp-append-version="true" />
+</head>
+
 <main id="dashPageContainer">
 	<div class="dashboard-container fxg-u-container fxg-f-col fxg-u-gap-6">
 		<header class="dashboard-header animate-slide-up" id="dashboardHeader">
@@ -46,7 +50,7 @@
 		</section>
 
 		<!-- Quick Actions -->
-		<section class="quick-actions animate-fade" id="quickActions">
+		<section class="quick-actions animate-fade fxg-f-col fxg-u-gap-4" id="quickActions">
 			<h2 class="section-title animate-slide-up" id="quickActionsTitle">
 				🚀 Quick Actions
 			</h2>
@@ -204,5 +208,3 @@
 		}
 	</script>
 }
-
-<link rel="stylesheet" href="~/css/Home/dashboard.css" asp-append-version="true" />
