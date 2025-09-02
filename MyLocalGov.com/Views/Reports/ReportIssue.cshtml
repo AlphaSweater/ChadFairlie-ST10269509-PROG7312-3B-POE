@@ -42,6 +42,10 @@
         <input asp-for="Address" type="hidden" />
         <span asp-validation-for="Address" class="text-danger flex-hidden"></span>
 
+        <!-- Wizard state (kept in sync by JS) -->
+        <input asp-for="CurrentStep" type="hidden" />
+        <input asp-for="StepHistory" type="hidden" />
+
         <!-- Step 1 -->
         <section class="wizard-step" data-step="1">
             <h2 class="section-title">Location</h2>
@@ -178,5 +182,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/Reports/reportIssueWizard.js" asp-append-version="true"></script>
 }
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

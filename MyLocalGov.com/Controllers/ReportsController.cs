@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyLocalGov.com.Models;
+using MyLocalGov.com.Services.Interfaces;
 using MyLocalGov.com.ViewModels.Reports;
 using System.Security.Claims;
 
@@ -21,6 +23,13 @@ namespace MyLocalGov.com.Controllers
 	[Authorize]
 	public class ReportsController : Controller
 	{
+		private readonly IIssueService _issueService;
+
+		public ReportsController(IIssueService issueService)
+		{
+			_issueService = issueService;
+		}
+
 		public IActionResult Index()
 		{
 			return View();
@@ -49,45 +58,12 @@ namespace MyLocalGov.com.Controllers
 				return View("ReportIssue", vm);
 			}
 
-			// Map ViewModel -> EF Model
-			var issue = new IssueModel
-			{
-				ReporterUserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
-				LocationText = vm.Address,
-				Latitude = vm.Latitude,
-				Longitude = vm.Longitude,
-				CategoryID = vm.CategoryID,
-				Description = vm.Description,
-				StatusID = 1,
-				Priority = 3,
-				DateReported = DateTime.UtcNow,
-				LastUpdated = DateTime.UtcNow
-			};
-
-			// Handle files (store paths; adapt to your storage)
-			if (vm.Files != null && vm.Files.Count > 0)
-			{
-				foreach (var file in vm.Files.Where(f => f?.Length > 0))
-				{
-					// TODO: save to storage (e.g., /wwwroot/uploads/issues/{guid}/filename.ext)
-					// Capture metadata only for now:
-					issue.Attachments.Add(new IssueAttachmentModel
-					{
-						FileName = file.FileName,
-						ContentType = file.ContentType,
-						FileSizeBytes = file.Length,
-						UploadedAt = DateTime.UtcNow
-					});
-				}
-			}
-
-			// TODO: persist using your DbContext, e.g.:
-			// _db.ReportIssues.Add(issue);
-			// await _db.SaveChangesAsync(ct);
+			var issueId = await _issueService.SubmitAsync(vm, User.FindFirstValue(ClaimTypes.NameIdentifier)!, ct);
 
 			TempData["ReportSubmitted"] = true;
 			return RedirectToAction(nameof(Index));
 		}
+
 
 		private static IEnumerable<SelectListItem> GetCategories()
 		{

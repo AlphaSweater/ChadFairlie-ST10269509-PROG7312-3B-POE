@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace MyLocalGov.com.ViewModels.Reports
 {
@@ -51,6 +52,17 @@ namespace MyLocalGov.com.ViewModels.Reports
 		// UI data
 		public IEnumerable<SelectListItem> Categories { get; set; } = Enumerable.Empty<SelectListItem>();
 
+		// Wizard state (client updates these via hidden inputs)
+		[Display(Name = "Current step")]
+		public int CurrentStep { get; set; } = 1;
+
+		// Serialized history (comma-separated), e.g. "1,2,3"
+		[Display(Name = "Step history")]
+		public string StepHistory { get; set; } = string.Empty;
+
+		// Optional: actual stack object (useful if you want to parse StepHistory on the server)
+		public Stack<int> StepStack { get; set; } = new();
+
 		// Helper to format combined address from parts
 		public string GetFormattedAddress()
 		{
@@ -59,25 +71,10 @@ namespace MyLocalGov.com.ViewModels.Reports
 			return string.Join(", ", parts);
 		}
 
-		// Cross-field validation: require minimum location info (Street+City) or coordinates
+		// IValidatableObject implementation (optional rules can be added here)
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			bool hasCoords = Latitude != null && Longitude != null;
-			bool hasMinAddress = !string.IsNullOrWhiteSpace(Street) && !string.IsNullOrWhiteSpace(City);
-
-			if (!hasCoords && !hasMinAddress)
-			{
-				yield return new ValidationResult(
-					"Provide a location: Street and City or coordinates.",
-					new[] { nameof(Street), nameof(City), nameof(Latitude), nameof(Longitude) }
-				);
-			}
-
-			// Ensure Address is populated server-side if missing
-			if (string.IsNullOrWhiteSpace(Address))
-			{
-				Address = GetFormattedAddress();
-			}
+			yield break;
 		}
 	}
 }

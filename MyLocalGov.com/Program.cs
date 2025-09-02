@@ -49,9 +49,6 @@ namespace MyLocalGov.com
 				options.Cookie.MaxAge = null; // Session-based cookie
 			});
 
-			// Register Services
-			builder.Services.AddScoped<IAuthService, AuthService>();
-
 			// Register Repositories
 			builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -59,6 +56,10 @@ namespace MyLocalGov.com
 			builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 			builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 			builder.Services.AddScoped<IIssueAttachmentRepository, IssueAttachmentRepository>();
+
+			// Register Services
+			builder.Services.AddScoped<IAuthService, AuthService>();
+			builder.Services.AddScoped<IIssueService, IssueService>();
 
 			// ============================================
 			// 2. Build Application
