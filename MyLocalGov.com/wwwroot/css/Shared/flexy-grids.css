@@ -52,9 +52,13 @@
 	box-sizing: border-box;
 }
 
-/* Flex alignment */
-.fxg-f-main-start {
-	justify-content: flex-start !important;
+/* Flex Directions*/
+.fxg-f-dir-row {
+	flex-direction: row !important;
+}
+
+.fxg-f-dir-col {
+	flex-direction: column !important;
 }
 
 .fxg-f-main-center {

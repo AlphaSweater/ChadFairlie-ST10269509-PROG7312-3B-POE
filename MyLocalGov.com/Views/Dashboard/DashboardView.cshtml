@@ -9,8 +9,8 @@
 </head>
 
 <main id="dashPageContainer">
-	<div class="dashboard-container fxg-u-container fxg-f-col fxg-u-gap-6">
-		<header class="dashboard-header animate-slide-up" id="dashboardHeader">
+	<div class="dashboard-container fxg-u-container fxg-f-col fxg-u-gap-8">
+		<header class="dashboard-header" id="dashboardHeader">
 			<div class="fxg-f-row fxg-f-main-between fxg-f-cross-start fxg-f-wrap">
 				<div>
 					<h1 class="dashboard-title animate-scale-in" id="dashboardTitle">📊 Dashboard Overview</h1>
@@ -30,32 +30,32 @@
 		</header>
 
 		<!-- Dashboard Statistics -->
-		<section class="dashboard-stats animate-fade fxg-g-grid fxg-g-cols-1 fxg-g-sm-cols-2 fxg-g-lg-cols-4 fxg-u-gap-4" id="dashboardStats">
-			<div class="stat-card animate-slide-up" id="statActiveRequests">
+		<section class="dashboard-stats animate-fade fxg-f-row fxg-f-main-between fxg-u-gap-4" id="dashboardStats">
+			<div class="stat-card fxg-f-cell fxg-f-main-center" id="statActiveRequests">
 				<div class="stat-number">@Model.Stats.ActiveRequests</div>
 				<div class="stat-label">Active Requests</div>
 			</div>
-			<div class="stat-card animate-slide-up" id="statCompletedIssues">
+			<div class="stat-card fxg-f-cell fxg-f-main-center" id="statCompletedIssues">
 				<div class="stat-number">@Model.Stats.CompletedIssues</div>
 				<div class="stat-label">Completed Issues</div>
 			</div>
-			<div class="stat-card animate-slide-up" id="statUpcomingEvents">
+			<div class="stat-card fxg-f-cell fxg-f-main-center" id="statUpcomingEvents">
 				<div class="stat-number">@Model.Stats.UpcomingEvents</div>
 				<div class="stat-label">Upcoming Events</div>
 			</div>
-			<div class="stat-card animate-slide-up" id="statUrgentNotices">
+			<div class="stat-card fxg-f-cell fxg-f-main-center" id="statUrgentNotices">
 				<div class="stat-number">@Model.Stats.UrgentNotices</div>
 				<div class="stat-label">Urgent Notices</div>
 			</div>
 		</section>
 
 		<!-- Quick Actions -->
-		<section class="quick-actions animate-fade fxg-f-col fxg-u-gap-4" id="quickActions">
-			<h2 class="section-title animate-slide-up" id="quickActionsTitle">
+		<section class="quick-actions fxg-f-col fxg-u-gap-4" id="quickActions">
+			<h2 class="section-title fxg-f-cell fxg-f-cross-start" id="quickActionsTitle">
 				🚀 Quick Actions
 			</h2>
-			<div class="actions-grid fxg-g-grid fxg-g-auto fxg-g-auto-250 fxg-u-gap-6">
-				<div class="action-card animate-bounce-in" id="actionReportIssue" onclick="handleActionClick('report-issue', this)">
+			<div class="actions-grid fxg-f-row fxg-u-gap-6">
+				<div class="action-card fxg-f-cell fxg-f-main-center" id="actionReportIssue" onclick="handleActionClick('report-issue', this)">
 					<span class="action-icon">📢</span>
 					<h3 class="action-title">Report an Issue</h3>
 					<p class="action-description">
@@ -63,7 +63,7 @@
 					</p>
 				</div>
 
-				<div class="action-card animate-bounce-in" id="actionRequestService" onclick="handleActionClick('request-service', this)">
+				<div class="action-card fxg-f-cell fxg-f-main-center" id="actionRequestService" onclick="handleActionClick('request-service', this)">
 					<span class="action-icon">📝</span>
 					<h3 class="action-title">Request Service</h3>
 					<p class="action-description">
@@ -71,7 +71,7 @@
 					</p>
 				</div>
 
-				<div class="action-card animate-bounce-in" id="actionViewEvents" onclick="handleActionClick('view-events', this)">
+				<div class="action-card fxg-f-cell fxg-f-main-center" id="actionViewEvents" onclick="handleActionClick('view-events', this)">
 					<span class="action-icon">📅</span>
 					<h3 class="action-title">Local Events</h3>
 					<p class="action-description">
@@ -79,7 +79,7 @@
 					</p>
 				</div>
 
-				<div class="action-card animate-bounce-in" id="actionTrackRequests" onclick="handleActionClick('track-requests', this)">
+				<div class="action-card" id="actionTrackRequests" onclick="handleActionClick('track-requests', this)">
 					<span class="action-icon">📊</span>
 					<h3 class="action-title">Track My Requests</h3>
 					<p class="action-description">
@@ -90,14 +90,14 @@
 		</section>
 
 		<!-- Recent Activity -->
-		<section class="recent-activity animate-fade" id="recentActivity">
-			<h2 class="section-title animate-slide-up" id="recentActivityTitle">
+		<section class="recent-activity fxg-f-col fxg-u-gap-4" id="recentActivity">
+			<h2 class="section-title fxg-f-cell fxg-f-cross-start" id="recentActivityTitle">
 				🕒 Recent Activity
 			</h2>
 			<ul class="activity-list fxg-f-col fxg-u-gap-4">
 				@foreach (var activity in Model.RecentActivities)
 				{
-					<li class="activity-item animate-slide-up fxg-f-row fxg-f-main-between fxg-f-cross-start">
+					<li class="activity-item fxg-f-cell fxg-f-dir-row fxg-f-main-between fxg-f-cross-center">
 						<div class="activity-icon">@activity.Icon</div>
 						<div class="activity-content">
 							<div class="activity-title">@activity.Title</div>
@@ -111,18 +111,21 @@
 		</section>
 
 		<!-- Municipal Announcements -->
-		<section class="announcements animate-fade fxg-f-col fxg-u-gap-4" id="announcements">
-			<h2 class="section-title animate-slide-up" id="announcementsTitle">
+		<section class="announcements fxg-f-col fxg-u-gap-4" id="announcements">
+			<h2 class="section-title fxg-f-cell fxg-f-cross-start" id="announcementsTitle">
 				📢 Municipal Announcements
 			</h2>
 			@foreach (var announcement in Model.Announcements)
 			{
-				<div class="announcement-item animate-slide-up">
-					<div class="announcement-title">@announcement.Icon @announcement.Title</div>
-					<div class="announcement-content">
-						@announcement.Content
+				<div class="announcement-item fxg-f-row">
+					<div class="fxg-f-cell">@announcement.Icon</div>
+					<div class="fxg-f-cell">
+						<div class="announcement-title fxg-f-cell">@announcement.Title</div>
+						<div class="announcement-content">
+							@announcement.Content
+						</div>
+						<div class="announcement-date">Posted: @announcement.PostedDate.ToString("MMMM dd, yyyy")</div>
 					</div>
-					<div class="announcement-date">Posted: @announcement.PostedDate.ToString("MMMM dd, yyyy")</div>
 				</div>
 			}
 		</section>

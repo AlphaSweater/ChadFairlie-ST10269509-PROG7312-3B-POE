@@ -4,6 +4,20 @@ using MyLocalGov.com.Services.Interfaces;
 
 namespace MyLocalGov.com.Controllers
 {
+	// ============================================================================
+	// AccountController
+	// ----------------------------------------------------------------------------
+	// Handles all user authentication and identity-related tasks.
+	// Focus: Login, registration, logout, password management.
+	// ----------------------------------------------------------------------------
+	// Typical Actions:
+	// - Landing()       : Public landing/homepage
+	// - Login()         : Show login form / process login
+	// - Register()      : Show registration form / create account
+	// - Logout()        : Log user out and redirect
+	// - ForgotPassword(): Request password reset
+	// - ResetPassword() : Handle password reset form
+	// ============================================================================
 	public class AccountController : Controller
 	{
 		// =============================================
@@ -94,7 +108,7 @@ namespace MyLocalGov.com.Controllers
 
 			if (result.Succeeded)
 				// Login successful, redirect to dashboard
-				return RedirectToAction("Dashboard", "Home");
+				return RedirectToAction("Index", "Dashboard");
 
 			// Login failed, show error
 			return RedirectToAction("Index", "Account", new
