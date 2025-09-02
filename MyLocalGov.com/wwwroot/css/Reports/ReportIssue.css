@@ -1,336 +1,410 @@
-﻿/* Visual alignment with Dashboard + Index */
-.breadcrumb-link {
-	display: inline-flex;
-	align-items: center;
-	gap: .5rem;
-	color: var(--white);
-	text-decoration: none;
-	padding: .25rem .5rem;
-	border-radius: 8px;
-	background: var(--white-transparent-10);
-	border: 1px solid var(--sa-green);
-	transition: all var(--transition-fast);
-}
-.breadcrumb-link:hover {
-	background: var(--white-transparent-15);
-	box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
-}
-.breadcrumb-separator {
-	color: var(--white-transparent-80);
-}
-.breadcrumb-current {
-	color: var(--white);
-	opacity: .9;
+﻿/*=============================================================================
+    CIVIC CONNECT - REPORT ISSUE CSS
+=============================================================================*/
+
+/*=============================================================================
+    TABLE OF CONTENTS
+    1. Page Layout & Container
+    2. Header & Breadcrumbs
+    3. Wizard Navigation & Progress
+    4. Form Elements & Rich Text Editor
+    5. Map & Location
+    6. Attachments & Dropzone (incl. File List)
+    7. Review Summary
+    8. Buttons (Scoped)
+    9. Helpers & Utilities (incl. Validation)
+    10. Responsive
+=============================================================================*/
+
+/*=============================================================================
+    1. PAGE LAYOUT & CONTAINER
+=============================================================================*/
+
+/* Layout override for this page */
+.layout-main {
+    padding-top: var(--spacing-lg);
 }
 
-/* Cards */
-.report-card {
-	background: var(--white-transparent-10);
-	padding: var(--spacing-xl);
-	border: 1px solid var(--sa-green);
-	border-radius: var(--border-radius-lg);
-	box-shadow: var(--shadow-md);
-	position: relative;
-}
-.report-card::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 4px;
-	background: var(--sa-green);
-	border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+/* Report page container (visual alignment with Dashboard) */
+.report-container {
+    min-height: 100vh;
+    padding: 0;
+    margin-top: 0;
 }
 
-/* Wizard */
-.wizard-nav {
-	position: sticky;
-	bottom: 0;
-	padding: 0;
-	padding-top: var(--spacing-lg);
-	border-top: 1px solid #ddd;
-	z-index: 10;
+/* Card wrapper for the form */
+.report-form-card {
+    background: var(--white-transparent-10);
+    padding: var(--spacing-xl);
+    border: 1px solid var(--sa-green);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    position: relative;
 }
 
-/* Progress bar */
-.wizard-progress {
-	width: 100%;
-	height: 10px;
-	background: var(--white-transparent-15);
-	border-radius: var(--border-radius-full);
-	border: 1px solid var(--sa-green);
-	overflow: hidden;
+/*=============================================================================
+    2. HEADER & BREADCRUMBS
+=============================================================================*/
+
+/* Breadcrumbs */
+.report-breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--white);
+    text-decoration: none;
+    padding: .25rem .5rem;
+    border-radius: 8px;
+    background: var(--white-transparent-10);
+    border: 1px solid var(--sa-green);
+    transition: all var(--transition-fast);
 }
-.wizard-progress-bar {
-	height: 100%;
-	width: 0%;
-	background: var(--sa-green);
-	transition: width var(--transition-normal);
+.report-breadcrumb-link:hover {
+    background: var(--white-transparent-15);
+    box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
 }
-.wizard-steps-labels span {
-	color: var(--white-transparent-90);
-	font-size: var(--font-size-sm);
+.report-breadcrumb-separator {
+    color: var(--white-transparent-80);
+}
+.report-breadcrumb-current {
+    color: var(--white);
+    opacity: .9;
 }
 
-/* Map placeholder */
-.map-placeholder {
-	height: 220px;
-	background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
-	border: 1px dashed var(--sa-green);
-	border-radius: var(--border-radius-md);
-	display: flex;
-	align-items: center;
-	justify-content: center;
+/* Header (shares "card chrome" with dashboard) */
+.report-header {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--sa-green);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+
+    background: var(--white-transparent-10);
+    margin: 0;
+    padding: var(--spacing-xl) var(--spacing-xl);
+    transition: all var(--transition-normal);
 }
-.map-content {
-	text-align: center;
-	color: var(--white-transparent-90);
+.report-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--sa-green);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    transition: background var(--transition-fast);
 }
-.map-content i {
-	font-size: 28px;
-	color: var(--sa-green);
-	display: block;
-	margin-bottom: .5rem;
+.report-header:hover {
+    border-color: var(--sa-green);
+    box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
+}
+.report-header:hover::before {
+    background: var(--sa-green);
+    box-shadow: 0 0 10px rgba(0, 200, 100, 0.6);
 }
 
-/* RTE */
-.rte-toolbar {
-	margin-bottom: .5rem;
+/* Header text */
+.report-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0;
+    color: var(--white);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
 }
-.rte-editor {
-	min-height: 160px;
-	border: 1.5px solid var(--sa-green);
-	border-radius: 10px;
-	background: #f6fff9;
-	padding: 12px;
-	color: #155c2b;
-	outline: none;
-}
-.rte-editor:focus {
-	border-color: #218c4a;
-	background: #eafbe7;
-	box-shadow: 0 0 8px rgba(42, 82, 152, 0.25);
-}
-
-/* Dropzone */
-.dropzone {
-	border: 2px dashed var(--sa-green);
-	border-radius: var(--border-radius-md);
-	background: var(--white-transparent-10);
-	padding: var(--spacing-lg);
-	transition: background var(--transition-fast), transform var(--transition-fast);
-	text-align: center;
-}
-.dropzone.is-dragover {
-	background: var(--white-transparent-20);
-	transform: translateY(-2px);
-}
-.dropzone-content i {
-	font-size: 40px;
-	color: var(--sa-green);
-	display: block;
-	margin-bottom: .5rem;
-}
-
-/* File list */
-.file-list {
-	margin: 0;
-	padding-left: 1rem;
-	color: var(--white);
-}
-.file-list-item {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: .5rem;
-	padding: .25rem 0;
-	border-bottom: 1px solid var(--white-transparent-20);
-}
-.file-name {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-.file-pill {
-	display: inline-block;
-	padding: .15rem .5rem;
-	border-radius: 999px;
-	border: 1px solid var(--sa-green);
-	color: var(--white);
-	background: var(--white-transparent-10);
-	margin: .1rem;
-	font-size: 12px;
-}
-
-.review-box {
-	background: var(--white-transparent-10);
-	border: 1px solid var(--sa-green);
-	border-radius: var(--border-radius-md);
-	padding: var(--spacing-lg);
-}
-.review-dl {
-	margin: 0;
-}
-.review-dl dt {
-	color: var(--white);
-	font-weight: 600;
-	margin-top: .5rem;
-}
-.review-dl dd {
-	color: var(--white-transparent-90);
-	margin-left: 0;
-}
-
-.hint {
-	color: var(--white-transparent-80);
-	font-size: var(--font-size-xs);
-}
-
-/* --------------------------------------------------------------------------
-   Borrowed from Dashboard.css (scoped to classes used in this view)
-   -------------------------------------------------------------------------- */
-
-/* Container */
-.dashboard-container {
-	min-height: 100vh;
-	padding: 0;
-	margin-top: 0;
-}
-
-/* Header card */
-.dashboard-header {
-	/* card chrome from dashboard components */
-	backdrop-filter: blur(15px);
-	-webkit-backdrop-filter: blur(15px);
-	border: 1px solid var(--sa-green);
-	border-radius: var(--border-radius-lg);
-	box-shadow: var(--shadow-md);
-	position: relative;
-	overflow: hidden;
-
-	/* header specifics */
-	background: var(--white-transparent-10);
-	margin: 0;
-	padding: var(--spacing-xl) var(--spacing-xl);
-	transition: all var(--transition-normal);
-}
-.dashboard-header::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 4px;
-	background: var(--sa-green);
-	border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-	transition: background var(--transition-fast);
-}
-.dashboard-header:hover {
-	border-color: var(--sa-green);
-	box-shadow: 0 2px 6px rgba(0, 200, 100, 0.2);
-}
-.dashboard-header:hover::before {
-	background: var(--sa-green);
-	box-shadow: 0 0 10px rgba(0, 200, 100, 0.6);
-}
-
-/* Header texts */
-.dashboard-title {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-md);
-	margin: 0;
-	color: var(--white);
-	font-family: var(--font-family-primary);
-	font-size: var(--font-size-3xl);
-	font-weight: var(--font-weight-bold);
-}
-.dashboard-subtitle {
-	margin: var(--spacing-sm) 0 0 0;
-	color: var(--white-transparent-90);
-	font-family: var(--font-family-primary);
-	font-size: var(--font-size-lg);
-	font-weight: var(--font-weight-normal);
+.report-subtitle {
+    margin: var(--spacing-sm) 0 0 0;
+    color: var(--white-transparent-90);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-normal);
 }
 
 /* Section titles */
-.section-title {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-sm);
-	margin: 0;
-	color: var(--white);
-	font-family: var(--font-family-primary);
-	font-size: var(--font-size-2xl);
-	font-weight: var(--font-weight-semibold);
+.report-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0;
+    color: var(--white);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
 }
 
-/* User info */
-.user-info {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-md);
-	color: var(--white-transparent-90);
-	font-size: var(--font-size-base);
+/*=============================================================================
+    3. WIZARD NAVIGATION & PROGRESS
+=============================================================================*/
+
+.report-wizard-nav {
+    position: sticky;
+    top: 0;
+    padding: 0;
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--white-transparent-20);
+    z-index: 10;
+}
+.report-wizard-step-info {
+    text-align: center;
+    min-width: 180px;
+}
+.report-wizard-step-indicator {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-top: 0.25em;
 }
 
-/* --------------------------------------------------------------------------
-   Borrowed from Index.css (limited to what's used here)
-   -------------------------------------------------------------------------- */
-
-/* Form controls (global bootstrap overrides used on this page) */
-.form-control {
-	border-radius: 10px;
-	border: 1.5px solid #3bbf6c;
-	padding: 12px;
-	font-size: 1rem;
-	width: 100%;
-	background: #f6fff9;
-	color: #155c2b;
+/* Progress bar */
+.report-wizard-progress {
+    width: 100%;
+    height: 10px;
+    background: var(--white-transparent-15);
+    border-radius: var(--border-radius-full);
+    border: 1px solid var(--sa-green);
+    overflow: hidden;
 }
-.form-control:focus {
-	border-color: #218c4a;
-	outline: none;
-	background: #eafbe7;
-	box-shadow: 0 0 8px rgba(42, 82, 152, 0.5);
-	transition: 0.3s ease;
+.report-wizard-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--sa-green);
+    transition: width var(--transition-normal);
+}
+.report-wizard-steps-labels span {
+    color: var(--white-transparent-90);
+    font-size: var(--font-size-sm);
 }
 
-/* Buttons
-   Note: intentionally not forcing width: 100% so wizard buttons stay compact.
-   Scoped to this page to avoid affecting other views. */
+/*=============================================================================
+    4. FORM ELEMENTS & RICH TEXT EDITOR
+=============================================================================*/
+
+/* Bootstrap overrides scoped to this page */
+#reportIssueRoot .form-control {
+    border-radius: 10px;
+    border: 1.5px solid #3bbf6c;
+    padding: 12px;
+    font-size: 1rem;
+    width: 100%;
+    background: #f6fff9;
+    color: #155c2b;
+}
+#reportIssueRoot .form-control:focus {
+    border-color: #218c4a;
+    outline: none;
+    background: #eafbe7;
+    box-shadow: 0 0 8px rgba(42, 82, 152, 0.5);
+    transition: 0.3s ease;
+}
+
+/* RTE */
+.report-rte-toolbar {
+    margin-bottom: .5rem;
+}
+.report-rte-editor {
+    min-height: 160px;
+    border: 1.5px solid var(--sa-green);
+    border-radius: 10px;
+    background: #f6fff9;
+    padding: 12px;
+    color: #155c2b;
+    outline: none;
+}
+.report-rte-editor:focus {
+    border-color: #218c4a;
+    background: #eafbe7;
+    box-shadow: 0 0 8px rgba(42, 82, 152, 0.25);
+}
+
+/*=============================================================================
+    5. MAP & LOCATION
+=============================================================================*/
+
+.report-map-placeholder {
+    height: 220px;
+    background: linear-gradient(145deg, var(--white-transparent-15), var(--white-transparent-10));
+    border: 1px dashed var(--sa-green);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.report-map-content {
+    text-align: center;
+    color: var(--white-transparent-90);
+}
+.report-map-content i {
+    font-size: 28px;
+    color: var(--sa-green);
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/*=============================================================================
+    6. ATTACHMENTS & DROPZONE (incl. File List)
+=============================================================================*/
+
+.report-dropzone {
+    border: 2px dashed var(--sa-green);
+    border-radius: var(--border-radius-md);
+    background: var(--white-transparent-10);
+    padding: var(--spacing-lg);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+    text-align: center;
+}
+.report-dropzone.is-dragover {
+    background: var(--white-transparent-20);
+    transform: translateY(-2px);
+}
+.report-dropzone-content i {
+    font-size: 40px;
+    color: var(--sa-green);
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/* File list */
+.report-file-list {
+    margin: 0;
+    padding-left: 1rem;
+    color: var(--white);
+}
+/* keep aliases for legacy class names used by JS/render */
+.report-file-list-item, .file-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+    padding: .25rem 0;
+    border-bottom: 1px solid var(--white-transparent-20);
+}
+.report-file-name, .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.report-file-pill, .file-pill {
+    display: inline-block;
+    padding: .15rem .5rem;
+    border-radius: 999px;
+    border: 1px solid var(--sa-green);
+    color: var(--white);
+    background: var(--white-transparent-10);
+    margin: .1rem;
+    font-size: 12px;
+}
+
+/*=============================================================================
+    7. REVIEW SUMMARY
+=============================================================================*/
+
+.report-review-box {
+    background: var(--white-transparent-10);
+    border: 1px solid var(--sa-green);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+}
+.report-review-dl {
+    margin: 0;
+}
+.report-review-dl dt {
+    color: var(--white);
+    font-weight: 600;
+    margin-top: .5rem;
+}
+.report-review-dl dd {
+    color: var(--white-transparent-90);
+    margin-left: 0;
+}
+
+/*=============================================================================
+    8. BUTTONS (SCOPED)
+=============================================================================*/
+
+/* Keep success buttons styled on this page without affecting others */
 #reportIssueRoot .btn-success {
-	border-radius: 10px;
-	font-weight: 700;
-	font-size: 1rem;
-	background: linear-gradient(90deg, #3bbf6c 60%, #218c4a 100%);
-	color: #fff;
-	border: none;
-	box-shadow: 0 2px 8px rgba(59,191,108,0.15);
-	position: relative;
-	overflow: hidden;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: linear-gradient(90deg, #3bbf6c 60%, #218c4a 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(59,191,108,0.15);
+    position: relative;
+    overflow: hidden;
 }
 #reportIssueRoot .btn-success::after {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: -75%;
-	width: 50%;
-	height: 100%;
-	background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-	transform: skewX(-20deg);
-	pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
 }
 #reportIssueRoot .btn-success:hover {
-	background: linear-gradient(90deg, #218c4a 60%, #3bbf6c 100%);
-	box-shadow: 0 4px 16px rgba(59,191,108,0.22);
+    background: linear-gradient(90deg, #218c4a 60%, #3bbf6c 100%);
+    box-shadow: 0 4px 16px rgba(59,191,108,0.22);
 }
 #reportIssueRoot .btn-success:hover::after {
-	animation: shine 0.75s forwards;
+    animation: shine 0.75s forwards;
 }
 
-/* Keep a subtle radius for success buttons even if other sheets load earlier */
+/* Keep subtle radius even if other sheets load earlier */
 .btn-success {
-	border-radius: 10px;
+    border-radius: 10px;
+}
+
+/*=============================================================================
+    9. HELPERS & UTILITIES (incl. Validation)
+=============================================================================*/
+
+.report-hint {
+    color: var(--white-transparent-80);
+    font-size: var(--font-size-xs);
+}
+
+/* Required asterisk on labels (added via JS by detecting data-val-required) */
+.label-required::after {
+    content: " *";
+    color: var(--sa-red);
+    font-weight: 700;
+}
+
+/* Unobtrusive validation error styles */
+#reportIssueRoot .field-validation-error {
+    color: var(--sa-red);
+    font-size: var(--font-size-sm);
+    margin-top: 4px;
+}
+#reportIssueRoot .input-validation-error {
+    border-color: var(--sa-red) !important;
+    background: rgba(220, 53, 69, 0.05);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.08) inset;
+}
+#reportIssueRoot .validation-summary-errors {
+    color: var(--sa-red);
+}
+
+/*=============================================================================
+    10. RESPONSIVE
+=============================================================================*/
+
+@media (max-width: 768px) {
+    .report-header {
+        padding: var(--spacing-md);
+        margin: 0;
+    }
+    .report-title {
+        font-size: var(--font-size-2xl);
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+    }
 }

@@ -64,7 +64,6 @@ namespace MyLocalGov.com.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-
 		private static IEnumerable<SelectListItem> GetCategories()
 		{
 			// Replace with DB-backed categories when available
@@ -83,4 +82,5 @@ namespace MyLocalGov.com.Controllers
 			return items.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
 		}
 	}
+ 
 }

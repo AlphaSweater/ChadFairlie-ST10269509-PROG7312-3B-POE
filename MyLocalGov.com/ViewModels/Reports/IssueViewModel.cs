@@ -9,24 +9,26 @@ namespace MyLocalGov.com.ViewModels.Reports
 	{
 		// Address parts
 		[Display(Name = "Street")]
-		[StringLength(100)]
+		[Required(ErrorMessage = "Street is required.")]
+		[StringLength(100, ErrorMessage = "Street cannot exceed 100 characters.")]
 		public string Street { get; set; } = string.Empty;
 
 		[Display(Name = "Suburb")]
-		[StringLength(100)]
+		[StringLength(100, ErrorMessage = "Suburb cannot exceed 100 characters.")]
 		public string Suburb { get; set; } = string.Empty;
 
 		[Display(Name = "City")]
-		[StringLength(100)]
+		[Required(ErrorMessage = "City is required.")]
+		[StringLength(100, ErrorMessage = "City cannot exceed 100 characters.")]
 		public string City { get; set; } = string.Empty;
 
 		[Display(Name = "Postal code")]
-		[StringLength(20)]
+		[StringLength(20, ErrorMessage = "Postal code cannot exceed 20 characters.")]
 		public string PostalCode { get; set; } = string.Empty;
 
 		// Combined address (used for persistence)
-		[Required, Display(Name = "Address")]
-		[StringLength(200)]
+		[Display(Name = "Address")]
+		[StringLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
 		public string Address { get; set; } = string.Empty;
 
 		[Display(Name = "Latitude")]
@@ -36,12 +38,14 @@ namespace MyLocalGov.com.ViewModels.Reports
 		public double? Longitude { get; set; }
 
 		// Category (match Model.CategoryID)
-		[Required, Display(Name = "Category")]
+		[Required(ErrorMessage = "Category is required.")]
+		[Display(Name = "Category")]
 		[Range(1, int.MaxValue, ErrorMessage = "Please select a category.")]
 		public int CategoryID { get; set; }
 
 		// Content
-		[Required, Display(Name = "Description")]
+		[Required(ErrorMessage = "Description is required.")]
+		[Display(Name = "Description")]
 		[StringLength(2000, ErrorMessage = "Description is too long.")]
 		public string Description { get; set; } = string.Empty;
 
@@ -51,17 +55,6 @@ namespace MyLocalGov.com.ViewModels.Reports
 
 		// UI data
 		public IEnumerable<SelectListItem> Categories { get; set; } = Enumerable.Empty<SelectListItem>();
-
-		// Wizard state (client updates these via hidden inputs)
-		[Display(Name = "Current step")]
-		public int CurrentStep { get; set; } = 1;
-
-		// Serialized history (comma-separated), e.g. "1,2,3"
-		[Display(Name = "Step history")]
-		public string StepHistory { get; set; } = string.Empty;
-
-		// Optional: actual stack object (useful if you want to parse StepHistory on the server)
-		public Stack<int> StepStack { get; set; } = new();
 
 		// Helper to format combined address from parts
 		public string GetFormattedAddress()
