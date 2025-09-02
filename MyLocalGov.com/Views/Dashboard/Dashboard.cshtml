@@ -5,7 +5,7 @@
     ViewData["HideNavbar"] = false;
 }
 <head>
-	<link rel="stylesheet" href="~/css/Home/dashboard.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/Dashboard/Dashboard.css" asp-append-version="true" />
 </head>
 
 <main id="dashPageContainer">
@@ -177,7 +177,8 @@
 			setTimeout(() => {
 				switch (action) {
 					case 'report-issue':
-						alert('🚧 Report Issue feature coming soon!\n\nThis will allow you to:\n• Report potholes, water leaks, power outages\n• Upload photos and location data\n• Track repair progress\n• Receive status notifications');
+						// Navigate to Reports Index page
+						window.location.href = '/Reports/ReportIssue';
 						break;
 					case 'request-service':
 						alert('📋 Request Service feature coming soon!\n\nThis will allow you to:\n• Request municipal permits\n• Schedule waste collection\n• Apply for certificates\n• Book municipal facilities');

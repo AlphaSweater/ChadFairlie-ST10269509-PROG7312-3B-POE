@@ -8,32 +8,46 @@ namespace MyLocalGov.com.Models
         [Key]
         public int IssueID { get; set; }
 
-        // Foreign key to UserProfileModel
+        // Reporter (FK to UserProfileModel)
         [Required]
         [ForeignKey(nameof(Reporter))]
-        public string ReporterUserID { get; set; }
+        public string ReporterUserID { get; set; } = default!;
 
-        public UserProfileModel Reporter { get; set; }
+        [Required]
+        public UserProfileModel Reporter { get; set; } = default!;
 
+        // Location
         [MaxLength(200)]
-        public string LocationText { get; set; }
+        public string? LocationText { get; set; }
 
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
 
+        // Category
+        [Required]
         public int CategoryID { get; set; }
 
+        // Content
+        [Required]
         [MaxLength(1000)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        public int StatusID { get; set; } = 1;
-        public int Priority { get; set; } = 3;
+        // Status & priority (defaults)
+        public int StatusID { get; set; } = 1; // e.g., 1 = New
+        public int Priority { get; set; } = 3; // e.g., 1 High, 3 Normal, 5 Low
 
+        // Audit
         public DateTime DateReported { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        // Navigation property for attachments
-        public ICollection<IssueAttachmentModel> Attachments { get; set; }
+        // Attachments
+        public ICollection<IssueAttachmentModel> Attachments { get; set; } = new List<IssueAttachmentModel>();
+
+        public IssueModel()
+        {
+            DateReported = DateTime.UtcNow;
+            LastUpdated = DateTime.UtcNow;
+        }
     }
 
     public class IssueAttachmentModel
@@ -45,20 +59,24 @@ namespace MyLocalGov.com.Models
         [ForeignKey(nameof(Issue))]
         public int IssueID { get; set; }
 
-        public IssueModel Issue { get; set; }
+        [Required]
+        public IssueModel Issue { get; set; } = default!;
 
         [MaxLength(255)]
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
+        // Recommended: store path to file on disk/cloud storage
         [MaxLength(500)]
-        public string FilePath { get; set; } // recommended
+        public string? FilePath { get; set; }
 
-        public byte[] FileBlob { get; set; } // optional
+        // Optional: if you also store blobs in DB
+        public byte[]? FileBlob { get; set; }
 
         [MaxLength(100)]
-        public string ContentType { get; set; }
+        public string? ContentType { get; set; }
 
         public long? FileSizeBytes { get; set; }
-        public DateTime UploadedAt { get; set; }
+
+        public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
     }
 }

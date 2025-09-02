@@ -118,7 +118,7 @@ namespace MyLocalGov.com.Controllers
 				}
 			};
 
-			return View("~/Views/Dashboard/DashboardView.cshtml", viewModel);
+			return View("~/Views/Dashboard/Dashboard.cshtml", viewModel);
 		}
 	}
 }
