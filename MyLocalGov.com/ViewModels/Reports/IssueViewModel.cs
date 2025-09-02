@@ -6,7 +6,24 @@ namespace MyLocalGov.com.ViewModels.Reports
 {
 	public class IssueViewModel : IValidatableObject
 	{
-		// Location
+		// Address parts
+		[Display(Name = "Street")]
+		[StringLength(100)]
+		public string Street { get; set; } = string.Empty;
+
+		[Display(Name = "Suburb")]
+		[StringLength(100)]
+		public string Suburb { get; set; } = string.Empty;
+
+		[Display(Name = "City")]
+		[StringLength(100)]
+		public string City { get; set; } = string.Empty;
+
+		[Display(Name = "Postal code")]
+		[StringLength(20)]
+		public string PostalCode { get; set; } = string.Empty;
+
+		// Combined address (used for persistence)
 		[Required, Display(Name = "Address")]
 		[StringLength(200)]
 		public string Address { get; set; } = string.Empty;
@@ -34,15 +51,32 @@ namespace MyLocalGov.com.ViewModels.Reports
 		// UI data
 		public IEnumerable<SelectListItem> Categories { get; set; } = Enumerable.Empty<SelectListItem>();
 
-		// Cross-field validation (optional): ensure at least some location info
+		// Helper to format combined address from parts
+		public string GetFormattedAddress()
+		{
+			var parts = new[] { Street, Suburb, City, PostalCode }
+				.Where(s => !string.IsNullOrWhiteSpace(s));
+			return string.Join(", ", parts);
+		}
+
+		// Cross-field validation: require minimum location info (Street+City) or coordinates
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			if (string.IsNullOrWhiteSpace(Address) && (Latitude == null || Longitude == null))
+			bool hasCoords = Latitude != null && Longitude != null;
+			bool hasMinAddress = !string.IsNullOrWhiteSpace(Street) && !string.IsNullOrWhiteSpace(City);
+
+			if (!hasCoords && !hasMinAddress)
 			{
 				yield return new ValidationResult(
-					"Provide an address or coordinates.",
-					new[] { nameof(Address), nameof(Latitude), nameof(Longitude) }
+					"Provide a location: Street and City or coordinates.",
+					new[] { nameof(Street), nameof(City), nameof(Latitude), nameof(Longitude) }
 				);
+			}
+
+			// Ensure Address is populated server-side if missing
+			if (string.IsNullOrWhiteSpace(Address))
+			{
+				Address = GetFormattedAddress();
 			}
 		}
 	}

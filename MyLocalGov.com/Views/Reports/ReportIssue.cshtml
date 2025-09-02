@@ -24,19 +24,18 @@
         <h1 class="dashboard-title">Report an Issue</h1>
         <p class="dashboard-subtitle">Help your municipality address problems faster by reporting accurate details.</p>
         <div class="user-info">
-            <span id="engagementMessage">Let’s get started — Step 1 of 4</span>
+            <span id="engagementMessage">Let’s get started — Step 1 of 3</span>
         </div>
     </section>
 
     <section class="fxg-f-col fxg-u-gap-2">
         <div class="wizard-progress">
-            <div class="wizard-progress-bar" id="wizardProgressBar" style="width: 25%;"></div>
+            <div class="wizard-progress-bar" id="wizardProgressBar" style="width: 50%;"></div>
         </div>
         <div class="fxg-f-row fxg-f-main-between fxg-f-cross-center wizard-steps-labels">
             <span>1. Location</span>
             <span>2. Details</span>
-            <span>3. Attachments</span>
-            <span>4. Review</span>
+            <span>3. Review</span>
         </div>
     </section>
 
@@ -44,26 +43,42 @@
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+        <!-- Hidden combined address bound to ViewModel -->
+        <input asp-for="Address" type="hidden" />
+        <span asp-validation-for="Address" class="text-danger flex-hidden"></span>
+
         <!-- Step 1 -->
         <section class="report-card wizard-step" data-step="1">
             <h2 class="section-title">Location</h2>
-            <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label asp-for="Address" class="form-label"></label>
-                    <input asp-for="Address" class="form-control" placeholder="e.g. 123 Main Road, Suburb, City" />
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                    <small class="hint">Type the address now. A Google Maps picker will be added in Part 2.</small>
-                </div>
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label class="form-label">Map (Coming Soon)</label>
-                    <div class="map-placeholder">
-                        <div class="map-content">
-                            <i class="bi bi-geo-alt"></i>
-                            <p>Google Maps picker placeholder.</p>
-                            <button type="button" class="btn btn-outline-success btn-sm" disabled>Choose on Map</button>
+
+            <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2 fxg-u-gap-4">
+                <div class="fxg-f-col fxg-u-gap-3">
+                    <div class="fxg-f-col">
+                        <label asp-for="Street" class="form-label"></label>
+                        <input asp-for="Street" class="form-control" placeholder="123 Main Road" />
+                        <span asp-validation-for="Street" class="text-danger"></span>
+                    </div>
+                    <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2 fxg-u-gap-3">
+                        <div class="fxg-f-col">
+                            <label asp-for="Suburb" class="form-label"></label>
+                            <input asp-for="Suburb" class="form-control" placeholder="Suburb" />
+                            <span asp-validation-for="Suburb" class="text-danger"></span>
+                        </div>
+                        <div class="fxg-f-col">
+                            <label asp-for="City" class="form-label"></label>
+                            <input asp-for="City" class="form-control" placeholder="City" />
+                            <span asp-validation-for="City" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="fxg-f-row fxg-u-gap-4">
+                    <div class="fxg-f-col">
+                        <label asp-for="PostalCode" class="form-label"></label>
+                        <input asp-for="PostalCode" class="form-control" placeholder="Postal code" />
+                        <span asp-validation-for="PostalCode" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="fxg-f-col fxg-u-gap-3">
+                    <div class="fxg-g-grid fxg-g-cols-2 fxg-u-gap-3">
                         <div class="fxg-f-col">
                             <label asp-for="Latitude" class="form-label"></label>
                             <input asp-for="Latitude" class="form-control" />
@@ -75,56 +90,61 @@
                             <span asp-validation-for="Longitude" class="text-danger"></span>
                         </div>
                     </div>
+
+                    <div class="map-placeholder">
+                        <i class="bi bi-geo-alt"></i>
+                        <p>Google Maps picker placeholder.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Step 2 -->
-        <section class="report-card wizard-step flex-hidden" data-step="2">
-            <h2 class="section-title">Details</h2>
-            <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label asp-for="CategoryID" class="form-label"></label>
-                    <select asp-for="CategoryID" asp-items="Model.Categories" class="form-control"></select>
-                    <span asp-validation-for="CategoryID" class="text-danger"></span>
-                </div>
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label class="form-label">Description (rich text)</label>
-                    <div id="rteToolbar" class="rte-toolbar fxg-f-row fxg-u-gap-2">
-                        <button type="button" class="btn btn-outline-success btn-sm" data-cmd="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
-                        <button type="button" class="btn btn-outline-success btn-sm" data-cmd="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
-                        <button type="button" class="btn btn-outline-success btn-sm" data-cmd="insertUnorderedList" title="Bulleted List"><i class="bi bi-list-ul"></i></button>
-                    </div>
-                    <div id="rteEditor" class="rte-editor" contenteditable="true" aria-label="Issue description"></div>
-                    <textarea asp-for="Description" id="descriptionHidden" class="flex-hidden"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                    <small class="hint">Use the toolbar above for basic formatting.</small>
-                </div>
-            </div>
-        </section>
+		<!-- Step 2 -->
+		<section class="report-card wizard-step flex-hidden" data-step="2">
+			<h2 class="section-title">Details</h2>
+			<div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
+				<div class="fxg-f-col fxg-u-gap-2">
+					<label asp-for="CategoryID" class="form-label"></label>
+					<select asp-for="CategoryID" asp-items="Model.Categories" class="form-control"></select>
+					<span asp-validation-for="CategoryID" class="text-danger"></span>
+				</div>
+				<div class="fxg-f-col fxg-u-gap-2">
+					<label class="form-label">Description (rich text)</label>
+					<div id="rteToolbar" class="rte-toolbar fxg-f-row fxg-u-gap-2">
+						<button type="button" class="btn btn-outline-success btn-sm" data-cmd="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+						<button type="button" class="btn btn-outline-success btn-sm" data-cmd="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+						<button type="button" class="btn btn-outline-success btn-sm" data-cmd="insertUnorderedList" title="Bulleted List"><i class="bi bi-list-ul"></i></button>
+					</div>
+					<div id="rteEditor" class="rte-editor" contenteditable="true" aria-label="Issue description"></div>
+					<textarea asp-for="Description" id="descriptionHidden" class="flex-hidden"></textarea>
+					<span asp-validation-for="Description" class="text-danger"></span>
+					<small class="hint">Use the toolbar above for basic formatting.</small>
+				</div>
+			</div>
+		</section>
 
-        <!-- Step 3 -->
-        <section class="report-card wizard-step flex-hidden" data-step="3">
-            <h2 class="section-title">Attachments</h2>
-            <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label class="form-label">Upload</label>
-                    <div id="dropzone" class="dropzone">
-                        <input asp-for="Files" id="fileInput" type="file" class="flex-hidden" multiple accept="image/*,.pdf,.doc,.docx" />
-                        <div class="dropzone-content">
-                            <i class="bi bi-cloud-arrow-up"></i>
-                            <p>Drag & drop images/documents here, or</p>
-                            <button type="button" class="btn btn-success btn-sm" id="browseBtn">Browse Files</button>
-                        </div>
-                    </div>
-                    <small class="hint">Accepted: images, PDF, DOC, DOCX</small>
-                </div>
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label class="form-label">Selected Files</label>
-                    <ul id="fileList" class="file-list"></ul>
-                </div>
-            </div>
-        </section>
+		<!-- Step 3 -->
+		<section class="report-card wizard-step flex-hidden" data-step="3">
+			<h2 class="section-title">Attachments</h2>
+			<div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
+				<div class="fxg-f-col fxg-u-gap-2">
+					<label class="form-label">Upload</label>
+					<div id="dropzone" class="dropzone">
+						<input asp-for="Files" id="fileInput" type="file" class="flex-hidden" multiple accept="image/*,.pdf,.doc,.docx" />
+						<div class="dropzone-content">
+							<i class="bi bi-cloud-arrow-up"></i>
+							<p>Drag & drop images/documents here, or</p>
+							<button type="button" class="btn btn-success btn-sm" id="browseBtn">Browse Files</button>
+						</div>
+					</div>
+					<small class="hint">Accepted: images, PDF, DOC, DOCX</small>
+				</div>
+				<div class="fxg-f-col fxg-u-gap-2">
+					<label class="form-label">Selected Files</label>
+					<ul id="fileList" class="file-list"></ul>
+				</div>
+			</div>
+		</section>
 
         <!-- Step 4 -->
         <section class="report-card wizard-step flex-hidden" data-step="4">
@@ -151,10 +171,11 @@
             </div>
         </section>
 
-        <section class="fxg-f-row fxg-f-main-between">
-            <button type="button" class="btn btn-outline-success" id="prevBtn" disabled>Back</button>
+        <!-- Single navigation bar for all steps -->
+        <div class="fxg-f-row fxg-f-main-between fxg-u-mt-2">
+            <button type="button" class="btn btn-outline-success" id="prevBtn">Back</button>
             <button type="button" class="btn btn-success" id="nextBtn">Next</button>
-        </section>
+        </div>
     </form>
 </main>
 
@@ -169,15 +190,24 @@
             const nextBtn = document.getElementById("nextBtn");
             const form = document.getElementById("reportForm");
 
+            // RTE
             const rte = document.getElementById("rteEditor");
             const rteToolbar = document.getElementById("rteToolbar");
             const descriptionHidden = document.getElementById("descriptionHidden");
 
-            const address = document.getElementById("Address");
+            // Address parts + hidden combined
+            const street = document.getElementById("Street");
+            const suburb = document.getElementById("Suburb");
+            const city = document.getElementById("City");
+            const postal = document.getElementById("PostalCode");
+            const addressCombined = document.getElementById("Address");
+
+            // Other fields
             const lat = document.getElementById("Latitude");
             const lng = document.getElementById("Longitude");
             const category = document.getElementById("CategoryID");
 
+            // Review
             const revAddress = document.getElementById("revAddress");
             const revLat = document.getElementById("revLat");
             const revLng = document.getElementById("revLng");
@@ -185,17 +215,18 @@
             const revDescription = document.getElementById("revDescription");
             const revFiles = document.getElementById("revFiles");
 
+            // Attachments
             const dropzone = document.getElementById("dropzone");
             const fileInput = document.getElementById("fileInput");
             const fileList = document.getElementById("fileList");
             const browseBtn = document.getElementById("browseBtn");
 
             let current = 0;
+            const stepStack = []; // stack-based navigation history
             const messages = [
-                "Let’s get started — Step 1 of 4",
-                "Great! Add details — Step 2 of 4",
-                "Almost there — Step 3 of 4",
-                "Review and submit — Step 4 of 4"
+                "Let’s get started — Step 1 of 3",
+                "Great! Add details — Step 2 of 3",
+                "Review and submit — Step 3 of 3"
             ];
 
             function showStep(index) {
@@ -211,8 +242,17 @@
                 descriptionHidden.value = rte.innerHTML.trim();
             }
 
+            function syncAddress() {
+                const parts = [street.value, suburb.value, city.value, postal.value]
+                    .map(x => (x || "").trim())
+                    .filter(x => x.length > 0);
+                addressCombined.value = parts.join(", ");
+            }
+
             function updateReview() {
-                revAddress.textContent = address.value || "—";
+                syncAddress();
+                syncDescription();
+                revAddress.textContent = addressCombined.value || "—";
                 revLat.textContent = lat.value || "—";
                 revLng.textContent = lng.value || "—";
                 revCategory.textContent = category.options[category.selectedIndex]?.text || "—";
@@ -226,17 +266,29 @@
             }
 
             function validateStep(idx) {
-                if (idx === 0) return (address.value?.trim().length > 0);
+                if (idx === 0) {
+                    const hasCoords = (lat.value?.trim().length > 0) && (lng.value?.trim().length > 0);
+                    const hasMinAddress = (street.value?.trim().length > 0) && (city.value?.trim().length > 0);
+                    if (!hasCoords && !hasMinAddress) return false;
+                    syncAddress(); // keep VM updated on next
+                    return true;
+                }
                 if (idx === 1) {
                     syncDescription();
                     const plain = descriptionHidden.value.replace(/<[^>]*>/g,'').trim();
-                    return category.value && plain.length > 0;
+                    return !!category.value && plain.length > 0;
                 }
                 return true;
             }
 
             prevBtn.addEventListener("click", () => {
-                if (current > 0) { current--; showStep(current); }
+                if (stepStack.length > 0) {
+                    current = stepStack.pop();
+                    showStep(current);
+                } else if (current > 0) {
+                    current--;
+                    showStep(current);
+                }
             });
 
             nextBtn.addEventListener("click", () => {
@@ -244,15 +296,26 @@
                     engagement.textContent = "Please complete the required fields before continuing.";
                     return;
                 }
+
                 if (current < steps.length - 1) {
-                    if (current === steps.length - 2) updateReview();
-                    current++; showStep(current);
+                    // push current onto stack before moving forward
+                    stepStack.push(current);
+
+                    if (current === steps.length - 2) {
+                        updateReview(); // moving into Review
+                    }
+
+                    current++;
+                    showStep(current);
                 } else {
+                    // Finish
+                    syncAddress();
                     syncDescription();
                     form.submit();
                 }
             });
 
+            // RTE toolbar
             rteToolbar.addEventListener("click", (e) => {
                 const btn = e.target.closest("[data-cmd]");
                 if (!btn) return;
@@ -260,9 +323,9 @@
                 document.execCommand(btn.dataset.cmd, false, null);
                 rte.focus(); syncDescription();
             });
-
             rte.addEventListener("input", syncDescription);
 
+            // Dropzone UX
             function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
             ["dragenter","dragover","dragleave","drop"].forEach(evt => dropzone.addEventListener(evt, preventDefaults));
             ["dragenter","dragover"].forEach(evt => dropzone.addEventListener(evt, () => dropzone.classList.add("is-dragover")));
@@ -271,15 +334,12 @@
             dropzone.addEventListener("drop", (e) => {
                 const dt = e.dataTransfer;
                 if (!dt?.files?.length) return;
-                const existing = Array.from(fileInput.files);
+                const existing = Array.from(fileInput.files || []);
                 const merged = new DataTransfer();
                 [...existing, ...Array.from(dt.files)].forEach(f => merged.items.add(f));
                 fileInput.files = merged.files;
                 renderFiles();
             });
-
-            browseBtn.addEventListener("click", () => fileInput.click());
-            fileInput.addEventListener("change", renderFiles);
 
             function renderFiles() {
                 fileList.innerHTML = "";
@@ -303,6 +363,8 @@
                 });
             }
 
+            browseBtn.addEventListener("click", () => fileInput.click());
+            fileInput.addEventListener("change", renderFiles);
             fileList.addEventListener("click", (e) => {
                 const btn = e.target.closest("[data-remove]");
                 if (!btn) return;
@@ -315,6 +377,7 @@
                 updateReview();
             });
 
+            // Init
             showStep(current);
             renderFiles();
         });
