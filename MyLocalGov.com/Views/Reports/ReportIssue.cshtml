@@ -123,7 +123,13 @@
                         </div>
                     </div>
                     <div id="rteEditor" class="report-rte-editor" contenteditable="true" aria-label="Issue description"></div>
-                    <textarea asp-for="Description" id="descriptionHidden" class="flex-hidden"></textarea>
+
+                    <!-- Add custom unobtrusive rule so "HTML-only" doesn't pass required -->
+                    <textarea asp-for="Description"
+                              id="descriptionHidden"
+                              class="flex-hidden"
+                              data-val="true"
+                              data-val-rterequired="Description is required."></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                     <small class="report-hint">Use the toolbar above for basic formatting.</small>
                 </div>
@@ -183,15 +189,23 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // ------------------------------------------------------------
-        // Report Issue Wizard (Client-side only)
-        // ------------------------------------------------------------
-        // Goals for a C# dev:
-        // - Keep a simple, explicit state (current step + a stack)
-    // - Update hidden fields the server will bind to (CurrentStep, StepHistory)
-        // - Validate per step and only submit on the last step
-        // - Keep functions small and named for readability
-        // ------------------------------------------------------------
+        // Register a custom validator that treats HTML-only content as empty
+        (function () {
+            if (!window.jQuery || !$.validator) return;
+
+            const stripHtml = (html) => (html || "")
+                .replace(/<[^>]*>/g, "")   // remove tags
+                .replace(/&nbsp;/g, " ")   // nbsp to space
+                .trim();
+
+            $.validator.addMethod("rterequired", function (value, element) {
+                return stripHtml(value).length > 0;
+            }, "Description is required.");
+
+            if ($.validator.unobtrusive && $.validator.unobtrusive.adapters) {
+                $.validator.unobtrusive.adapters.addBool("rterequired");
+            }
+        })();
 
         document.addEventListener("DOMContentLoaded", function () {
             // DOM lookups (treat these like injected dependencies)
@@ -240,9 +254,9 @@
                 "Review and submit — Step 4 of 4"
             ];
 
-		// --------------------------------------------------------
-		// Helpers: formatting, syncing, validation, review
-		// --------------------------------------------------------
+            // --------------------------------------------------------
+            // Helpers: formatting, syncing, validation, review, focus
+            // --------------------------------------------------------
 
             // Setup jQuery Validation: include hidden #descriptionHidden in validation
             const $form = window.jQuery ? $(form) : null;
@@ -273,14 +287,63 @@
                 descriptionHidden.value = (rte.innerHTML || "").trim();
             }
 
+            // Focus helper: moves focus to the first error on the given step
+            function focusFirstErrorOnStep(stepEl) {
+                // Prefer jQuery Validate's errorList if available
+                if ($form && $form.length && $form.data("validator")) {
+                    const v = $form.data("validator");
+                    const err = (v.errorList || []).find(e => stepEl.contains(e.element));
+                    if (err && err.element) {
+                        const el = err.element;
+                        if (el.id === "descriptionHidden") {
+                            rte.focus();
+                            rte.scrollIntoView({ behavior: "smooth", block: "center" });
+                        } else {
+                            try { el.focus({ preventScroll: true }); } catch { el.focus(); }
+                            el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }
+                        return;
+                    }
+                }
+                // Fallback: find first invalid control in the step
+                let el = stepEl.querySelector(".input-validation-error, [aria-invalid='true']");
+                if (el && el.id === "descriptionHidden") {
+                    el = rte;
+                }
+                if (el) {
+                    try { el.focus({ preventScroll: true }); } catch { el.focus(); }
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }
+
             function validateStep(stepNum) {
                 // Sync any derived fields before validation
                 if (stepNum === 2) syncDescription();
 
+                // Fallback validation if unobtrusive isn't active
                 if (!$form || !$form.length) {
-                    // Fallback (shouldn't happen if _ValidationScriptsPartial is loaded)
-                    if (stepNum === 1) return (street.value || "").trim() && (city.value || "").trim();
-                    if (stepNum === 2) return (category.value && Number(category.value) > 0) && (descriptionHidden.value.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0);
+                    let valid = true;
+                    if (stepNum === 1) {
+                        valid = (street.value || "").trim() && (city.value || "").trim();
+                        if (!valid) {
+                            const firstMissing = [street, city].find(f => !(f.value || "").trim());
+                            if (firstMissing) {
+                                try { firstMissing.focus({ preventScroll: true }); } catch { firstMissing.focus(); }
+                                firstMissing.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                        }
+                        return !!valid;
+                    }
+                    if (stepNum === 2) {
+                        const descText = (descriptionHidden.value || "").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+                        valid = (category.value && Number(category.value) > 0) && (descText.length > 0);
+                        if (!valid) {
+                            const badEl = !(category.value && Number(category.value) > 0) ? category : rte;
+                            try { badEl.focus({ preventScroll: true }); } catch { badEl.focus(); }
+                            badEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }
+                        return !!valid;
+                    }
                     return true;
                 }
 
@@ -298,6 +361,11 @@
                     $f.removeData("previousValue");
                     if (!$f.valid()) valid = false;
                 });
+
+                if (!valid) {
+                    // Auto-focus the first error in this step
+                    focusFirstErrorOnStep(stepEl);
+                }
 
                 return valid;
             }
