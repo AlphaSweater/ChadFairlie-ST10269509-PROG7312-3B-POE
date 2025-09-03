@@ -14,6 +14,12 @@ namespace MyLocalGov.com
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
+			// Load environment-specific and local settings
+			builder.Configuration
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+				.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
 			// ============================================
 			// 1. Configure Services (Dependency Injection)
 			// ============================================

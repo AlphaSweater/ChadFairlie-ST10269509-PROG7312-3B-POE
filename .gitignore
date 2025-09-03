@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /MyLocalGov.com/Data/dev.db-shm
 /MyLocalGov.com/Data/dev.db-wal
+/MyLocalGov.com/appsettings.Local.json
