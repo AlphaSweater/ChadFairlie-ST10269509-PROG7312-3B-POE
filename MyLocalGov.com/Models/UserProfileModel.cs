@@ -41,6 +41,7 @@ namespace MyLocalGov.com.Models
 
 		// Status and reputation
 		public int ReputationPoints { get; set; } = 0;
+
 		public bool IsActive { get; set; } = true;
 
 		// Preferences (JSON for extensibility)
@@ -57,6 +58,7 @@ namespace MyLocalGov.com.Models
 		}
 
 		// Parameterless constructor for EF Core
-		public UserProfileModel() { }
+		public UserProfileModel()
+		{ }
 	}
 }

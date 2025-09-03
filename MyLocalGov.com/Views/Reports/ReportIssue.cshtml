@@ -187,6 +187,8 @@
 </main>
 
 @section Scripts {
+    <script src="~/js/Shared/dropzone-helper.js" asp-append-version="true"></script>
+	<script src="~/js/Shared/wizard-helper.js" asp-append-version="true"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Register custom rule for RTE and initialize form validator
@@ -195,12 +197,8 @@
             }
 
             // DOM lookups
-            const steps = Array.from(document.querySelectorAll(".wizard-step"));
-            const progressBar = document.getElementById("wizardProgressBar");
-            const engagement = document.getElementById("engagementMessage");
-            const prevBtn = document.getElementById("prevBtn");
-            const nextBtn = document.getElementById("nextBtn");
             const form = document.getElementById("reportForm");
+            const root = document.getElementById("reportIssueRoot");
 
             // Inputs
             const street = document.getElementById("Street");
@@ -231,15 +229,6 @@
             const fileList = document.getElementById("fileList");
             const browseBtn = document.getElementById("browseBtn");
 
-            const TOTAL_STEPS = steps.length;
-            const stepStack = [1];
-            const messages = [
-                "Let’s get started — Step 1 of 4",
-                "Great! Add details — Step 2 of 4",
-                "Almost there — Step 3 of 4",
-                "Review and submit — Step 4 of 4"
-            ];
-
             // Initialize shared validator (includes hidden description backing field)
             const v = window.ValidationHelper
                 ? ValidationHelper.init("#reportForm", {
@@ -251,12 +240,15 @@
 
             // Add asterisks to labels of required fields
             if (window.ValidationHelper) {
-                ValidationHelper.markRequiredLabels(document.getElementById("reportIssueRoot"));
+                ValidationHelper.markRequiredLabels(root);
             }
 
-            function currentStep() {
-                return stepStack[stepStack.length - 1];
-            }
+            const messages = [
+                "Let’s get started — Step 1 of 4",
+                "Great! Add details — Step 2 of 4",
+                "Almost there — Step 3 of 4",
+                "Review and submit — Step 4 of 4"
+            ];
 
             function computeFormattedAddress() {
                 const parts = [street.value, suburb.value, city.value, postalCode.value]
@@ -267,26 +259,6 @@
 
             function syncDescription() {
                 descriptionHidden.value = (rte.innerHTML || "").trim();
-            }
-
-            // Focus helper using ValidationHelper
-            function focusFirstErrorOnStep(stepEl) {
-                if (v) v.focusFirstError(stepEl);
-                // If the failing field is the hidden description, focus the editor instead
-                const hiddenHasError = stepEl.querySelector("#descriptionHidden.input-validation-error, #descriptionHidden[aria-invalid='true']");
-                if (hiddenHasError) {
-                    rte.focus();
-                    rte.scrollIntoView({ behavior: "smooth", block: "center" });
-                }
-            }
-
-            function validateStep(stepNum) {
-                if (stepNum === 2) syncDescription();
-                const container = `.wizard-step[data-step="${stepNum}"]`;
-                if (!v) return true; // fallback if validator not present
-                const valid = v.validateContainer(container);
-                if (!valid) focusFirstErrorOnStep(document.querySelector(container));
-                return valid;
             }
 
             function updateReview() {
@@ -305,53 +277,89 @@
                 }
             }
 
-            function showStep(stepNum) {
-                steps.forEach(s => {
-                    const sNum = Number(s.getAttribute("data-step"));
-                    s.classList.toggle("flex-hidden", sNum !== stepNum);
-                });
-
-                const pct = ((stepNum - 1) / (TOTAL_STEPS - 1)) * 100;
-                progressBar.style.width = pct + "%";
-                engagement.textContent = messages[stepNum - 1] || "";
-                prevBtn.disabled = stepNum === 1;
-                nextBtn.textContent = stepNum === TOTAL_STEPS ? "Finish" : "Next";
-
-                const stepIndicator = document.getElementById("stepIndicator");
-                if (stepIndicator) stepIndicator.textContent = `Step ${stepNum} of ${TOTAL_STEPS}`;
-
-                setHiddenStepFields();
-            }
-
-            prevBtn.addEventListener("click", () => {
-                if (stepStack.length > 1) {
-                    stepStack.pop();
-                    showStep(currentStep());
-                }
-            });
-
-            nextBtn.addEventListener("click", () => {
-                const cur = currentStep();
-                if (!validateStep(cur)) {
-                    engagement.textContent = "Please complete the required fields before continuing.";
-                    return;
-                }
-
-                if (cur < TOTAL_STEPS) {
-                    if (cur === TOTAL_STEPS - 1) {
-                        syncDescription();
+            // Initialize DropzoneHelper (replaces manual drag/drop and render logic)
+            if (window.DropzoneHelper) {
+                const dz = DropzoneHelper.init({
+                    dropzone: dropzone,
+                    input: fileInput,
+                    list: fileList,
+                    browse: browseBtn,
+                    dragOverClass: "is-dragover",
+                    emptyListText: "No files selected",
+                    clickToBrowse: true,
+                    maxFiles: 10, // optional cap; remove or increase as needed
+                    renderItem: (file, idx) => {
+                        const li = document.createElement("li");
+                        li.className = "report-file-list-item";
+                        li.innerHTML = `
+                            <span class="report-file-name">${file.name}</span>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}">
+                                <i class="bi bi-x"></i>
+                            </button>`;
+                        return li;
+                    },
+                    validateInputOnChange: false,
+                    onChange: () => {
+                        if (v) v.validateFields(fileInput);
                         updateReview();
                     }
-                    stepStack.push(cur + 1);
-                    showStep(cur + 1);
-                } else {
-                    // Final submit – ensure address bound and trigger normal submit pipeline
-                    address.value = computeFormattedAddress();
-                    syncDescription();
-                    if (form.requestSubmit) form.requestSubmit();
-                    else form.submit();
-                }
-            });
+                });
+                // Initial sync for review
+                updateReview();
+            }
+
+            // Use WizardHelper to control steps and per-step validation/messages
+            if (window.WizardHelper) {
+                WizardHelper.init({
+                    container: "#reportIssueRoot",
+                    form: "#reportForm",
+                    stepSelector: ".wizard-step",
+                    nextSelector: "#nextBtn",
+                    prevSelector: "#prevBtn",
+                    progressBarSelector: "#wizardProgressBar",
+                    stepIndicatorSelector: "#stepIndicator",
+                    engagementSelector: "#engagementMessage",
+                    hiddenClass: "flex-hidden",
+                    messages,
+                    validator: v,
+
+                    // Validate only the current step; ensure RTE hidden value is synced before validating step 2
+                    validateStep: (step, ctx) => {
+                        if (step === 2) syncDescription();
+                        if (!ctx.validator) return true;
+                        const ok = ctx.validator.validateContainer(ctx.currentStepEl);
+                        if (!ok) {
+                            const msgEl = document.getElementById("engagementMessage");
+                            if (msgEl) msgEl.textContent = "Please complete the required fields before continuing.";
+                            if (typeof ctx.validator.focusFirstError === "function") {
+                                // Focus RTE if the hidden field is the error
+                                ctx.validator.focusFirstError(ctx.currentStepEl);
+                                const hiddenHasError = ctx.currentStepEl.querySelector("#descriptionHidden.input-validation-error, #descriptionHidden[aria-invalid='true']");
+                                if (hiddenHasError) {
+                                    rte.focus();
+                                    rte.scrollIntoView({ behavior: "smooth", block: "center" });
+                                }
+                            }
+                        }
+                        return ok;
+                    },
+
+                    // When showing the review step, refresh the summary
+                    onShowStep: ({ step }) => {
+                        if (step === 4) {
+                            syncDescription();
+                            updateReview();
+                        }
+                    },
+
+                    // Before final submit, compute Address and sync description
+                    beforeFinish: () => {
+                        address.value = computeFormattedAddress();
+                        syncDescription();
+                        return true;
+                    }
+                });
+            }
 
             // Rich text toolbar
             rteToolbar.addEventListener("click", (e) => {
@@ -368,69 +376,17 @@
                 if (v) v.validateFields("#descriptionHidden");
             });
 
-            // Dropzone (UI only)
-            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-            ["dragenter", "dragover", "dragleave", "drop"].forEach(evt =>
-                dropzone.addEventListener(evt, preventDefaults)
-            );
-            ["dragenter", "dragover"].forEach(() =>
-                dropzone.classList.add("is-dragover")
-            );
-            ["dragleave", "drop"].forEach(() =>
-                dropzone.classList.remove("is-dragover")
-            );
-
-            dropzone.addEventListener("drop", (e) => {
-                const dt = e.dataTransfer;
-                if (!dt?.files?.length) return;
-                const existing = Array.from(fileInput.files);
-                const merged = new DataTransfer();
-                [...existing, ...Array.from(dt.files)].forEach(f => merged.items.add(f));
-                fileInput.files = merged.files;
-                renderFiles();
-            });
-
-            browseBtn.addEventListener("click", () => fileInput.click());
-            fileInput.addEventListener("change", renderFiles);
-
-            function renderFiles() {
-                fileList.innerHTML = "";
-                const files = Array.from(fileInput.files || []);
-                if (files.length === 0) {
-                    const li = document.createElement("li");
-                    li.textContent = "No files selected";
-                    fileList.appendChild(li);
+            // Validate on direct submit (Submit button on Step 4)
+            form.addEventListener("submit", (e) => {
+                if (v && !v.validateAll()) {
+                    e.preventDefault();
+                    v.focusFirstError();
                     return;
                 }
-                files.forEach((f, idx) => {
-                    const li = document.createElement("li");
-                    li.className = "report-file-list-item";
-                    li.innerHTML = `
-                        <span class="report-file-name">${f.name}</span>
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-remove="${idx}"><i class="bi bi-x"></i></button>
-                    `;
-                    fileList.appendChild(li);
-                });
-            }
-
-            fileList.addEventListener("click", (e) => {
-                const btn = e.target.closest("[data-remove]");
-                if (!btn) return;
-                const idx = parseInt(btn.getAttribute("data-remove"), 10);
-                const files = Array.from(fileInput.files);
-                const dt = new DataTransfer();
-                files.forEach((f, i) => { if (i !== idx) dt.items.add(f); });
-                fileInput.files = dt.files;
-                renderFiles();
-                updateReview();
+                // Ensure derived fields are up to date on submit
+                address.value = computeFormattedAddress();
+                syncDescription();
             });
-
-            // Optional hidden fields hook
-            function setHiddenStepFields() {}
-
-            // Initialize
-            renderFiles();
-            showStep(currentStep());
         });
     </script>
 }
