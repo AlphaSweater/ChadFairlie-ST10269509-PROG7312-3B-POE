@@ -93,7 +93,7 @@
         }
         .debug-toggle input {
             cursor: pointer;
-            accent-color: #6ee7b7; /* mint-ish */
+            accent-color: #6ee7b7;
         }
         .debug-toggle .debug-label {
             line-height: 1;
@@ -215,6 +215,13 @@
 
     <!-- AOS JS -->
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <!-- jQuery Validate + Unobtrusive (global for Razor Pages/MVC) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- Validation helper (shared) -->
+    <script src="~/js/Shared/validation-helper.js" asp-append-version="true"></script>
 
     <!-- Animation helpers JS -->
 	<script src="~/js/Shared/animations.motion.js"></script>
