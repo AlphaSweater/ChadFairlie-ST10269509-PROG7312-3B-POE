@@ -22,18 +22,6 @@
         <p class="report-subtitle">Help your municipality address problems faster by reporting accurate details.</p>
     </section>
 
-    <section class="fxg-f-col fxg-u-gap-2">
-        <div class="report-wizard-progress">
-            <div class="report-wizard-progress-bar" id="wizardProgressBar" style="width: 25%;"></div>
-        </div>
-        <div class="fxg-f-row fxg-f-main-between fxg-f-cross-center report-wizard-steps-labels">
-            <span>1. Location</span>
-            <span>2. Details</span>
-            <span>3. Attachments</span>
-            <span>4. Review</span>
-        </div>
-    </section>
-
     <form asp-action="ReportIssue" asp-controller="Reports" method="post" enctype="multipart/form-data" class="fxg-f-col fxg-u-gap-6 report-form-card" id="reportForm">
         <!-- Wizard navigation at the top -->
         <div class="report-wizard-nav fxg-f-row fxg-f-main-between fxg-f-cross-center report-wizard-nav-top">
@@ -83,23 +71,22 @@
                 <div class="fxg-f-cell fxg-f-grow-1"></div>
 
                 <div class="fxg-f-col fxg-f-grow-3 fxg-u-gap-3">
-                    <div class="fxg-g-grid fxg-g-cols-2 fxg-u-gap-3">
-                        <div class="fxg-f-col fxg-u-gap-0">
-                            <label asp-for="Latitude" class="form-label"></label>
-                            <input asp-for="Latitude" class="form-control" />
-                            <span asp-validation-for="Latitude" class="text-danger"></span>
-                        </div>
-                        <div class="fxg-f-col fxg-u-gap-0">
-                            <label asp-for="Longitude" class="form-label"></label>
-                            <input asp-for="Longitude" class="form-control" />
-                            <span asp-validation-for="Longitude" class="text-danger"></span>
+                    <!-- Hidden lat/lng fields (still bind and post) -->
+                    <input asp-for="Latitude" type="hidden" id="Latitude" />
+                    <input asp-for="Longitude" type="hidden" id="Longitude" />
+
+                    <div class="fxg-f-col fxg-u-gap-1">
+                        <label for="locationInput" class="form-label">Search location</label>
+                        <div class="fxg-f-row fxg-u-gap-2">
+                            <input id="locationInput" class="form-control fxg-f-grow-1" placeholder="Search by address or place" autocomplete="off" />
+                            <button type="button" class="btn btn-outline-success" id="useMyLocationBtn" title="Use my current location">
+                                <i class="bi bi-crosshair"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="report-map-placeholder">
-                        <i class="bi bi-geo-alt"></i>
-                        <p class="report-map-content">Google Maps picker placeholder.</p>
-                    </div>
+                    <div id="map" class="report-map" style="width: 100%; height: 320px; border-radius: 8px; overflow: hidden;"></div>
+                    <small class="report-hint">Drag the pin or click the map to adjust the location.</small>
                 </div>
             </div>
         </section>
@@ -189,6 +176,7 @@
 @section Scripts {
     <script src="~/js/Shared/dropzone-helper.js" asp-append-version="true"></script>
 	<script src="~/js/Shared/wizard-helper.js" asp-append-version="true"></script>
+    <script src="~/js/Shared/map-helper.js" asp-append-version="true"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Register custom rule for RTE and initialize form validator
@@ -209,6 +197,11 @@
             const lng = document.getElementById("Longitude");
             const category = document.getElementById("CategoryID");
             const address = document.getElementById("Address");
+
+            // Map elements
+            const locationInput = document.getElementById("locationInput");
+            const mapEl = document.getElementById("map");
+            const useMyLocationBtn = document.getElementById("useMyLocationBtn");
 
             // Rich text editor bits
             const rte = document.getElementById("rteEditor");
@@ -232,7 +225,7 @@
             // Initialize shared validator (includes hidden description backing field)
             const v = window.ValidationHelper
                 ? ValidationHelper.init("#reportForm", {
-                    includeHidden: ["#descriptionHidden"],
+                    includeHidden: ["#descriptionHidden", "#Latitude", "#Longitude"],
                     focusOnError: true,
                     scrollToError: true
                 })
@@ -287,15 +280,13 @@
                     dragOverClass: "is-dragover",
                     emptyListText: "No files selected",
                     clickToBrowse: true,
-                    maxFiles: 10, // optional cap; remove or increase as needed
+                    maxFiles: 10,
                     renderItem: (file, idx) => {
                         const li = document.createElement("li");
                         li.className = "report-file-list-item";
                         li.innerHTML = `
                             <span class="report-file-name">${file.name}</span>
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}">
-                                <i class="bi bi-x"></i>
-                            </button>`;
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}"><i class="bi bi-x"></i></button>`;
                         return li;
                     },
                     validateInputOnChange: false,
@@ -332,7 +323,6 @@
                             const msgEl = document.getElementById("engagementMessage");
                             if (msgEl) msgEl.textContent = "Please complete the required fields before continuing.";
                             if (typeof ctx.validator.focusFirstError === "function") {
-                                // Focus RTE if the hidden field is the error
                                 ctx.validator.focusFirstError(ctx.currentStepEl);
                                 const hiddenHasError = ctx.currentStepEl.querySelector("#descriptionHidden.input-validation-error, #descriptionHidden[aria-invalid='true']");
                                 if (hiddenHasError) {
@@ -375,6 +365,69 @@
                 syncDescription();
                 if (v) v.validateFields("#descriptionHidden");
             });
+
+            // Google Maps: load, init, and wire up to form fields
+            (function initMapPicker() {
+                // Start from existing coordinates if present; else default Cape Town
+                const defaultCenter = {
+                    lat: parseFloat(lat.value) || -33.9249,
+                    lng: parseFloat(lng.value) || 18.4241
+                };
+
+                // TODO: Replace with your real API key (consider reading from configuration)
+                const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+
+                MapHelper.loadGoogleMaps(apiKey)
+                    .then(() => {
+                        const instance = MapHelper.init({
+                            map: mapEl,
+                            input: locationInput,
+                            latInput: lat,
+                            lngInput: lng,
+                            defaultCenter,
+                            zoom: 13,
+                            pickZoom: 15,
+                            draggable: true,
+                            reverseGeocodeOnPick: true,
+                            autocompleteOptions: { fields: ["formatted_address", "geometry", "address_components"] },
+                            onChange: ({ lat: la, lng: lo, place }) => {
+                                // If we have a place, try to populate address fields
+                                if (place && place.address_components) {
+                                    const parts = MapHelper.parseAddressComponents(place);
+                                    const streetValue = parts.street || [parts.streetNumber, parts.route].filter(Boolean).join(" ").trim();
+                                    if (streetValue) street.value = streetValue;
+                                    if (parts.suburb) suburb.value = parts.suburb;
+                                    if (parts.city) city.value = parts.city;
+                                    if (parts.postalCode) postalCode.value = parts.postalCode;
+                                }
+                                // Validate updated fields and refresh review
+                                if (v) v.validateFields([lat, lng, street, suburb, city, postalCode]);
+                                updateReview();
+                            }
+                        });
+
+                        // Geolocate button
+                        useMyLocationBtn.addEventListener("click", () => {
+                            if (!navigator.geolocation) return;
+                            useMyLocationBtn.disabled = true;
+                            navigator.geolocation.getCurrentPosition(
+                                (pos) => {
+                                    const { latitude: la, longitude: lo } = pos.coords;
+                                    // Pan to location and reverse geocode to fill address/search input
+                                    instance.setPosition(la, lo, { pan: true, zoom: 16, reverseGeocode: true });
+                                    useMyLocationBtn.disabled = false;
+                                },
+                                () => { useMyLocationBtn.disabled = false; }
+                            );
+                        });
+
+                        // Keep instance around if needed later
+                        window.__mapInstance = instance;
+                    })
+                    .catch(err => {
+                        console.error("Failed to initialize Google Maps:", err);
+                    });
+            })();
 
             // Validate on direct submit (Submit button on Step 4)
             form.addEventListener("submit", (e) => {

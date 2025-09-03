@@ -104,7 +104,7 @@
 	animation: bgShift 15s ease infinite;
 }
 
-/*	.blueGreenDots-page-bg::before {
+	.blueGreenDots-page-bg::before {
 		content: '';
 		position: absolute;
 		inset: 0;
@@ -112,7 +112,7 @@
 		background-image: radial-gradient(circle at 25% 25%, rgba(59,191,108,0.7) 2px, transparent 2px), radial-gradient(circle at 75% 75%, rgba(59,191,108,0.5) 1px, transparent 1px);
 		background-size: 50px 50px;
 		pointer-events: none;
-	}*/
+	}
 
 @keyframes bgShift {
 	0% {
