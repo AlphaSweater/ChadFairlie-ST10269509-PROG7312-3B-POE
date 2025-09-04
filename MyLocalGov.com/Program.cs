@@ -5,6 +5,7 @@ using MyLocalGov.com.Repositories.Implementations;
 using MyLocalGov.com.Repositories.Interfaces;
 using MyLocalGov.com.Services.Implementations;
 using MyLocalGov.com.Services.Interfaces;
+using MyLocalGov.com.Options;
 
 namespace MyLocalGov.com
 {
@@ -67,6 +68,9 @@ namespace MyLocalGov.com
 			builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<IIssueService, IssueService>();
 
+			// HttpClient if needed elsewhere
+			builder.Services.AddHttpClient();
+
 			// ============================================
 			// 2. Build Application
 			// ============================================
@@ -124,6 +128,9 @@ namespace MyLocalGov.com
 			app.MapControllerRoute(
 				name: "default",
 				pattern: "{controller=Account}/{action=Index}/{id?}");
+
+			// Removed the previous minimal API proxy for /api/address/validate,
+			// since MapsController now exposes the same route using the .NET client library.
 
 			// ============================================
 			// 6. Run Application
