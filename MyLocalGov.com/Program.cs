@@ -21,6 +21,9 @@ namespace MyLocalGov.com
 				.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
 				.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
+			// Bind Google Maps options
+			builder.Services.Configure<GoogleMapsOptions>(builder.Configuration.GetSection("GoogleMaps"));
+
 			// ============================================
 			// 1. Configure Services (Dependency Injection)
 			// ============================================
@@ -67,6 +70,9 @@ namespace MyLocalGov.com
 			// Register Services
 			builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<IIssueService, IssueService>();
+
+			// Maps validation service
+			builder.Services.AddScoped<IAddressValidationService, AddressValidationService>();
 
 			// HttpClient if needed elsewhere
 			builder.Services.AddHttpClient();
@@ -128,9 +134,6 @@ namespace MyLocalGov.com
 			app.MapControllerRoute(
 				name: "default",
 				pattern: "{controller=Account}/{action=Index}/{id?}");
-
-			// Removed the previous minimal API proxy for /api/address/validate,
-			// since MapsController now exposes the same route using the .NET client library.
 
 			// ============================================
 			// 6. Run Application

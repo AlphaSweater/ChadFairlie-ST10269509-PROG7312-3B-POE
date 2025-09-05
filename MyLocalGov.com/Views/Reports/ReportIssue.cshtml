@@ -222,7 +222,7 @@
             const fileList = document.getElementById("fileList");
             const browseBtn = document.getElementById("browseBtn");
 
-            // Initialize shared validator (includes hidden description backing field)
+            // Initialize shared validator
             const v = window.ValidationHelper
                 ? ValidationHelper.init("#reportForm", {
                     includeHidden: ["#descriptionHidden", "#Latitude", "#Longitude"],
@@ -270,7 +270,7 @@
                 }
             }
 
-            // Initialize DropzoneHelper (replaces manual drag/drop and render logic)
+            // Initialize DropzoneHelper
             if (window.DropzoneHelper) {
                 const dz = DropzoneHelper.init({
                     dropzone: dropzone,
@@ -295,11 +295,10 @@
                         updateReview();
                     }
                 });
-                // Initial sync for review
                 updateReview();
             }
 
-            // Use WizardHelper to control steps and per-step validation/messages
+            // WizardHelper
             if (window.WizardHelper) {
                 WizardHelper.init({
                     container: "#reportIssueRoot",
@@ -313,8 +312,6 @@
                     hiddenClass: "flex-hidden",
                     messages,
                     validator: v,
-
-                    // Validate only the current step; ensure RTE hidden value is synced before validating step 2
                     validateStep: (step, ctx) => {
                         if (step === 2) syncDescription();
                         if (!ctx.validator) return true;
@@ -333,16 +330,12 @@
                         }
                         return ok;
                     },
-
-                    // When showing the review step, refresh the summary
                     onShowStep: ({ step }) => {
                         if (step === 4) {
                             syncDescription();
                             updateReview();
                         }
                     },
-
-                    // Before final submit, compute Address and sync description
                     beforeFinish: () => {
                         address.value = computeFormattedAddress();
                         syncDescription();
@@ -374,10 +367,8 @@
                     lng: parseFloat(lng.value) || 18.4241
                 };
 
-                // API key from configuration
-				const apiKey =
-
-                MapHelper.loadGoogleMaps(apiKey)
+                // Let MapHelper auto-discover key from <meta name="google-maps-api-key" .../>
+                MapHelper.loadGoogleMaps()
                     .then(() => {
                         const instance = MapHelper.init({
                             map: mapEl,
@@ -389,7 +380,7 @@
                             pickZoom: 15,
                             draggable: true,
                             reverseGeocodeOnPick: true,
-                            inputReflectsCoordinatesOnPick: true, // shows "lat, lng" when picking on map
+                            inputReflectsCoordinatesOnPick: true,
                             autocompleteOptions: { fields: ["formatted_address", "geometry", "address_components"] },
                             addressFields: { street, suburb, city, postalCode },
                             validation: {
@@ -398,11 +389,34 @@
                                 debounceMs: 350
                             },
                             onChange: ({ score, scoreLabel }) => {
-                                // Optionally reflect score in UI
                                 console.log("Address score:", score, scoreLabel);
                             }
                         });
                         window.__mapInstance = instance;
+
+                        // Use My Location
+                        if (useMyLocationBtn) {
+                            useMyLocationBtn.addEventListener("click", () => {
+                                if (!navigator.geolocation) {
+                                    alert("Geolocation is not supported by your browser.");
+                                    return;
+                                }
+                                useMyLocationBtn.disabled = true;
+                                navigator.geolocation.getCurrentPosition(
+                                    (pos) => {
+                                        const { latitude, longitude } = pos.coords;
+                                        instance.setPosition(latitude, longitude, { reverseGeocodeOnPick: true });
+                                        useMyLocationBtn.disabled = false;
+                                    },
+                                    (err) => {
+                                        console.warn("Geolocation error:", err);
+                                        alert("Unable to get your location.");
+                                        useMyLocationBtn.disabled = false;
+                                    },
+                                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                                );
+                            });
+                        }
                     });
             })();
 
@@ -413,7 +427,6 @@
                     v.focusFirstError();
                     return;
                 }
-                // Ensure derived fields are up to date on submit
                 address.value = computeFormattedAddress();
                 syncDescription();
             });
