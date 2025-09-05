@@ -501,19 +501,31 @@
                 // Single source of truth for accepted types
                 const ACCEPTED = [
                     { label: "Images", value: "image/*", test: f => (f.type || "").startsWith("image/") },
-                    { label: "PDF", value: ".pdf", test: f => /\.pdf$/i.test(f.name) },
+					// Common video types (mobile + desktop)
+					{
+						label: "Videos",
+						value: "video/*,.mp4,.mov,.webm,.mkv,.avi,.m4v,.3gp",
+						test: f =>
+							(f.type || "").startsWith("video/") ||
+							/\.(mp4|mov|webm|mkv|avi|m4v|3gp)$/i.test(f.name)
+					},
+					{ label: "PDF", value: ".pdf", test: f => /\.pdf$/i.test(f.name) },
                     { label: "DOC", value: ".doc", test: f => /\.doc$/i.test(f.name) },
                     { label: "DOCX", value: ".docx", test: f => /\.docx$/i.test(f.name) }
                 ];
 
+                // Per-file size limit: 50 MB
+                const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+
                 // Apply to <input accept="...">
                 fileInput.setAttribute("accept", ACCEPTED.map(a => a.value).join(","));
 
-                // Render accepted types as plain text under the dropzone
+                // Render accepted types + size limit as plain text under the dropzone
                 (function renderAcceptedText() {
                     const el = document.getElementById("acceptedTypesText");
                     if (!el) return;
-                    el.textContent = `Accepted: ${ACCEPTED.map(a => a.label).join(", ")}`;
+                    const sizeMb = Math.round(MAX_FILE_SIZE_BYTES / (1024 * 1024));
+                    el.textContent = `Accepted: ${ACCEPTED.map(a => a.label).join(", ")} — Max per file: ${sizeMb} MB`;
                 })();
 
                 // Utility to filter files against ACCEPTED
@@ -531,6 +543,7 @@
                     emptyListText: "No files selected",
                     clickToBrowse: true,
                     maxFiles: 10,
+                    maxSizeBytes: MAX_FILE_SIZE_BYTES, // enforce 50 MB per file
                     renderItem: (file, idx) => {
                         const li = document.createElement("li");
                         li.className = "report-file-list-item";
@@ -541,7 +554,7 @@
                             </button>`;
                         return li;
                     },
-                    validateInputOnChange: false,
+                    validateInputOnChange: true,
                     onChange: () => {
                         // Enforce accept list even for drag/drop by replacing FileList
                         const allowed = filterAccepted(fileInput.files);
