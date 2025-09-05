@@ -50,14 +50,6 @@
 		}
 	};
 
-	function debounce(fn, wait = 250) {
-		let t = 0;
-		return function (...args) {
-			clearTimeout(t);
-			t = setTimeout(() => fn.apply(this, args), wait);
-		};
-	}
-
 	class MapWidget {
 		constructor(opts) {
 			if (!global.google || !global.google.maps) {
@@ -90,9 +82,7 @@
 			if (this.lngInputEl) this.lngInputEl.value = Dom.toFixedOr(center.lng);
 			this._emitChange(center.lat, center.lng);
 
-			this._buildSuggestionsUI();
 			this._wireMapInteractions();
-			this._wireSearchBox();
 		}
 
 		_emitChange(lat, lng) {
@@ -169,139 +159,7 @@
 			});
 		}
 
-		_wireSearchBox() {
-			this.inputEl.addEventListener("keydown", (e) => {
-				if (e.key === "ArrowDown") { e.preventDefault(); this._moveSelection(1); return; }
-				if (e.key === "ArrowUp") { e.preventDefault(); this._moveSelection(-1); return; }
-				if (e.key === "Escape") { this._hideSuggestions(); return; }
-				if (e.key === "Enter") {
-					e.preventDefault();
-					if (this._selectHighlighted()) return;
-					const q = (this.inputEl.value || "").trim();
-					if (!q) return;
-					MapService.AddressApi.geocodeText(q)
-						.then(d => this._applyResultToUI(d, { setInput: true }))
-						.catch(() => { /* ignore */ });
-				}
-			});
-
-			this.inputEl.addEventListener("input", debounce(() => {
-				const q = (this.inputEl.value || "").trim();
-				if (q.length < 3) { this._hideSuggestions(); return; }
-				MapService.AddressApi.autocomplete(q)
-					.then(items => {
-						if (!Array.isArray(items) || items.length === 0) { this._hideSuggestions(); return; }
-						this._renderSuggestions(items);
-					})
-					.catch(() => this._hideSuggestions());
-			}, 200));
-
-			this.inputEl.addEventListener("blur", () => setTimeout(() => this._hideSuggestions(), 200));
-		}
-
-		_buildSuggestionsUI() {
-			const container = document.createElement("div");
-			container.className = "mapui-suggest";
-			container.setAttribute("role", "listbox");
-
-			this._sugHost = container;
-			this._sugItems = [];
-			this._sugIndex = -1;
-
-			const parent = this.inputEl.parentElement || this.inputEl;
-			if (getComputedStyle(parent).position === "static") {
-				parent.style.position = "relative";
-			}
-			parent.appendChild(container);
-
-			const reposition = () => this._positionSuggestions();
-			window.addEventListener("resize", reposition);
-			window.addEventListener("scroll", reposition, true);
-		}
-
-		_positionSuggestions() {
-			const r = this.inputEl.getBoundingClientRect();
-			const pr = (this.inputEl.parentElement || document.body).getBoundingClientRect();
-			const left = r.left - pr.left;
-			const top = r.bottom - pr.top + 4;
-			this._sugHost.style.left = `${left}px`;
-			this._sugHost.style.top = `${top}px`;
-			this._sugHost.style.width = `${r.width}px`;
-		}
-
-		_renderSuggestions(items) {
-			this._sugItems = items;
-			this._sugIndex = -1;
-			this._sugHost.innerHTML = "";
-			this._positionSuggestions();
-
-			items.forEach((it, idx) => {
-				const div = document.createElement("div");
-				div.className = "mapui-suggest-item";
-				div.setAttribute("role", "option");
-				div.dataset.index = String(idx);
-
-				const main = document.createElement("span");
-				main.className = "mapui-suggest-item-main";
-				main.textContent = it.mainText || it.description || "";
-
-				const secondary = document.createElement("small");
-				secondary.className = "mapui-suggest-item-secondary";
-				secondary.textContent = it.secondaryText || "";
-
-				div.appendChild(main);
-				if (secondary.textContent) div.appendChild(secondary);
-
-				div.addEventListener("mouseenter", () => { this._highlight(idx); });
-				div.addEventListener("mouseleave", () => { this._highlight(-1); });
-				div.addEventListener("mousedown", (e) => e.preventDefault());
-				div.addEventListener("click", () => this._choose(idx));
-
-				this._sugHost.appendChild(div);
-			});
-
-			this._sugHost.classList.add("is-open");
-		}
-
-		_hideSuggestions() {
-			this._sugHost.classList.remove("is-open");
-			this._sugHost.innerHTML = "";
-			this._sugItems = [];
-			this._sugIndex = -1;
-		}
-
-		_highlight(index) {
-			const children = Array.from(this._sugHost.children);
-			children.forEach((el, i) => {
-				el.classList.toggle("is-active", i === index);
-			});
-			this._sugIndex = index;
-		}
-
-		_moveSelection(delta) {
-			if (!this._sugItems.length) return;
-			let idx = this._sugIndex + delta;
-			if (idx < 0) idx = this._sugItems.length - 1;
-			if (idx >= this._sugItems.length) idx = 0;
-			this._highlight(idx);
-		}
-
-		_selectHighlighted() {
-			if (this._sugIndex < 0 || this._sugIndex >= this._sugItems.length) return false;
-			this._choose(this._sugIndex);
-			return true;
-		}
-
-		_choose(index) {
-			const it = this._sugItems[index];
-			this._hideSuggestions();
-			if (!it || !it.placeId) return;
-
-			MapService.AddressApi.placeDetails(it.placeId)
-				.then(d => this._applyResultToUI(d, { setInput: true }))
-				.catch(() => { /* ignore */ });
-		}
-
+		// Public API
 		setPosition(lat, lng, { pan = true, zoom = this.opts.pickZoom || 15, reverseGeocodeOnPick = true } = {}) {
 			const maps = global.google.maps;
 			const pos = new maps.LatLng(lat, lng);
