@@ -31,6 +31,7 @@
     <Folder Include="wwwroot\js\Reports\" />
     <Folder Include="wwwroot\uploads\issues\10\" />
     <Folder Include="wwwroot\uploads\issues\11\" />
+    <Folder Include="wwwroot\uploads\issues\3644b7f0-fa05-4b96-8b79-0b19194c6710\" />
     <Folder Include="wwwroot\uploads\issues\8\" />
     <Folder Include="wwwroot\uploads\issues\9\" />
   </ItemGroup>

@@ -34,8 +34,7 @@ namespace MyLocalGov.com.Services.Implementations
 		/// <inheritdoc />
 		public async Task<string> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default)
 		{
-			if (viewModel is null)
-				throw new ArgumentNullException(nameof(viewModel));
+			ArgumentNullException.ThrowIfNull(viewModel);
 			if (string.IsNullOrWhiteSpace(reporterUserId))
 				throw new ArgumentException("Reporter user ID is required.", nameof(reporterUserId));
 

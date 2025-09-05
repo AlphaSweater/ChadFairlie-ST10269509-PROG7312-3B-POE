@@ -32,6 +32,6 @@ namespace MyLocalGov.com.Services.Interfaces
 		/// <param name="reporterUserId">The user who is submitting the issue.</param>
 		/// <param name="ct">Optional cancellation token (lets callers cancel the operation).</param>
 		/// <returns>The newly created issue's ID from the database.</returns>
-		Task<int> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default);
+		Task<string> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default);
 	}
 }

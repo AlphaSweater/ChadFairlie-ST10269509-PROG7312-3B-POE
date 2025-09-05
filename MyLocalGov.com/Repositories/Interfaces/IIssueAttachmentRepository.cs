@@ -4,6 +4,6 @@ namespace MyLocalGov.com.Repositories.Interfaces
 {
 	public interface IIssueAttachmentRepository : IRepository<IssueAttachmentModel>
 	{
-		Task<IEnumerable<IssueAttachmentModel>> GetByIssueIdAsync(int issueId);
+		Task<IEnumerable<IssueAttachmentModel>> GetByIssueIdAsync(string issueId);
 	}
 }

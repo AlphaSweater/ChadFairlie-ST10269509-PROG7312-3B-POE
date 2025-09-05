@@ -85,6 +85,11 @@ namespace MyLocalGov.com.Models
 
 		public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
+		protected IssueAttachmentModel() 
+		{
+			AttachmentID = Guid.NewGuid().ToString();
+		}
+
 		public IssueAttachmentModel(string issueId, string filename, string filePath, string contentType, long fileSizeBytes)
 		{
 			AttachmentID = Guid.NewGuid().ToString();

@@ -14,7 +14,7 @@ namespace MyLocalGov.com.Repositories.Implementations
 			_context = context;
 		}
 
-		public async Task<IEnumerable<IssueAttachmentModel>> GetByIssueIdAsync(int issueId)
+		public async Task<IEnumerable<IssueAttachmentModel>> GetByIssueIdAsync(string issueId)
 		{
 			return await _context.IssueAttachments
 				.Where(a => a.IssueID == issueId)
