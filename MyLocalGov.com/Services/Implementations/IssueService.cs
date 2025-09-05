@@ -215,7 +215,8 @@ namespace MyLocalGov.com.Services.Implementations
 						});
 
 						var remaining = workQueue.Count;
-						_logger.LogInformation("Worker {Worker} DONE {FileName} for Issue {IssueId} (remaining: {Remaining})",
+						_logger.LogInformation(
+							"Worker {Worker} DONE {FileName} for Issue {IssueId} (remaining: {Remaining})",
 							workerId, plan.FinalName, issueId, remaining);
 					}
 					catch (OperationCanceledException)
@@ -235,35 +236,87 @@ namespace MyLocalGov.com.Services.Implementations
 				}
 			}
 
-			// 3) Spin up limited workers
-			var workerCount = Math.Min(MaxParallelUploads, plannedUploads.Count);
-			var workerTasks = new Task[workerCount];
-			for (int i = 0; i < workerCount; i++)
-			{
-				workerTasks[i] = Task.Run(() => WorkerAsync(i + 1), ct);
-			}
+			// 3) Spin up limited workers (fix closure capture by using local workerId)
+var workerCount = Math.Min(MaxParallelUploads, plannedUploads.Count);
+var workerTasks = new Task[workerCount];
 
+// Track how many uploads actually completed successfully
+int successCount = 0;
+
+for (int i = 0; i < workerCount; i++)
+{
+	var workerId = i + 1; // new local prevents closure bug
+	workerTasks[i] = Task.Run(async () =>
+	{
+		while (!ct.IsCancellationRequested && workQueue.TryDequeue(out var plan))
+		{
 			try
 			{
-				await Task.WhenAll(workerTasks);
+				_logger.LogDebug("Worker {Worker} START {FileName} ({Bytes} bytes)",
+					workerId, plan.FinalName, plan.File.Length);
+
+				await using (var fs = new FileStream(plan.FullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true))
+				{
+					await plan.File.CopyToAsync(fs, ct);
+				}
+
+				attachments.Enqueue(new IssueAttachmentModel
+				{
+					IssueID = issueId,
+					FileName = plan.FinalName,
+					FilePath = plan.RelativePath,
+					ContentType = string.IsNullOrWhiteSpace(plan.File.ContentType) ? null : plan.File.ContentType,
+					FileSizeBytes = plan.File.Length,
+					UploadedAt = DateTime.UtcNow
+				});
+
+				var remaining = workQueue.Count;
+				var done = Interlocked.Increment(ref successCount);
+				_logger.LogInformation(
+					"Worker {Worker} DONE {FileName} for Issue {IssueId} (done: {Done}/{Total}, remaining queue: {Remaining})",
+					workerId, plan.FinalName, issueId, done, plannedUploads.Count, remaining);
 			}
 			catch (OperationCanceledException)
 			{
-				_logger.LogWarning("SaveAttachmentsAsync: Batch canceled for Issue {IssueId}", issueId);
+				_logger.LogWarning("Worker {Worker} CANCELED during upload of {FileName} (Issue {IssueId})",
+					workerId, plan.FinalName, issueId);
+				TryDelete(plan.FullPath);
 				throw;
 			}
-
-			// 4) Persist successful attachments
-			if (!attachments.IsEmpty)
+			catch (Exception ex)
 			{
-				while (attachments.TryDequeue(out var att))
-					await _unitOfWork.IssueAttachments.AddAsync(att);
-
-				await _unitOfWork.SaveAsync();
+				_logger.LogError(ex, "Worker {Worker} FAILED {FileName} (Issue {IssueId})",
+					workerId, plan.FinalName, issueId);
+				TryDelete(plan.FullPath);
+				// continue with next item
 			}
+		}
+	}, ct);
+}
 
-			_logger.LogInformation("SaveAttachmentsAsync: Attachments persisted for Issue {IssueId}", issueId);
-			return plannedUploads.Count - workQueue.Count; // Number of processed items (success + failures); 
+try
+{
+	await Task.WhenAll(workerTasks);
+}
+catch (OperationCanceledException)
+{
+	_logger.LogWarning("SaveAttachmentsAsync: Batch canceled for Issue {IssueId}", issueId);
+	throw;
+}
+
+// Persist successful attachments
+if (!attachments.IsEmpty)
+{
+	while (attachments.TryDequeue(out var att))
+		await _unitOfWork.IssueAttachments.AddAsync(att);
+
+	await _unitOfWork.SaveAsync();
+}
+
+_logger.LogInformation("SaveAttachmentsAsync: {Success}/{Planned} attachment(s) persisted for Issue {IssueId}",
+	successCount, plannedUploads.Count, issueId);
+
+return successCount;
 		}
 
 		private sealed record UploadPlan(IFormFile File, string FinalName, string FullPath, string RelativePath);
