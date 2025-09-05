@@ -37,10 +37,7 @@ namespace MyLocalGov.com.Services.Implementations
 		{
 			var doc = await PlacesGetAsync(placeId, ct);
 			var root = doc.RootElement;
-
-			// Gracefully read Places v1 coordinates
 			var (lat, lng) = TryReadLatLngFromNode(root);
-
 			var formatted = root.TryGetProperty("formattedAddress", out var fa) ? fa.GetString() : null;
 
 			return new MapResultDto
@@ -56,7 +53,6 @@ namespace MyLocalGov.com.Services.Implementations
 		{
 			var doc = await PlacesSearchTextAsync(query, ct);
 
-			// Handle API error payloads cleanly
 			if (doc.RootElement.TryGetProperty("error", out var err))
 			{
 				var msg = err.TryGetProperty("message", out var m) ? m.GetString() : "Unknown Places API error.";
@@ -75,7 +71,6 @@ namespace MyLocalGov.com.Services.Implementations
 			}
 
 			var first = places[0];
-
 			var (lat, lng) = TryReadLatLngFromNode(first);
 			var formatted = first.TryGetProperty("formattedAddress", out var fa) ? fa.GetString() : null;
 
@@ -86,6 +81,66 @@ namespace MyLocalGov.com.Services.Implementations
 				FormattedAddress = formatted ?? string.Empty,
 				Parts = new AddressPartsDto { Formatted = formatted }
 			};
+		}
+
+		public async Task<List<PlaceSuggestionDto>> AutocompleteAsync(string query, CancellationToken ct = default)
+		{
+			var doc = await PlacesAutocompleteAsync(query, ct);
+
+			if (doc.RootElement.TryGetProperty("error", out var err))
+			{
+				var msg = err.TryGetProperty("message", out var m) ? m.GetString() : "Unknown Places API error.";
+				throw new InvalidOperationException($"Places autocomplete failed: {msg}");
+			}
+
+			var list = new List<PlaceSuggestionDto>();
+			if (!doc.RootElement.TryGetProperty("suggestions", out var suggestions) || suggestions.ValueKind != JsonValueKind.Array)
+				return list;
+
+			foreach (var s in suggestions.EnumerateArray())
+			{
+				if (!s.TryGetProperty("placePrediction", out var pp)) continue;
+
+				string? placeId = null;
+				string? main = null;
+				string? secondary = null;
+				string? description = null;
+
+				if (pp.TryGetProperty("placeId", out var pid)) placeId = pid.GetString();
+
+				// Preferred: structuredFormat main/secondary
+				if (pp.TryGetProperty("structuredFormat", out var sf))
+				{
+					if (sf.TryGetProperty("mainText", out var mt) && mt.TryGetProperty("text", out var mtx))
+						main = mtx.GetString();
+					if (sf.TryGetProperty("secondaryText", out var st) && st.TryGetProperty("text", out var stx))
+						secondary = stx.GetString();
+				}
+
+				// Fallback: pp.text.text (full)
+				if (string.IsNullOrWhiteSpace(main) && pp.TryGetProperty("text", out var t) && t.TryGetProperty("text", out var tx))
+				{
+					description = tx.GetString();
+				}
+
+				if (string.IsNullOrWhiteSpace(description))
+				{
+					description = string.IsNullOrWhiteSpace(secondary) ? main : $"{main}, {secondary}";
+				}
+
+				if (!string.IsNullOrWhiteSpace(placeId) && !string.IsNullOrWhiteSpace(description))
+				{
+					list.Add(new PlaceSuggestionDto
+					{
+						PlaceId = placeId,
+						MainText = main,
+						SecondaryText = secondary,
+						Description = description
+					});
+				}
+			}
+
+			return list;
 		}
 
 		private async Task<JsonDocument> GeocodeByLatLngAsync(double lat, double lng, CancellationToken ct)
@@ -105,7 +160,6 @@ namespace MyLocalGov.com.Services.Implementations
 			return await JsonDocument.ParseAsync(stream, cancellationToken: ct);
 		}
 
-		// Places API (New)
 		private async Task<JsonDocument> PlacesSearchTextAsync(string textQuery, CancellationToken ct)
 		{
 			var key = _options.ServerApiKey ?? _options.BrowserApiKey ?? string.Empty;
@@ -115,7 +169,6 @@ namespace MyLocalGov.com.Services.Implementations
 			var client = _httpClientFactory.CreateClient();
 			using var req = new HttpRequestMessage(HttpMethod.Post, "https://places.googleapis.com/v1/places:searchText");
 			req.Headers.Add("X-Goog-Api-Key", key);
-			// Request only what we need
 			req.Headers.Add("X-Goog-FieldMask", "places.id,places.formattedAddress,places.location");
 			var body = new
 			{
@@ -152,21 +205,45 @@ namespace MyLocalGov.com.Services.Implementations
 			return JsonDocument.Parse(content);
 		}
 
+		private async Task<JsonDocument> PlacesAutocompleteAsync(string input, CancellationToken ct)
+		{
+			var key = _options.ServerApiKey ?? _options.BrowserApiKey ?? string.Empty;
+			if (string.IsNullOrWhiteSpace(key))
+				throw new InvalidOperationException("Google Maps ServerApiKey is not configured.");
+
+			var client = _httpClientFactory.CreateClient();
+			using var req = new HttpRequestMessage(HttpMethod.Post, "https://places.googleapis.com/v1/places:autocomplete");
+			req.Headers.Add("X-Goog-Api-Key", key);
+			// Ask only for fields we need to render suggestions
+			req.Headers.Add("X-Goog-FieldMask", "suggestions.placePrediction.placeId,suggestions.placePrediction.text,suggestions.placePrediction.structuredFormat.mainText.text,suggestions.placePrediction.structuredFormat.secondaryText.text");
+			var body = new
+			{
+				input,
+				languageCode = _options.Language ?? "en",
+				regionCode = _options.Region
+			};
+			req.Content = JsonContent.Create(body);
+
+			using var res = await client.SendAsync(req, ct);
+			var content = await res.Content.ReadAsStringAsync(ct);
+			if (!res.IsSuccessStatusCode)
+				throw new HttpRequestException($"Places autocomplete HTTP {(int)res.StatusCode}: {content}");
+
+			return JsonDocument.Parse(content);
+		}
+
 		private static AddressPartsDto ExtractAddressParts(JsonDocument doc)
 		{
-			// Places v1 list shape
 			if (doc.RootElement.TryGetProperty("places", out var places) && places.ValueKind == JsonValueKind.Array && places.GetArrayLength() > 0)
 			{
 				var first = places[0];
 				return ExtractPartsFromNewPlaces(first);
 			}
-			// Places v1 single place shape
 			if (doc.RootElement.TryGetProperty("formattedAddress", out _))
 			{
 				return ExtractPartsFromNewPlaces(doc.RootElement);
 			}
 
-			// Legacy Geocoding shape
 			var results = doc.RootElement.TryGetProperty("results", out var r) ? r : default;
 			var firstLegacy = results.ValueKind == JsonValueKind.Array && results.GetArrayLength() > 0 ? results[0] : default;
 			return ExtractPartsFromLegacy(firstLegacy);
@@ -233,11 +310,9 @@ namespace MyLocalGov.com.Services.Implementations
 			double lat = 0, lng = 0;
 			if (node.TryGetProperty("location", out var locEl))
 			{
-				// v1 typically: { "location": { "latitude": 1.23, "longitude": 4.56 } }
 				if (locEl.TryGetProperty("latitude", out var la)) lat = la.GetDouble();
 				if (locEl.TryGetProperty("longitude", out var lo)) lng = lo.GetDouble();
 
-				// Defensive: accept nested latLng shape if returned by upstream components
 				if ((lat == 0 && lng == 0) && locEl.TryGetProperty("latLng", out var latLng))
 				{
 					if (latLng.TryGetProperty("latitude", out var la2)) lat = la2.GetDouble();

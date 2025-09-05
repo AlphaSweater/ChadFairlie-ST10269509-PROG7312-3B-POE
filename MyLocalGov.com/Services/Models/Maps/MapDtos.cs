@@ -24,4 +24,13 @@ namespace MyLocalGov.com.Services.Models.Maps
 		public string? GeocodeLocationType { get; set; }
 		public LatLngDto? GeocodedPoint { get; set; }
 	}
+
+	// New: simplified suggestion DTO for the client dropdown
+	public class PlaceSuggestionDto
+	{
+		public string? PlaceId { get; set; }
+		public string? Description { get; set; } // e.g., "Main text, secondary"
+		public string? MainText { get; set; }
+		public string? SecondaryText { get; set; }
+	}
 }

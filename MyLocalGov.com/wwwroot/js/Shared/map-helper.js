@@ -50,6 +50,14 @@
 		}
 	};
 
+	function debounce(fn, wait = 250) {
+		let t = 0;
+		return function (...args) {
+			clearTimeout(t);
+			t = setTimeout(() => fn.apply(this, args), wait);
+		};
+	}
+
 	class MapPicker {
 		constructor(options) {
 			if (!global.google || !global.google.maps) {
@@ -93,6 +101,7 @@
 			if (this.lngEl) this.lngEl.value = Dom.toFixedOr(center.lng);
 			this._emitChange(center.lat, center.lng, null);
 
+			this._buildSuggestionsUI();
 			this._wireMapInteractions();
 			this._wireManualGeocode();
 		}
@@ -148,20 +157,30 @@
 		}
 
 		_wireManualGeocode() {
+			// Enter: select highlighted suggestion or geocode free text
 			this.inputEl.addEventListener("keydown", (e) => {
+				if (e.key === "ArrowDown") { e.preventDefault(); this._moveSelection(1); return; }
+				if (e.key === "ArrowUp") { e.preventDefault(); this._moveSelection(-1); return; }
+				if (e.key === "Escape") { this._hideSuggestions(); return; }
 				if (e.key === "Enter") {
 					e.preventDefault();
+					if (this._selectHighlighted()) return;
 					const q = (this.inputEl.value || "").trim();
 					if (q.length === 0) return;
 					this._geocodeText(q);
 				}
 			});
-			this.inputEl.addEventListener("blur", () => {
+
+			// Debounced autocomplete as user types
+			this.inputEl.addEventListener("input", debounce(() => {
 				const q = (this.inputEl.value || "").trim();
-				if (q.length === 0) return;
-				setTimeout(() => {
-					this._geocodeText(q);
-				}, 150);
+				if (q.length < 3) { this._hideSuggestions(); return; }
+				this._fetchSuggestions(q);
+			}, 200));
+
+			// Blur: hide suggestions slightly after to allow click
+			this.inputEl.addEventListener("blur", () => {
+				setTimeout(() => this._hideSuggestions(), 200);
 			});
 		}
 
@@ -190,7 +209,6 @@
 				.then(data => {
 					const lat = Number(data?.lat);
 					const lng = Number(data?.lng);
-					// Only center if we have a real match (avoid (0,0) no-result centering)
 					if (Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0)) {
 						const maps = global.google.maps;
 						const pos = new maps.LatLng(lat, lng);
@@ -202,6 +220,159 @@
 				})
 				.catch(err => {
 					console.warn("geocode-text failed:", err);
+				});
+		}
+
+		_fetchSuggestions(query) {
+			// POST to our server autocomplete (Places API v1)
+			fetch("/api/address/autocomplete", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ query })
+			})
+				.then(r => r.ok ? r.json() : Promise.reject(r))
+				.then(items => {
+					if (!Array.isArray(items) || items.length === 0) { this._hideSuggestions(); return; }
+					this._renderSuggestions(items);
+				})
+				.catch(err => {
+					console.warn("autocomplete failed:", err);
+					this._hideSuggestions();
+				});
+		}
+
+		_buildSuggestionsUI() {
+			// Ensure parent is positioned
+			const container = document.createElement("div");
+			container.className = "maphelper-suggest";
+			container.style.position = "absolute";
+			container.style.zIndex = "1000";
+			container.style.background = "#fff";
+			container.style.border = "1px solid rgba(0,0,0,0.15)";
+			container.style.borderRadius = "0.25rem";
+			container.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
+			container.style.padding = "4px 0";
+			container.style.display = "none";
+			container.setAttribute("role", "listbox");
+
+			this._sugHost = container;
+			this._sugItems = [];
+			this._sugIndex = -1;
+
+			// Insert after input
+			const parent = this.inputEl.parentElement || this.inputEl;
+			parent.style.position = "relative";
+			parent.appendChild(container);
+
+			// Reposition on window resize/scroll
+			const reposition = () => this._positionSuggestions();
+			window.addEventListener("resize", reposition);
+			window.addEventListener("scroll", reposition, true);
+		}
+
+		_positionSuggestions() {
+			const r = this.inputEl.getBoundingClientRect();
+			const pr = (this.inputEl.parentElement || document.body).getBoundingClientRect();
+			const left = r.left - pr.left;
+			const top = r.bottom - pr.top + 4; // small gap
+			this._sugHost.style.left = `${left}px`;
+			this._sugHost.style.top = `${top}px`;
+			this._sugHost.style.width = `${r.width}px`;
+		}
+
+		_renderSuggestions(items) {
+			this._sugItems = items;
+			this._sugIndex = -1;
+			this._sugHost.innerHTML = "";
+			this._positionSuggestions();
+
+			items.forEach((it, idx) => {
+				const div = document.createElement("div");
+				div.className = "maphelper-suggest-item";
+				div.style.padding = "6px 10px";
+				div.style.cursor = "pointer";
+				div.style.display = "flex";
+				div.style.flexDirection = "column";
+				div.setAttribute("role", "option");
+				div.dataset.index = String(idx);
+
+				const main = document.createElement("span");
+				main.textContent = it.mainText || it.description || "";
+				main.style.fontWeight = "500";
+
+				const secondary = document.createElement("small");
+				secondary.textContent = it.secondaryText || "";
+				secondary.style.color = "#6c757d";
+
+				div.appendChild(main);
+				if (secondary.textContent) div.appendChild(secondary);
+
+				div.addEventListener("mouseenter", () => { this._highlight(idx); });
+				div.addEventListener("mouseleave", () => { this._highlight(-1); });
+				div.addEventListener("mousedown", (e) => e.preventDefault()); // prevent input blur
+				div.addEventListener("click", () => this._choose(idx));
+
+				this._sugHost.appendChild(div);
+			});
+
+			this._sugHost.style.display = "block";
+		}
+
+		_hideSuggestions() {
+			this._sugHost.style.display = "none";
+			this._sugHost.innerHTML = "";
+			this._sugItems = [];
+			this._sugIndex = -1;
+		}
+
+		_highlight(index) {
+			const children = Array.from(this._sugHost.children);
+			children.forEach((el, i) => {
+				el.style.background = i === index ? "rgba(25,135,84,0.08)" : "transparent";
+			});
+			this._sugIndex = index;
+		}
+
+		_moveSelection(delta) {
+			if (!this._sugItems.length) return;
+			let idx = this._sugIndex + delta;
+			if (idx < 0) idx = this._sugItems.length - 1;
+			if (idx >= this._sugItems.length) idx = 0;
+			this._highlight(idx);
+		}
+
+		_selectHighlighted() {
+			if (this._sugIndex < 0 || this._sugIndex >= this._sugItems.length) return false;
+			this._choose(this._sugIndex);
+			return true;
+		}
+
+		_choose(index) {
+			const it = this._sugItems[index];
+			this._hideSuggestions();
+			if (!it || !it.placeId) return;
+
+			// Fetch place details then update map and input
+			fetch("/api/address/place-details", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ placeId: it.placeId })
+			})
+				.then(r => r.ok ? r.json() : Promise.reject(r))
+				.then(data => {
+					const lat = Number(data?.lat);
+					const lng = Number(data?.lng);
+					if (Number.isFinite(lat) && Number.isFinite(lng)) {
+						const maps = global.google.maps;
+						const pos = new maps.LatLng(lat, lng);
+						this.marker.setPosition(pos);
+						this.map.setCenter(pos);
+						this.map.setZoom(this.opts.pickZoom || 15);
+					}
+					this._applyServerResult(data, { setInput: true });
+				})
+				.catch(err => {
+					console.warn("place-details failed:", err);
 				});
 		}
 

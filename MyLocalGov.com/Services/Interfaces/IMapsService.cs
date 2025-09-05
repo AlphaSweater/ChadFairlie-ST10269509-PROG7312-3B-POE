@@ -9,5 +9,6 @@ namespace MyLocalGov.com.Services.Interfaces
 		Task<MapResultDto> ReverseGeocodeAsync(double lat, double lng, CancellationToken ct = default);
 		Task<MapResultDto> PlaceDetailsAsync(string placeId, CancellationToken ct = default);
 		Task<MapResultDto> GeocodeTextAsync(string query, CancellationToken ct = default);
+		Task<List<PlaceSuggestionDto>> AutocompleteAsync(string query, CancellationToken ct = default);
 	}
 }
