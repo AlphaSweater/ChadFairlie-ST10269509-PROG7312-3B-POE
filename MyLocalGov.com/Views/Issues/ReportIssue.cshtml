@@ -365,7 +365,49 @@
                 }
             });
 
-            // Dropzone/other code (unchanged) ...
+			// Rich text toolbar
+			rteToolbar.addEventListener("click", (e) => {
+				const btn = e.target.closest("[data-cmd]");
+				if (!btn) return;
+				e.preventDefault();
+				document.execCommand(btn.dataset.cmd, false, null);
+				rte.focus();
+				syncDescription();
+				if (v) v.validateFields("#descriptionHidden");
+			});
+			rte.addEventListener("input", () => {
+				syncDescription();
+				if (v) v.validateFields("#descriptionHidden");
+			});
+
+			// Initialize DropzoneHelper (replaces manual drag/drop and render logic)
+			if (window.DropzoneHelper) {
+				const dz = DropzoneHelper.init({
+					dropzone: dropzone,
+					input: fileInput,
+					list: fileList,
+					browse: browseBtn,
+					dragOverClass: "is-dragover",
+					emptyListText: "No files selected",
+					clickToBrowse: true,
+					maxFiles: 10,
+					renderItem: (file, idx) => {
+						const li = document.createElement("li");
+						li.className = "report-file-list-item";
+						li.innerHTML = `
+							<span class="report-file-name">${file.name}</span>
+							<button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}"><i class="bi bi-x"></i></button>`;
+						return li;
+					},
+					validateInputOnChange: false,
+					onChange: () => {
+						if (v) v.validateFields(fileInput);
+						updateReview();
+					}
+				});
+				// Initial sync for review
+				updateReview();
+			}
         });
     </script>
 }
