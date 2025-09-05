@@ -24,6 +24,10 @@
 
     <form asp-action="ReportIssue" asp-controller="Issues" method="post" enctype="multipart/form-data" class="fxg-f-col fxg-u-gap-6 report-form-card" id="reportForm">
         <!-- Wizard navigation at the top -->
+		<!-- Progress bar -->
+		<div class="report-wizard-progress" role="progressbar" aria-label="Wizard progress">
+			<div class="report-wizard-progress-bar" id="wizardProgressBar" style="width:0%"></div>
+		</div>
         <div class="report-wizard-nav fxg-f-row fxg-f-main-between fxg-f-cross-center report-wizard-nav-top">
             <button type="button" class="btn btn-outline-success" id="prevBtn">Back</button>
             <div class="report-wizard-step-info fxg-f-col fxg-f-cross-center">
@@ -164,32 +168,26 @@
     <script src="~/js/Shared/dropzone-helper.js" asp-append-version="true"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Register custom rule for RTE and initialize form validator
             if (window.ValidationHelper) {
                 ValidationHelper.registerRichTextRequired();
             }
 
-            // DOM lookups
             const form = document.getElementById("reportForm");
             const root = document.getElementById("reportIssueRoot");
 
-            // Inputs
             const lat = document.getElementById("Latitude");
             const lng = document.getElementById("Longitude");
             const category = document.getElementById("CategoryID");
 
-            // Map elements
             const locationInput = document.getElementById("locationInput");
             const mapEl = document.getElementById("map");
             const useMyLocationBtn = document.getElementById("useMyLocationBtn");
             const coordsLabel = document.getElementById("coordsLabel");
 
-            // Rich text editor bits
             const rte = document.getElementById("rteEditor");
             const rteToolbar = document.getElementById("rteToolbar");
             const descriptionHidden = document.getElementById("descriptionHidden");
 
-            // Review fields
             const revAddress = document.getElementById("revAddress");
             const revLat = document.getElementById("revLat");
             const revLng = document.getElementById("revLng");
@@ -197,13 +195,11 @@
             const revDescription = document.getElementById("revDescription");
             const revFiles = document.getElementById("revFiles");
 
-            // File upload UI
             const dropzone = document.getElementById("dropzone");
             const fileInput = document.getElementById("fileInput");
             const fileList = document.getElementById("fileList");
             const browseBtn = document.getElementById("browseBtn");
 
-            // Initialize shared validator
             const v = window.ValidationHelper
                 ? ValidationHelper.init("#reportForm", {
                     includeHidden: ["#descriptionHidden", "#Latitude", "#Longitude"],
@@ -212,7 +208,6 @@
                 })
                 : null;
 
-            // Add asterisks to labels of required fields
             if (window.ValidationHelper) {
                 ValidationHelper.markRequiredLabels(root);
             }
@@ -225,7 +220,6 @@
             ];
 
             function computeFormattedAddress() {
-                // The input is now bound to Address (name=Address), so use its value
                 return (locationInput.value || "").trim();
             }
 
@@ -266,7 +260,6 @@
             (function initMapAndAutocomplete() {
                 const latEl = document.getElementById("Latitude");
                 const lngEl = document.getElementById("Longitude");
-                const useMyLocationBtn = document.getElementById("useMyLocationBtn");
                 const input = document.getElementById("locationInput");
 
                 const defaultCenter = {
@@ -288,7 +281,6 @@
                     window.__mapInstance = widget;
                     setCoordsLabel(latEl.value, lngEl.value);
 
-                    // Autocomplete (standalone)
                     AutocompleteHelper.create({
                         inputEl: "#locationInput",
                         minLength: 3,
@@ -297,7 +289,6 @@
                             const addr = (details?.formattedAddress || suggestion?.description || "").trim();
                             if (addr) {
                                 input.value = addr;
-                                // Trigger validation when address is set by selection
                                 if (v?.validator) $(input).valid();
                             }
                             if (details && Number.isFinite(details.lat) && Number.isFinite(details.lng)) {
@@ -306,7 +297,6 @@
                         }
                     });
 
-                    // Optional: Enter-to-geocode fallback when no suggestion selected
                     input.addEventListener("keydown", (e) => {
                         if (e.key !== "Enter" || e.defaultPrevented) return;
                         e.preventDefault();
@@ -341,32 +331,30 @@
                 });
             })();
 
-            // WIZARD: init multi-step flow, validation, review sync
+            // Wizard init with progress bar
             const wiz = window.WizardHelper && WizardHelper.init({
                 container: "#reportIssueRoot",
                 form: "#reportForm",
                 stepSelector: ".wizard-step",
                 nextSelector: "#nextBtn",
                 prevSelector: "#prevBtn",
+                progressBarSelector: "#wizardProgressBar",
                 stepIndicatorSelector: "#stepIndicator",
                 engagementSelector: "#engagementMessage",
                 hiddenClass: "flex-hidden",
                 validator: v,
                 messages,
                 beforeNext: (ctx) => {
-                    // Ensure RTE value is mirrored before leaving Details step
                     if (ctx.step === 2) syncDescription();
                     return true;
                 },
                 onShowStep: (ctx) => {
-                    // Refresh review when entering last step
                     if (ctx.step === 4) {
                         syncDescription();
                         updateReview();
                     }
                 },
                 beforeFinish: (ctx) => {
-                    // Final sync + full form validation safeguard
                     syncDescription();
                     if (v && typeof v.validateAll === "function") {
                         const ok = v.validateAll();
