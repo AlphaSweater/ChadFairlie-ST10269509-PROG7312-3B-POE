@@ -32,11 +32,9 @@ namespace MyLocalGov.com.Controllers
 
 		public IActionResult Index()
 		{
-			// Redirect to Dashboard landing page
 			return RedirectToAction("Index", "Dashboard");
 		}
 
-		// GET: /Reports/ReportIssue
 		[HttpGet]
 		public IActionResult ReportIssue()
 		{
@@ -47,19 +45,16 @@ namespace MyLocalGov.com.Controllers
 			return View("ReportIssue", vm);
 		}
 
-		// POST: /Issues/ReportIssue
+		// Single POST endpoint
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> ReportIssue(IssueViewModel vm, CancellationToken ct)
 		{
 			vm.Categories ??= GetCategories();
+			if (!ModelState.IsValid) return View("ReportIssue", vm);
 
-			if (!ModelState.IsValid)
-			{
-				return View("ReportIssue", vm);
-			}
-
-			var issueId = await _issueService.SubmitAsync(vm, User.FindFirstValue(ClaimTypes.NameIdentifier)!, ct);
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+			await _issueService.SubmitAsync(vm, userId, ct);
 
 			TempData["ReportSubmitted"] = true;
 			return RedirectToAction(nameof(Index));
@@ -67,7 +62,6 @@ namespace MyLocalGov.com.Controllers
 
 		private static IEnumerable<SelectListItem> GetCategories()
 		{
-			// Replace with DB-backed categories when available
 			var items = new[]
 			{
 				new { Id = 1, Name = "Sanitation" },
@@ -79,9 +73,7 @@ namespace MyLocalGov.com.Controllers
 				new { Id = 7, Name = "Utilities" },
 				new { Id = 8, Name = "Other" }
 			};
-
 			return items.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
 		}
 	}
- 
 }
