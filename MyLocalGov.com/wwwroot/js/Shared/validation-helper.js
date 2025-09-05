@@ -310,8 +310,22 @@
 		// Add 'label-required' to labels for inputs that have data-val-required
 		markRequiredLabels(root) {
 			const scope = isElement(root) ? root : document;
-			scope.querySelectorAll('[data-val="true"][data-val-required]').forEach(el => {
-				const label = scope.querySelector(`label[for="${el.id}"]`);
+
+			// Support both standard [Required] and the custom RTE required flag
+			const selector = '[data-val="true"][data-val-required], [data-val="true"][data-val-rterequired]';
+
+			scope.querySelectorAll(selector).forEach(el => {
+				// Prefer label bound by id
+				let label = el.id ? scope.querySelector(`label[for="${el.id}"]`) : null;
+
+				// Fallback: label bound by name (useful when the id was overridden)
+				if (!label) {
+					const name = el.getAttribute("name");
+					if (name) {
+						label = scope.querySelector(`label[for="${name}"]`);
+					}
+				}
+
 				if (label) label.classList.add("label-required");
 			});
 		}

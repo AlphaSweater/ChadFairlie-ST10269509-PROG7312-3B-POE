@@ -56,15 +56,15 @@
                 <input asp-for="Latitude" type="hidden" id="Latitude" />
                 <input asp-for="Longitude" type="hidden" id="Longitude" />
 
-                <div class="fxg-f-col fxg-u-gap-1 locationInputArea">
+                <div class="fxg-f-col fxg-u-gap-0 locationInputArea">
 
-					<!-- Address validation message -->
-					<span asp-validation-for="Address" class="text-danger"></span>
+                    <!-- Address label + validation ABOVE input -->
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <span asp-validation-for="Address" class="text-danger"></span>
 
                     <!-- Composite location control -->
                     <div class="location-composite">
                         <div class="location-composite-row">
-                            <!-- Bind this visible input to Address so unobtrusive validation applies -->
                             <input asp-for="Address"
                                    id="locationInput"
                                    class="fxg-f-grow-1 form-control location-input"
@@ -92,65 +92,76 @@
             <div class="fxg-f-col">
                 <div class="fxg-f-col fxg-u-gap-0">
                     <label asp-for="CategoryID" class="form-label"></label>
-                    <select asp-for="CategoryID" asp-items="Model.Categories" class="form-control"></select>
+                    <!-- Validation ABOVE input -->
                     <span asp-validation-for="CategoryID" class="text-danger"></span>
+                    <select asp-for="CategoryID" asp-items="Model.Categories" class="form-control"></select>
                 </div>
                 <div class="fxg-f-col fxg-u-gap-0">
-                    <div class="fxg-f-row">
-                        <label class="form-label">Description (rich text)</label>
-                        <div id="rteToolbar" class="report-rte-toolbar fxg-f-row fxg-u-gap-2">
-                            <button type="button" class="btn btn-outline-success btn-sm" data-cmd="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
-                            <button type="button" class="btn btn-outline-success btn-sm" data-cmd="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
-                            <button type="button" class="btn btn-outline-success btn-sm" data-cmd="insertUnorderedList" title="Bulleted List"><i class="bi bi-list-ul"></i></button>
-                        </div>
-                    </div>
+
+					<div class="fxg-f-row fxg-f-cross-center fxg-u-gap-2">
+						<!-- Bind label to Description, keep helpful text -->
+						<label asp-for="Description" class="form-label">Description</label>
+
+						<div id="rteToolbar" class="report-rte-toolbar fxg-f-row fxg-u-gap-2">
+							<button type="button" class="btn btn-outline-success btn-sm" data-cmd="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+							<button type="button" class="btn btn-outline-success btn-sm" data-cmd="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+							<button type="button" class="btn btn-outline-success btn-sm" data-cmd="insertUnorderedList" title="Bulleted List"><i class="bi bi-list-ul"></i></button>
+						</div>
+					</div>
+
+					<!-- Validation ABOVE editor -->
+					<span asp-validation-for="Description" class="text-danger"></span>
+
                     <div id="rteEditor" class="report-rte-editor" contenteditable="true" aria-label="Issue description"></div>
 
-                    <!-- Add custom unobtrusive rule so "HTML-only" doesn't pass required -->
+                    <!-- Hidden field bound to Description for validation/post -->
                     <textarea asp-for="Description"
                               id="descriptionHidden"
                               class="flex-hidden"
                               data-val="true"
                               data-val-rterequired="Description is required."></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+
                     <small class="report-hint">Use the toolbar above for basic formatting.</small>
                 </div>
             </div>
         </section>
 
-		<!-- Step 3 -->
-		<section class="wizard-step flex-hidden" data-step="3">
-			<h2 class="report-section-title">Attachments</h2>
+        <!-- Step 3 -->
+        <section class="wizard-step flex-hidden" data-step="3">
+            <h2 class="report-section-title">Attachments</h2>
 
-			<!-- 3-column grid: Upload | Spacer | Selected Files -->
-			<div class="fxg-f-row fxg-u-gap-0">
-				<!-- Upload -->
-				<div class="fxg-f-col fxg-f-grow-2 fxg-u-gap-2">
-					<label class="form-label">Upload</label>
+            <!-- Upload | Spacer | Selected Files -->
+            <div class="fxg-f-row fxg-u-gap-0">
+                <!-- Upload -->
+                <div class="fxg-f-col fxg-f-grow-2 fxg-u-gap-2">
+                    <!-- Bind label to Files -->
+                    <label class="form-label">Upload</label>
+                    <!-- Validation ABOVE dropzone -->
+                    <span asp-validation-for="Files" class="text-danger"></span>
 
-					<div id="dropzone" class="report-dropzone">
-						<input asp-for="Files" id="fileInput" type="file" class="flex-hidden" multiple />
-						<div class="report-dropzone-content">
-							<i class="bi bi-cloud-arrow-up"></i>
-							<p>Drag & drop files here, or</p>
-							<button type="button" class="btn btn-success btn-sm" id="browseBtn">Browse Files</button>
-						</div>
-					</div>
+                    <div id="dropzone" class="report-dropzone">
+                        <input asp-for="Files" id="fileInput" type="file" class="flex-hidden" multiple />
+                        <div class="report-dropzone-content">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <p>Drag & drop files here, or</p>
+                            <button type="button" class="btn btn-success btn-sm" id="browseBtn">Browse Files</button>
+                        </div>
+                    </div>
 
-					<!-- Accepted types text (driven by JS) -->
-					<small id="acceptedTypesText" class="report-hint"></small>
-				</div>
+                    <!-- Accepted types text (driven by JS) -->
+                    <small id="acceptedTypesText" class="report-hint"></small>
+                </div>
 
-				<!-- Spacer column -->
-				<div class="fxg-f-col fxg-f-grow-1" aria-hidden="true"></div>
+                <!-- Spacer column -->
+                <div class="fxg-f-col fxg-f-grow-1" aria-hidden="true"></div>
 
-				<!-- Selected files -->
-				<div class="fxg-f-col fxg-f-grow-2 fxg-u-gap-2">
-					<label class="form-label">Selected Files</label>
-					<ul id="fileList" class="report-file-list"></ul>
-				</div>
-			</div>
-		</section>
+                <!-- Selected files -->
+                <div class="fxg-f-col fxg-f-grow-2 fxg-u-gap-2">
+                    <label class="form-label">Selected Files</label>
+                    <ul id="fileList" class="report-file-list"></ul>
+                </div>
+            </div>
+        </section>
 
         <!-- Step 4 -->
         <section class="wizard-step flex-hidden" data-step="4">
