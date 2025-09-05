@@ -1,24 +1,37 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MyLocalGov.com.ViewModels.Issues;
+﻿using MyLocalGov.com.ViewModels.Issues;
 
 namespace MyLocalGov.com.Services.Interfaces
 {
 	/// <summary>
-	/// Service for creating an Issue (and its attachments) in one call.
-	/// Flow (SubmitAsync):
-	/// 1. Persist the Issue to obtain IssueID.
-	/// 2. Filter incoming files: skip null/empty, sanitize names, drop duplicates.
-	/// 3. Save remaining files sequentially to: wwwroot/uploads/issues/{IssueID}/
-	/// 4. Create attachment records and commit.
-	/// Returns the new IssueID. Throws for invalid arguments or cancellation.
-	/// Individual file save failures are logged and skipped; others continue.
+	/// Contract for the IssueService.
+	/// 
+	/// Basically, this defines what operations any "issue handling service"
+	/// must provide — regardless of how it’s implemented.
+	/// 
+	/// By depending on this interface (instead of the concrete IssueService),
+	/// we get cleaner code, easier testing, and the flexibility to swap 
+	/// implementations later if needed.
 	/// </summary>
 	public interface IIssueService
 	{
 		/// <summary>
-		/// Creates the Issue and (if provided) saves attachments; returns IssueID.
+		/// Submit a new issue on behalf of a reporter.
+		/// 
+		/// This method takes in:
+		///  - The view model with all issue details (title, description, attachments).
+		///  - The user ID of the reporter (so we know who logged it).
+		/// 
+		/// What happens inside:
+		///  1. The issue is saved to the DB (generates an IssueID).
+		///  2. Any file uploads are validated, sanitized, written to disk, 
+		///     and stored as IssueAttachment records.
+		/// 
+		/// Returns the database ID of the newly created issue.
 		/// </summary>
-		Task<int> SubmitAsync(IssueViewModel model, string reporterUserId, CancellationToken ct = default);
+		/// <param name="viewModel">The form data / inputs from the user.</param>
+		/// <param name="reporterUserId">The user who is submitting the issue.</param>
+		/// <param name="ct">Optional cancellation token (lets callers cancel the operation).</param>
+		/// <returns>The newly created issue's ID from the database.</returns>
+		Task<int> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default);
 	}
 }
