@@ -118,28 +118,39 @@
             </div>
         </section>
 
-        <!-- Step 3 -->
-        <section class="wizard-step flex-hidden" data-step="3">
-            <h2 class="report-section-title">Attachments</h2>
-            <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label class="form-label">Upload</label>
-                    <div id="dropzone" class="report-dropzone">
-                        <input asp-for="Files" id="fileInput" type="file" class="flex-hidden" multiple accept="image/*,.pdf,.doc,.docx" />
-                        <div class="report-dropzone-content">
-                            <i class="bi bi-cloud-arrow-up"></i>
-                            <p>Drag & drop images/documents here, or</p>
-                            <button type="button" class="btn btn-success btn-sm" id="browseBtn">Browse Files</button>
-                        </div>
-                    </div>
-                    <small class="report-hint">Accepted: images, PDF, DOC, DOCX</small>
-                </div>
-                <div class="fxg-f-col fxg-u-gap-2">
-                    <label class="form-label">Selected Files</label>
-                    <ul id="fileList" class="report-file-list"></ul>
-                </div>
-            </div>
-        </section>
+		<!-- Step 3 -->
+		<section class="wizard-step flex-hidden" data-step="3">
+			<h2 class="report-section-title">Attachments</h2>
+
+			<!-- 3-column grid: Upload | Spacer | Selected Files -->
+			<div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-3">
+				<!-- Upload -->
+				<div class="fxg-f-col fxg-u-gap-2">
+					<label class="form-label">Upload</label>
+
+					<div id="dropzone" class="report-dropzone">
+						<input asp-for="Files" id="fileInput" type="file" class="flex-hidden" multiple />
+						<div class="report-dropzone-content">
+							<i class="bi bi-cloud-arrow-up"></i>
+							<p>Drag & drop files here, or</p>
+							<button type="button" class="btn btn-success btn-sm" id="browseBtn">Browse Files</button>
+						</div>
+					</div>
+
+					<!-- Accepted types text (driven by JS) -->
+					<small id="acceptedTypesText" class="report-hint"></small>
+				</div>
+
+				<!-- Spacer column -->
+				<div aria-hidden="true"></div>
+
+				<!-- Selected files -->
+				<div class="fxg-f-col fxg-u-gap-2">
+					<label class="form-label">Selected Files</label>
+					<ul id="fileList" class="report-file-list"></ul>
+				</div>
+			</div>
+		</section>
 
         <!-- Step 4 -->
         <section class="wizard-step flex-hidden" data-step="4">
@@ -476,6 +487,30 @@
             // 6) Attachments (dropzone)
             // ------------------------------------------------------------
             if (window.DropzoneHelper) {
+                // Single source of truth for accepted types
+                const ACCEPTED = [
+                    { label: "Images", value: "image/*", test: f => (f.type || "").startsWith("image/") },
+                    { label: "PDF", value: ".pdf", test: f => /\.pdf$/i.test(f.name) },
+                    { label: "DOC", value: ".doc", test: f => /\.doc$/i.test(f.name) },
+                    { label: "DOCX", value: ".docx", test: f => /\.docx$/i.test(f.name) }
+                ];
+
+                // Apply to <input accept="...">
+                fileInput.setAttribute("accept", ACCEPTED.map(a => a.value).join(","));
+
+                // Render accepted types as plain text under the dropzone
+                (function renderAcceptedText() {
+                    const el = document.getElementById("acceptedTypesText");
+                    if (!el) return;
+                    el.textContent = `Accepted: ${ACCEPTED.map(a => a.label).join(", ")}`;
+                })();
+
+                // Utility to filter files against ACCEPTED
+                function filterAccepted(fileList) {
+                    const files = Array.from(fileList || []);
+                    return files.filter(f => ACCEPTED.some(a => a.test(f)));
+                }
+
                 const dz = DropzoneHelper.init({
                     dropzone: dropzone,
                     input: fileInput,
@@ -489,12 +524,21 @@
                         const li = document.createElement("li");
                         li.className = "report-file-list-item";
                         li.innerHTML = `
-                            <span class="report-file-name">${file.name}</span>
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}"><i class="bi bi-x"></i></button>`;
+                            <span class="report-file-name" title="${file.name}">${file.name}</span>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}" aria-label="Remove ${file.name}">
+                                <i class="bi bi-x"></i>
+                            </button>`;
                         return li;
                     },
                     validateInputOnChange: false,
                     onChange: () => {
+                        // Enforce accept list even for drag/drop by replacing FileList
+                        const allowed = filterAccepted(fileInput.files);
+                        if (allowed.length !== (fileInput.files?.length || 0)) {
+                            const dt = new DataTransfer();
+                            allowed.forEach(f => dt.items.add(f));
+                            fileInput.files = dt.files;
+                        }
                         if (v) v.validateFields("#fileInput");
                         updateReview();
                     }
