@@ -71,7 +71,7 @@ namespace MyLocalGov.com.Data
                     new IssueModel
                     {
                         ReporterUserID = hiccupUser.Id,
-                        LocationText = "Dragon Arena",
+                        Address = "Dragon Arena",
                         Latitude = 64.9632,
                         Longitude = -19.0210,
                         CategoryID = 1,
@@ -84,7 +84,7 @@ namespace MyLocalGov.com.Data
                     new IssueModel
                     {
                         ReporterUserID = hiccupUser.Id,
-                        LocationText = "Village Square",
+                        Address = "Village Square",
                         Latitude = 64.9633,
                         Longitude = -19.0212,
                         CategoryID = 2,
@@ -97,7 +97,7 @@ namespace MyLocalGov.com.Data
                     new IssueModel
                     {
                         ReporterUserID = hiccupUser.Id,
-                        LocationText = "Cliffside",
+                        Address = "Cliffside",
                         Latitude = 64.9634,
                         Longitude = -19.0214,
                         CategoryID = 3,

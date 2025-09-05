@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MyLocalGov.com.ViewModels.Issues
 {
-	public class IssueViewModel : IValidatableObject
+	public class IssueViewModel
 	{
 		// Combined address
 		[Required(ErrorMessage = "Address is required.")]
@@ -13,10 +13,14 @@ namespace MyLocalGov.com.ViewModels.Issues
 		[StringLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
 		public string Address { get; set; } = string.Empty;
 
+		[Required(ErrorMessage = "Latitude is required.")]
 		[Display(Name = "Latitude")]
+		[Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90.")]
 		public double? Latitude { get; set; }
 
+		[Required(ErrorMessage = "Longitude is required.")]
 		[Display(Name = "Longitude")]
+		[Range(-180, 180, ErrorMessage = "Longitude must be between -180 and 180.")]
 		public double? Longitude { get; set; }
 
 		// Category (match Model.CategoryID)
@@ -37,11 +41,5 @@ namespace MyLocalGov.com.ViewModels.Issues
 
 		// UI data
 		public IEnumerable<SelectListItem> Categories { get; set; } = Enumerable.Empty<SelectListItem>();
-
-		// IValidatableObject implementation (optional rules can be added here)
-		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-		{
-			yield break;
-		}
 	}
 }

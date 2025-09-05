@@ -32,7 +32,8 @@ namespace MyLocalGov.com.Controllers
 
 		public IActionResult Index()
 		{
-			return View();
+			// Redirect to Dashboard landing page
+			return RedirectToAction("Index", "Dashboard");
 		}
 
 		// GET: /Reports/ReportIssue
@@ -46,7 +47,7 @@ namespace MyLocalGov.com.Controllers
 			return View("ReportIssue", vm);
 		}
 
-		// POST: /Reports/ReportIssue
+		// POST: /Issues/ReportIssue
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> ReportIssue(IssueViewModel vm, CancellationToken ct)
