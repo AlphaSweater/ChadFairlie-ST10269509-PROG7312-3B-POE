@@ -24,19 +24,27 @@
 
     <form asp-action="ReportIssue" asp-controller="Issues" method="post" enctype="multipart/form-data" class="fxg-f-col fxg-u-gap-6 report-form-card" id="reportForm">
         <!-- Wizard navigation at the top -->
-		<!-- Progress bar -->
-		<div class="report-wizard-progress" role="progressbar" aria-label="Wizard progress">
-			<div class="report-wizard-progress-bar" id="wizardProgressBar" style="width:0%"></div>
-		</div>
-        <div class="report-wizard-nav fxg-f-row fxg-f-main-between fxg-f-cross-center report-wizard-nav-top">
-            <button type="button" class="btn btn-outline-success" id="prevBtn">Back</button>
-            <div class="report-wizard-step-info fxg-f-col fxg-f-cross-center">
-                <span id="engagementMessage">Let’s get started — Step 1 of 4</span>
-                <div class="report-wizard-step-indicator">
-                    <span id="stepIndicator">Step 1 of 4</span>
-                </div>
+        <div class="report-wizard-nav report-wizard-nav-top fxg-u-gap-0">
+            <!-- Step counter -->
+            <div class="report-wizard-step-indicator-top">
+                <span id="stepIndicator">Step 1 of 4</span>
             </div>
-            <button type="button" class="btn btn-success" id="nextBtn">Next</button>
+
+            <!-- Nav Buttons with PROGRESS BAR -->
+            <div class="report-wizard-controls fxg-f-row fxg-f-cross-center">
+                <button type="button" class="btn btn-outline-success" id="prevBtn">Back</button>
+
+                <div class="report-wizard-progress fxg-f-grow-1" role="progressbar" aria-label="Wizard progress">
+                    <div class="report-wizard-progress-bar" id="wizardProgressBar" style="width:0%"></div>
+                </div>
+
+                <button type="button" class="btn btn-success" id="nextBtn">Next</button>
+            </div>
+
+            <!-- Engagement message -->
+            <div class="report-wizard-engagement">
+                <span id="engagementMessage">Pin the problem location — Step 1 of 4</span>
+            </div>
         </div>
 
         <!-- Step 1 -->
@@ -237,13 +245,13 @@
                 ValidationHelper.markRequiredLabels(root);
             }
 
-            // Wizard step engagement messages
-            const messages = [
-                "Let’s get started — Step 1 of 4",
-                "Great! Add details — Step 2 of 4",
-                "Almost there — Step 3 of 4",
-                "Review and submit — Step 4 of 4"
-            ];
+			// Wizard step engagement messages
+			const messages = [
+				"Pin the problem location on the map and confirm the address!",
+				"Describe what’s wrong and choose the most relevant category",
+				"Attach photos or documents that show the issue clearly",
+				"Review your details and submit your report"
+			];
 
             // ------------------------------------------------------------
             // 2) Utilities

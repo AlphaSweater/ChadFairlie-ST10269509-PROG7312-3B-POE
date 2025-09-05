@@ -148,15 +148,21 @@
     padding-bottom: var(--spacing-lg);
     border-bottom: 1px solid var(--white-transparent-20);
     z-index: 10;
-}
-.report-wizard-step-info {
-    text-align: center;
-    min-width: 180px;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
 }
 .report-wizard-step-indicator {
     font-weight: bold;
     font-size: 1.1em;
     margin-top: 0.25em;
+}
+.report-wizard-step-indicator-top {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--white);
 }
 
 /* Progress bar */
@@ -174,7 +180,28 @@
     background: var(--sa-green);
     transition: width var(--transition-normal);
 }
-.report-wizard-steps-labels span {
+.report-wizard-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.report-wizard-controls #prevBtn,
+.report-wizard-controls #nextBtn {
+    flex: 0 0 auto;
+}
+
+.report-wizard-controls .report-wizard-progress {
+    flex: 1 1 auto; /* span full width between buttons */
+    height: 10px;
+    background: var(--white-transparent-15);
+    border-radius: var(--border-radius-full);
+    border: 1px solid var(--sa-green);
+    overflow: hidden;
+}
+
+.report-wizard-engagement {
+    text-align: center;
     color: var(--white-transparent-90);
     font-size: var(--font-size-sm);
 }
