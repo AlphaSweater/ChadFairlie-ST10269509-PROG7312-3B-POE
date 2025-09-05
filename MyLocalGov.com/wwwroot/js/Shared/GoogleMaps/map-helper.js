@@ -69,7 +69,6 @@
 				onChange: null
 			}, opts || {});
 
-			// Resolve elements
 			this.mapEl = Dom.resolve(this.opts.mapEl);
 			this.inputEl = Dom.resolve(this.opts.inputEl);
 			this.coordsLabelEl = Dom.resolve(this.opts.coordsLabelEl);
@@ -171,7 +170,6 @@
 		}
 
 		_wireSearchBox() {
-			// Keyboard navigation + Enter handling
 			this.inputEl.addEventListener("keydown", (e) => {
 				if (e.key === "ArrowDown") { e.preventDefault(); this._moveSelection(1); return; }
 				if (e.key === "ArrowUp") { e.preventDefault(); this._moveSelection(-1); return; }
@@ -187,7 +185,6 @@
 				}
 			});
 
-			// Debounced autocomplete
 			this.inputEl.addEventListener("input", debounce(() => {
 				const q = (this.inputEl.value || "").trim();
 				if (q.length < 3) { this._hideSuggestions(); return; }
@@ -199,22 +196,12 @@
 					.catch(() => this._hideSuggestions());
 			}, 200));
 
-			// Hide after blur (allow click to register)
 			this.inputEl.addEventListener("blur", () => setTimeout(() => this._hideSuggestions(), 200));
 		}
 
-		// Suggestions UI
 		_buildSuggestionsUI() {
 			const container = document.createElement("div");
 			container.className = "mapui-suggest";
-			container.style.position = "absolute";
-			container.style.zIndex = "1000";
-			container.style.background = "#fff";
-			container.style.border = "1px solid rgba(0,0,0,0.15)";
-			container.style.borderRadius = "0.25rem";
-			container.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
-			container.style.padding = "4px 0";
-			container.style.display = "none";
 			container.setAttribute("role", "listbox");
 
 			this._sugHost = container;
@@ -222,7 +209,9 @@
 			this._sugIndex = -1;
 
 			const parent = this.inputEl.parentElement || this.inputEl;
-			parent.style.position = "relative";
+			if (getComputedStyle(parent).position === "static") {
+				parent.style.position = "relative";
+			}
 			parent.appendChild(container);
 
 			const reposition = () => this._positionSuggestions();
@@ -249,20 +238,16 @@
 			items.forEach((it, idx) => {
 				const div = document.createElement("div");
 				div.className = "mapui-suggest-item";
-				div.style.padding = "6px 10px";
-				div.style.cursor = "pointer";
-				div.style.display = "flex";
-				div.style.flexDirection = "column";
 				div.setAttribute("role", "option");
 				div.dataset.index = String(idx);
 
 				const main = document.createElement("span");
+				main.className = "mapui-suggest-item-main";
 				main.textContent = it.mainText || it.description || "";
-				main.style.fontWeight = "500";
 
 				const secondary = document.createElement("small");
+				secondary.className = "mapui-suggest-item-secondary";
 				secondary.textContent = it.secondaryText || "";
-				secondary.style.color = "#6c757d";
 
 				div.appendChild(main);
 				if (secondary.textContent) div.appendChild(secondary);
@@ -275,11 +260,11 @@
 				this._sugHost.appendChild(div);
 			});
 
-			this._sugHost.style.display = "block";
+			this._sugHost.classList.add("is-open");
 		}
 
 		_hideSuggestions() {
-			this._sugHost.style.display = "none";
+			this._sugHost.classList.remove("is-open");
 			this._sugHost.innerHTML = "";
 			this._sugItems = [];
 			this._sugIndex = -1;
@@ -288,7 +273,7 @@
 		_highlight(index) {
 			const children = Array.from(this._sugHost.children);
 			children.forEach((el, i) => {
-				el.style.background = i === index ? "rgba(25,135,84,0.08)" : "transparent";
+				el.classList.toggle("is-active", i === index);
 			});
 			this._sugIndex = index;
 		}
@@ -317,7 +302,6 @@
 				.catch(() => { /* ignore */ });
 		}
 
-		// Public API
 		setPosition(lat, lng, { pan = true, zoom = this.opts.pickZoom || 15, reverseGeocodeOnPick = true } = {}) {
 			const maps = global.google.maps;
 			const pos = new maps.LatLng(lat, lng);
@@ -338,6 +322,11 @@
 			return { lat: p.lat(), lng: p.lng() };
 		}
 
+		validateNow() {
+			const p = this.marker.getPosition();
+			return MapService.AddressApi.reverseGeocode(p.lat(), p.lng()).then(d => this._applyResultToUI(d, { setInput: true }));
+		}
+
 		destroy() {
 			const g = global.google.maps;
 			g.event.clearInstanceListeners(this.marker);
@@ -346,12 +335,8 @@
 		}
 	}
 
-	function createWidget(options) {
-		return new MapWidget(options);
-	}
-
 	global.MapUI = {
 		loadGoogleMaps,
-		createWidget
+		createWidget: (options) => new MapWidget(options)
 	};
 })(window);

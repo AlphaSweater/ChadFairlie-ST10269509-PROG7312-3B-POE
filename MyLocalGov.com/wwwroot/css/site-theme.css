@@ -351,3 +351,81 @@ body {
 *, *::before, *::after {
 	transition: inherit;
 }
+
+
+/* ===========================================
+   Input boxes and auto-dropdowns
+   =========================================== */
+
+/* === Reusable green input (matches ReportIssue page) === */
+.gov-input {
+	border-radius: 10px;
+	border: 1.5px solid #3bbf6c;
+	padding: 12px;
+	font-size: 1rem;
+	width: 100%;
+	background: #f6fff9;
+	color: #155c2b;
+}
+.gov-input:focus {
+	border-color: #218c4a;
+	outline: none;
+	background: #eafbe7;
+	box-shadow: 0 0 8px rgba(42, 82, 152, 0.5);
+}
+
+/* === Autocomplete-only dropdown (AutocompleteHelper) === */
+.ac-helper-menu {
+	position: absolute;
+	z-index: 1000;
+	display: none;
+	background: #f6fff9;
+	border: 1.5px solid #3bbf6c;
+	border-radius: 10px;
+	box-shadow: var(--shadow-md);
+	padding: 4px 0;
+	max-height: 320px;
+	overflow-y: auto;
+}
+.ac-helper-menu.is-open { display: block; }
+
+.ac-helper-item {
+	padding: 8px 12px;
+	cursor: pointer;
+	color: #155c2b;
+}
+.ac-helper-item:hover,
+.ac-helper-item.is-active {
+	background: #eafbe7;
+}
+.ac-helper-item-main { font-weight: 500; }
+.ac-helper-item-secondary { color: #6c757d; }
+
+/* === Map UI dropdown (MapUI suggest) === */
+.mapui-suggest {
+	position: absolute;
+	z-index: 1000;
+	display: none;
+	background: #f6fff9;
+	border: 1.5px solid #3bbf6c;
+	border-radius: 10px;
+	box-shadow: var(--shadow-md);
+	padding: 4px 0;
+	max-height: 320px;
+	overflow-y: auto;
+}
+.mapui-suggest.is-open { display: block; }
+
+.mapui-suggest-item {
+	padding: 8px 12px;
+	cursor: pointer;
+	color: #155c2b;
+	display: flex;
+	flex-direction: column;
+}
+.mapui-suggest-item:hover,
+.mapui-suggest-item.is-active {
+	background: #eafbe7;
+}
+.mapui-suggest-item-main { font-weight: 500; }
+.mapui-suggest-item-secondary { color: #6c757d; }
