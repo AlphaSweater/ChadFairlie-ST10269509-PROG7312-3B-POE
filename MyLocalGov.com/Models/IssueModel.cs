@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Mime;
+using System.Numerics;
 
 namespace MyLocalGov.com.Models
 {
 	public class IssueModel
 	{
 		[Key]
-		public int IssueID { get; set; }
+		public string IssueID { get; set; }
 
 		// Reporter (FK to UserProfileModel)
 		[Required]
@@ -48,6 +50,7 @@ namespace MyLocalGov.com.Models
 		// Default constructor
 		public IssueModel()
 		{
+			IssueID = Guid.NewGuid().ToString();
 			DateReported = DateTime.UtcNow;
 			LastUpdated = DateTime.UtcNow;
 		}
@@ -56,11 +59,11 @@ namespace MyLocalGov.com.Models
 	public class IssueAttachmentModel
 	{
 		[Key]
-		public int AttachmentID { get; set; }
+		public string AttachmentID { get; set; }
 
 		[Required]
 		[ForeignKey(nameof(Issue))]
-		public int IssueID { get; set; }
+		public string IssueID { get; set; }
 
 		[Required]
 		public IssueModel Issue { get; set; } = default!;
@@ -81,5 +84,16 @@ namespace MyLocalGov.com.Models
 		public long? FileSizeBytes { get; set; }
 
 		public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+
+		public IssueAttachmentModel(string issueId, string filename, string filePath, string contentType, long fileSizeBytes)
+		{
+			AttachmentID = Guid.NewGuid().ToString();
+			IssueID = issueId;
+			FileName = filename;
+			FilePath = filePath;
+			ContentType = contentType;
+			FileSizeBytes = fileSizeBytes;
+			UploadedAt = DateTime.UtcNow;
+		}
 	}
 }

@@ -29,6 +29,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\js\Reports\" />
+    <Folder Include="wwwroot\uploads\issues\10\" />
+    <Folder Include="wwwroot\uploads\issues\11\" />
+    <Folder Include="wwwroot\uploads\issues\8\" />
+    <Folder Include="wwwroot\uploads\issues\9\" />
   </ItemGroup>
 
 </Project>
