@@ -1,40 +1,59 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MyLocalGov.com.Models;
 using MyLocalGov.com.Services.Interfaces;
 using MyLocalGov.com.ViewModels.Issues;
 using System.Security.Claims;
 
 namespace MyLocalGov.com.Controllers
 {
-	// ============================================================================
+	// =================================================================================================
 	// IssuesController
-	// ----------------------------------------------------------------------------
-	// Manages user Issues (e.g., issues, incidents, complaints).
-	// Allows users to create, view, and track their own reports.
-	// ----------------------------------------------------------------------------
-	// Typical Actions:
-	// - Create()     : Display form to submit a new report
-	// - MyIssues()  : List all Issues created by the current user
-	// - Details(id)  : View details for a specific Issue report
-	// ============================================================================
+	// -------------------------------------------------------------------------------------------------
+	// Purpose:
+	//   Handles user-submitted municipal issues (incidents / complaints / service requests).
+	//
+	// Responsibilities:
+	//   - Display the "Report Issue" form (GET).
+	//   - Accept and validate posted issue data (POST).
+	//   - Delegate persistence + attachment handling to IIssueService.
+	//
+	// Notes:
+	//   - Currently redirects Index() to the Dashboard (no list view implemented here yet).
+	//   - Categories are static for now; if they become data-driven, replace GetCategories().
+	// =================================================================================================
 	[Authorize]
 	public class IssuesController : Controller
 	{
 		private readonly IIssueService _issueService;
+
+		// Static, reusable category list (avoids reallocation on every request).
+		private static readonly IReadOnlyList<SelectListItem> _categories = new List<SelectListItem>
+		{
+			new() { Value = "1", Text = "Sanitation" },
+			new() { Value = "2", Text = "Roads" },
+			new() { Value = "3", Text = "Water" },
+			new() { Value = "4", Text = "Electricity" },
+			new() { Value = "5", Text = "Parks" },
+			new() { Value = "6", Text = "Waste" },
+			new() { Value = "7", Text = "Utilities" },
+			new() { Value = "8", Text = "Other" }
+		};
 
 		public IssuesController(IIssueService issueService)
 		{
 			_issueService = issueService;
 		}
 
-		public IActionResult Index()
-		{
-			return RedirectToAction("Index", "Dashboard");
-		}
+		/// <summary>
+		/// Redirects the base Issues route to the Dashboard.
+		/// (Placeholder: add a "My Issues" listing endpoint later.)
+		/// </summary>
+		public IActionResult Index() => RedirectToAction("Index", "Dashboard");
 
+		/// <summary>
+		/// Renders the issue reporting form.
+		/// </summary>
 		[HttpGet]
 		public IActionResult ReportIssue()
 		{
@@ -45,35 +64,37 @@ namespace MyLocalGov.com.Controllers
 			return View("ReportIssue", vm);
 		}
 
-		// Single POST endpoint
+		/// <summary>
+		/// Handles submission of a new issue.
+		/// - Validates model state.
+		/// - Uses authenticated user ID.
+		/// - Delegates persistence to the issue service.
+		/// </summary>
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> ReportIssue(IssueViewModel vm, CancellationToken ct)
+		public async Task<IActionResult> CreateIssue(IssueViewModel vm, CancellationToken ct)
 		{
-			vm.Categories ??= GetCategories();
-			if (!ModelState.IsValid) return View("ReportIssue", vm);
+			if (!ModelState.IsValid)
+				return View("ReportIssue", vm);
 
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (string.IsNullOrWhiteSpace(userId))
+			{
+				// Very unlikely (Authorize attribute), but defensive.
+				ModelState.AddModelError(string.Empty, "Unable to resolve current user.");
+				return View("ReportIssue", vm);
+			}
+
+			// Service handles persistence + attachments. Returned ID not yet used; could route to details later.
 			await _issueService.SubmitAsync(vm, userId, ct);
 
 			TempData["ReportSubmitted"] = true;
 			return RedirectToAction(nameof(Index));
 		}
 
-		private static IEnumerable<SelectListItem> GetCategories()
-		{
-			var items = new[]
-			{
-				new { Id = 1, Name = "Sanitation" },
-				new { Id = 2, Name = "Roads" },
-				new { Id = 3, Name = "Water" },
-				new { Id = 4, Name = "Electricity" },
-				new { Id = 5, Name = "Parks" },
-				new { Id = 6, Name = "Waste" },
-				new { Id = 7, Name = "Utilities" },
-				new { Id = 8, Name = "Other" }
-			};
-			return items.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name });
-		}
+		/// <summary>
+		/// Returns a static category list (replace with data store / config if needed).
+		/// </summary>
+		private static IEnumerable<SelectListItem> GetCategories() => _categories;
 	}
 }
