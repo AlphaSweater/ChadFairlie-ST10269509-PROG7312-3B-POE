@@ -17,6 +17,7 @@ namespace MyLocalGov.com.Controllers
 	//   - Display the "Report Issue" form (GET).
 	//   - Accept and validate posted issue data (POST).
 	//   - Delegate persistence + attachment handling to IIssueService.
+	//   - Provides JSON (AJAX) responses when requested, enabling SweetAlert UX.
 	//
 	// Notes:
 	//   - Currently redirects Index() to the Dashboard (no list view implemented here yet).
@@ -65,36 +66,91 @@ namespace MyLocalGov.com.Controllers
 		}
 
 		/// <summary>
-		/// Handles submission of a new issue.
-		/// - Validates model state.
-		/// - Uses authenticated user ID.
-		/// - Delegates persistence to the issue service.
+		/// Creates a new issue. Supports:
+		///  - Standard form POST (redirect flow).
+		///  - AJAX (X-Requested-With=XMLHttpRequest) returning JSON for SweetAlert.
 		/// </summary>
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Consumes("multipart/form-data")]
 		public async Task<IActionResult> CreateIssue(IssueViewModel vm, CancellationToken ct)
 		{
+			var isAjax = IsAjaxRequest();
+			vm.Categories ??= GetCategories();
+
 			if (!ModelState.IsValid)
-				return View("ReportIssue", vm);
+			{
+				if (!isAjax)
+					return View("ReportIssue", vm);
+
+				return BadRequest(new
+				{
+					success = false,
+					message = "Validation failed.",
+					errors = ModelState
+						.Where(kvp => kvp.Value?.Errors.Count > 0)
+						.Select(kvp => new
+						{
+							field = kvp.Key,
+							messages = kvp.Value!.Errors.Select(e => e.ErrorMessage)
+						})
+				});
+			}
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (string.IsNullOrWhiteSpace(userId))
 			{
-				// Very unlikely (Authorize attribute), but defensive.
-				ModelState.AddModelError(string.Empty, "Unable to resolve current user.");
-				return View("ReportIssue", vm);
+				const string failMsg = "Unable to resolve current user.";
+				if (!isAjax)
+				{
+					ModelState.AddModelError(string.Empty, failMsg);
+					return View("ReportIssue", vm);
+				}
+				return Unauthorized(new { success = false, message = failMsg });
 			}
 
-			// Service handles persistence + attachments. Returned ID not yet used; could route to details later.
-			await _issueService.SubmitAsync(vm, userId, ct);
+			try
+			{
+				var result = await _issueService.SubmitAsync(vm, userId, ct);
 
-			TempData["ReportSubmitted"] = true;
-			return RedirectToAction(nameof(Index));
+				if (!isAjax)
+				{
+					TempData["ReportSubmitted"] = true;
+					return RedirectToAction(nameof(Index));
+				}
+
+				return Ok(new
+				{
+					success = result.Success,
+					message = result.Message,
+					issueId = result.IssueId,
+					attachments = result.AttachmentCount,
+					redirectUrl = Url.Action(nameof(Index))!
+				});
+			}
+			catch (OperationCanceledException)
+			{
+				if (isAjax)
+					return StatusCode(499, new { success = false, message = "Submission canceled." }); // Client Closed Request (non-standard but recognizable)
+				ModelState.AddModelError(string.Empty, "Submission canceled.");
+				return View("ReportIssue", vm);
+			}
+			catch (Exception ex)
+			{
+				if (isAjax)
+					return StatusCode(500, new { success = false, message = "An unexpected error occurred.", detail = ex.Message });
+				ModelState.AddModelError(string.Empty, "An unexpected error occurred.");
+				return View("ReportIssue", vm);
+			}
 		}
 
 		/// <summary>
 		/// Returns a static category list (replace with data store / config if needed).
 		/// </summary>
 		private static IEnumerable<SelectListItem> GetCategories() => _categories;
+		
+		private bool IsAjaxRequest() =>
+				Request.Headers.TryGetValue("X-Requested-With", out var v) &&
+				string.Equals(v, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 	}
 }

@@ -5,6 +5,7 @@ using MyLocalGov.com.Repositories.Interfaces;
 using MyLocalGov.com.Services.Interfaces;
 using MyLocalGov.com.ViewModels.Issues;
 using MyLocalGov.com.Mappings;
+using static MyLocalGov.com.Services.Interfaces.IIssueService;
 
 namespace MyLocalGov.com.Services.Implementations
 {
@@ -32,7 +33,7 @@ namespace MyLocalGov.com.Services.Implementations
 		#region Public API
 
 		/// <inheritdoc />
-		public async Task<string> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default)
+		public async Task<IssueSubmissionResult> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default)
 		{
 			ArgumentNullException.ThrowIfNull(viewModel);
 			if (string.IsNullOrWhiteSpace(reporterUserId))
@@ -48,14 +49,20 @@ namespace MyLocalGov.com.Services.Implementations
 			_logger.LogInformation("SubmitAsync: Issue {IssueId} created", issue.IssueID);
 
 			// 2) Then handle attachments → validation, sanitation, upload, and persistence
-			var saved = await SaveAttachmentsAsync(issue.IssueID.ToString(), viewModel.Files, ct);
+			var savedAttachments = await SaveAttachmentsAsync(issue.IssueID, viewModel.Files, ct);
 
-			if (saved > 0)
-				_logger.LogInformation("SubmitAsync: Persisted {SavedCount} attachment(s) for Issue {IssueId}", saved, issue.IssueID);
-			else
-				_logger.LogDebug("SubmitAsync: No attachments to save for Issue {IssueId}", issue.IssueID);
+			string msg = savedAttachments switch
+			{
+				> 1 => $"Issue submitted successfully with {savedAttachments} attachments.",
+				1 => "Issue submitted successfully with 1 attachment.",
+				_ => "Issue submitted successfully."
+			};
 
-			return issue.IssueID;
+			return new IssueSubmissionResult(
+				Success: true,
+				IssueId: issue.IssueID,
+				AttachmentCount: savedAttachments,
+				Message: msg);
 		}
 
 		#endregion
@@ -262,8 +269,8 @@ namespace MyLocalGov.com.Services.Implementations
 			var attempt = 0;
 
 			string Candidate() => attempt == 0 ? $"{name}{ext}" : $"{name} ({attempt}){ext}";
-
 			var candidate = Candidate();
+
 			while (usedNames.Contains(candidate))
 			{
 				attempt++;

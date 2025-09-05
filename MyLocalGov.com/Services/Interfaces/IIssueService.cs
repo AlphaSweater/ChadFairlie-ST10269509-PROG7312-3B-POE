@@ -26,12 +26,21 @@ namespace MyLocalGov.com.Services.Interfaces
 		///  2. Any file uploads are validated, sanitized, written to disk, 
 		///     and stored as IssueAttachment records.
 		/// 
-		/// Returns the database ID of the newly created issue.
+		/// Returns the IssueSubmissionResult from the service.
 		/// </summary>
 		/// <param name="viewModel">The form data / inputs from the user.</param>
 		/// <param name="reporterUserId">The user who is submitting the issue.</param>
 		/// <param name="ct">Optional cancellation token (lets callers cancel the operation).</param>
-		/// <returns>The newly created issue's ID from the database.</returns>
-		Task<string> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default);
+		/// <returns>The IssueSubmissionResult from the service.</returns>
+		Task<IssueSubmissionResult> SubmitAsync(IssueViewModel viewModel, string reporterUserId, CancellationToken ct = default);
+
+		/// <summary>
+		/// Standard response wrapper for issue submission.
+		/// </summary>
+		public sealed record IssueSubmissionResult(
+			bool Success,
+			string IssueId,
+			int AttachmentCount,
+			string Message);
 	}
 }
