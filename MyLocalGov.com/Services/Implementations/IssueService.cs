@@ -25,6 +25,9 @@ namespace MyLocalGov.com.Services.Implementations
 		private readonly IWebHostEnvironment _env;
 		private readonly ILogger<IssueService> _logger;
 
+		// Tune this to control parallelism of the physical uploads.
+		private const int MaxParallelUploads = 4;
+
 		public IssueService(IUnitOfWork unitOfWork, IWebHostEnvironment env, ILogger<IssueService> logger)
 		{
 			_unitOfWork = unitOfWork;
@@ -49,15 +52,14 @@ namespace MyLocalGov.com.Services.Implementations
 			// 1) Create the issue
 			var issue = viewModel.ToModel(reporterUserId);
 			await _unitOfWork.Issues.AddAsync(issue);
-			await _unitOfWork.SaveAsync(); // ensure IssueID is generated
-
+			await _unitOfWork.SaveAsync(); // ensure IssueID
 			_logger.LogInformation("SubmitAsync: Issue {IssueId} created", issue.IssueID);
 
-			// 2) Build a queue of validated, de-duplicated files
+			// 2) Build queue (sequential validation + de-dupe)
 			var fileQueue = BuildFileQueue(viewModel.Files);
 			_logger.LogInformation("SubmitAsync: {Count} attachment(s) queued for Issue {IssueId}", fileQueue.Count, issue.IssueID);
 
-			// 3) Upload and persist attachments
+			// 3) Parallel upload with sequential validation already done
 			if (fileQueue.Count > 0)
 			{
 				var saved = await SaveAttachmentsAsync(issue.IssueID, fileQueue, ct);
@@ -75,10 +77,6 @@ namespace MyLocalGov.com.Services.Implementations
 
 		#region Queue building
 
-		// Validates files and returns a queue for sequential processing.
-		// - Skips empty files
-		// - Sanitizes names
-		// - De-duplicates by sanitized name (first occurrence wins)
 		private Queue<IFormFile> BuildFileQueue(IEnumerable<IFormFile>? files)
 		{
 			var queue = new Queue<IFormFile>();
@@ -89,11 +87,7 @@ namespace MyLocalGov.com.Services.Implementations
 			}
 
 			var seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			var total = 0;
-			var enqueued = 0;
-			var skippedEmpty = 0;
-			var skippedName = 0;
-			var skippedDup = 0;
+			int total = 0, enqueued = 0, skippedEmpty = 0, skippedName = 0, skippedDup = 0;
 
 			foreach (var file in files)
 			{
@@ -112,7 +106,6 @@ namespace MyLocalGov.com.Services.Implementations
 					continue;
 				}
 
-				// Only enqueue first occurrence of a logical name
 				if (seenNames.Add(safeName))
 				{
 					queue.Enqueue(file);
@@ -134,21 +127,25 @@ namespace MyLocalGov.com.Services.Implementations
 
 		#endregion
 
-		#region File save
+		#region File save (sequential validation → parallel upload)
 
-		// Uploads files to wwwroot/uploads/issues/{issueId}/ and persists attachment rows,
-		// sequentially dequeuing. Continues past individual failures.
+		// New approach: sequentially determine unique target names, then upload in parallel.
 		private async Task<int> SaveAttachmentsAsync(int issueId, Queue<IFormFile> fileQueue, CancellationToken ct)
 		{
 			if (issueId <= 0) throw new ArgumentOutOfRangeException(nameof(issueId));
-			if (fileQueue is null) return 0;
+			if (fileQueue is null || fileQueue.Count == 0) return 0;
 
 			var root = _env.WebRootPath ?? "wwwroot";
 			var destDir = Path.Combine(root, "uploads", "issues", issueId.ToString());
 			Directory.CreateDirectory(destDir);
 			_logger.LogDebug("SaveAttachmentsAsync: Destination directory {DestDir}", destDir);
 
-			var saved = 0;
+			// 1) Sequential pass: assign final unique names (no IO yet)
+			var existingNames = new HashSet<string>(
+				Directory.EnumerateFiles(destDir).Select(Path.GetFileName) ?? Array.Empty<string>(),
+				StringComparer.OrdinalIgnoreCase);
+
+			var planned = new List<UploadPlan>(fileQueue.Count);
 
 			while (fileQueue.Count > 0)
 			{
@@ -157,77 +154,133 @@ namespace MyLocalGov.com.Services.Implementations
 				var file = fileQueue.Dequeue();
 				if (file is null || file.Length <= 0)
 				{
-					_logger.LogWarning("SaveAttachmentsAsync: Skipped a null/empty file for Issue {IssueId}", issueId);
+					_logger.LogWarning("SaveAttachmentsAsync: Skipped null/empty file during planning for Issue {IssueId}", issueId);
 					continue;
 				}
 
-				try
+				var safeName = MakeSafeFileName(file.FileName);
+				if (string.IsNullOrWhiteSpace(safeName))
 				{
-					var safeName = MakeSafeFileName(file.FileName);
-					if (string.IsNullOrWhiteSpace(safeName))
-					{
-						_logger.LogWarning("SaveAttachmentsAsync: Skipped file with invalid name. Original: {Original}", file.FileName);
-						continue;
-					}
-
-					var finalName = EnsureUniqueFileName(destDir, safeName);
-					var fullPath = Path.Combine(destDir, finalName);
-
-					_logger.LogDebug(
-						"SaveAttachmentsAsync: Writing {FileName} ({Bytes} bytes) to {Path}",
-						finalName, file.Length, fullPath
-					);
-
-					await using (var stream = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true))
-					{
-						await file.CopyToAsync(stream, ct);
-					}
-
-					var relativePath = Path.Combine("uploads", "issues", issueId.ToString(), finalName).Replace('\\', '/');
-
-					var attachment = new IssueAttachmentModel
-					{
-						IssueID = issueId,
-						FileName = finalName,
-						FilePath = relativePath,
-						ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? null : file.ContentType,
-						FileSizeBytes = file.Length,
-						UploadedAt = DateTime.UtcNow
-					};
-
-					await _unitOfWork.IssueAttachments.AddAsync(attachment);
-					saved++;
-
-					_logger.LogInformation(
-						"SaveAttachmentsAsync: Saved attachment {FileName} for Issue {IssueId}",
-						finalName, issueId
-					);
+					_logger.LogWarning("SaveAttachmentsAsync: Skipped invalid filename (planning). Original={Original}", file.FileName);
+					continue;
 				}
-				catch (OperationCanceledException)
-				{
-					_logger.LogWarning("SaveAttachmentsAsync: Canceled while saving attachments for Issue {IssueId}", issueId);
-					throw;
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "SaveAttachmentsAsync: Failed saving a file for Issue {IssueId}", issueId);
-					// Continue with next file
-				}
+
+				var finalName = EnsureUniqueFileName(existingNames, safeName);
+				existingNames.Add(finalName);
+
+				var fullPath = Path.Combine(destDir, finalName);
+				var relativePath = Path.Combine("uploads", "issues", issueId.ToString(), finalName).Replace('\\', '/');
+
+				planned.Add(new UploadPlan(file, finalName, fullPath, relativePath));
 			}
 
-			if (saved > 0)
+			if (planned.Count == 0)
 			{
+				_logger.LogDebug("SaveAttachmentsAsync: Nothing to upload after planning for Issue {IssueId}", issueId);
+				return 0;
+			}
+
+			_logger.LogDebug("SaveAttachmentsAsync: Planned {Count} upload(s) for Issue {IssueId}", planned.Count, issueId);
+
+			// 2) Parallel upload (bounded)
+			var semaphore = new SemaphoreSlim(MaxParallelUploads);
+			var attachmentModels = new List<IssueAttachmentModel>(planned.Count);
+			var uploadTasks = new List<Task>(planned.Count);
+			int completed = 0;
+
+			foreach (var plan in planned)
+			{
+				ct.ThrowIfCancellationRequested();
+				await semaphore.WaitAsync(ct);
+
+				uploadTasks.Add(Task.Run(async () =>
+				{
+					try
+					{
+						_logger.LogDebug("Upload START {FileName} ({Bytes} bytes) -> {Path}", plan.FinalName, plan.File.Length, plan.FullPath);
+
+						await using (var stream = new FileStream(plan.FullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true))
+						{
+							await plan.File.CopyToAsync(stream, ct);
+						}
+
+						lock (attachmentModels)
+						{
+							attachmentModels.Add(new IssueAttachmentModel
+							{
+								IssueID = issueId,
+								FileName = plan.FinalName,
+								FilePath = plan.RelativePath,
+								ContentType = string.IsNullOrWhiteSpace(plan.File.ContentType) ? null : plan.File.ContentType,
+								FileSizeBytes = plan.File.Length,
+								UploadedAt = DateTime.UtcNow
+							});
+						}
+
+						var done = Interlocked.Increment(ref completed);
+						_logger.LogInformation("Upload DONE {FileName} for Issue {IssueId} ({Done}/{Total})",
+							plan.FinalName, issueId, done, planned.Count);
+					}
+					catch (OperationCanceledException)
+					{
+						_logger.LogWarning("Upload CANCELED {FileName} for Issue {IssueId}", plan.FinalName, issueId);
+						TryDelete(plan.FullPath);
+						throw;
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex, "Upload FAILED {FileName} for Issue {IssueId}", plan.FinalName, issueId);
+						TryDelete(plan.FullPath);
+						// swallow to allow other uploads to continue
+					}
+					finally
+					{
+						semaphore.Release();
+					}
+				}, ct));
+			}
+
+			try
+			{
+				await Task.WhenAll(uploadTasks);
+			}
+			catch (OperationCanceledException)
+			{
+				_logger.LogWarning("SaveAttachmentsAsync: Upload batch canceled for Issue {IssueId}", issueId);
+				throw;
+			}
+
+			// 3) Persist successful attachments
+			if (attachmentModels.Count > 0)
+			{
+				foreach (var att in attachmentModels)
+					await _unitOfWork.IssueAttachments.AddAsync(att);
+
 				await _unitOfWork.SaveAsync();
 			}
 
-			return saved;
+			_logger.LogInformation("SaveAttachmentsAsync: {Saved}/{Planned} attachment(s) persisted for Issue {IssueId}",
+				attachmentModels.Count, planned.Count, issueId);
+
+			return attachmentModels.Count;
+		}
+
+		private sealed record UploadPlan(IFormFile File, string FinalName, string FullPath, string RelativePath);
+
+		private static void TryDelete(string path)
+		{
+			try
+			{
+				if (File.Exists(path))
+					File.Delete(path);
+			}
+			catch { /* ignore */ }
 		}
 
 		#endregion
 
 		#region Helpers
 
-		// Produces a sanitized file name safe for most filesystems.
 		private static string MakeSafeFileName(string? originalName)
 		{
 			var raw = Path.GetFileName(originalName ?? string.Empty).Trim();
@@ -247,8 +300,8 @@ namespace MyLocalGov.com.Services.Implementations
 			return basePart + ext;
 		}
 
-		// Returns a unique file name in the target directory by appending " (n)" if needed.
-		private static string EnsureUniqueFileName(string dir, string fileName)
+		// Overload that ensures uniqueness using an existing in-memory set (no disk race).
+		private static string EnsureUniqueFileName(HashSet<string> usedNames, string fileName)
 		{
 			var name = Path.GetFileNameWithoutExtension(fileName);
 			var ext = Path.GetExtension(fileName);
@@ -256,13 +309,13 @@ namespace MyLocalGov.com.Services.Implementations
 
 			string Candidate() => attempt == 0 ? $"{name}{ext}" : $"{name} ({attempt}){ext}";
 
-			var full = Path.Combine(dir, Candidate());
-			while (File.Exists(full))
+			var candidate = Candidate();
+			while (usedNames.Contains(candidate))
 			{
 				attempt++;
-				full = Path.Combine(dir, Candidate());
+				candidate = Candidate();
 			}
-			return Path.GetFileName(full);
+			return candidate;
 		}
 
 		#endregion
