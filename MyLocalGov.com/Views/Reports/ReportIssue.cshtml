@@ -38,56 +38,35 @@
         <!-- Hidden combined address to bind on submit -->
         <input asp-for="Address" type="hidden" id="Address" />
 
+        <!-- Keep address parts as hidden so the server model can bind/validate -->
+        <input asp-for="Street" type="hidden" id="Street" />
+        <input asp-for="Suburb" type="hidden" id="Suburb" />
+        <input asp-for="City" type="hidden" id="City" />
+        <input asp-for="PostalCode" type="hidden" id="PostalCode" />
+
         <!-- Step 1 -->
         <section class="wizard-step" data-step="1">
             <h2 class="report-section-title">Location</h2>
 
-            <div class="fxg-f-row fxg-u-w-full">
-                <div class="fxg-f-col fxg-f-grow-3 fxg-u-gap-3">
-                    <div class="fxg-f-col fxg-u-gap-0">
-                        <label asp-for="Street" class="form-label"></label>
-                        <input asp-for="Street" class="form-control" placeholder="123 Main Road" />
-                        <span asp-validation-for="Street" class="text-danger"></span>
+            <div class="fxg-f-col fxg-u-gap-3">
+                <!-- Hidden lat/lng fields (still bind and post) -->
+                <input asp-for="Latitude" type="hidden" id="Latitude" />
+                <input asp-for="Longitude" type="hidden" id="Longitude" />
+
+                <div class="fxg-f-col fxg-u-gap-1">
+                    <label for="locationInput" class="form-label">Search location</label>
+                    <div class="fxg-f-row fxg-u-gap-2">
+                        <input id="locationInput" class="form-control fxg-f-grow-1" placeholder="Search by address or place" autocomplete="off" />
+                        <button type="button" class="btn btn-outline-success" id="useMyLocationBtn" title="Use my current location">
+                            <i class="bi bi-crosshair"></i>
+                        </button>
                     </div>
-                    <div class="fxg-f-col fxg-u-gap-0">
-                        <label asp-for="Suburb" class="form-label"></label>
-                        <input asp-for="Suburb" class="form-control" placeholder="Suburb" />
-                        <span asp-validation-for="Suburb" class="text-danger"></span>
-                    </div>
-                    <div class="fxg-f-row fxg-u-gap-3">
-                        <div class="fxg-f-col fxg-f-grow-2 fxg-u-gap-0">
-                            <label asp-for="City" class="form-label"></label>
-                            <input asp-for="City" class="form-control" placeholder="City" />
-                            <span asp-validation-for="City" class="text-danger"></span>
-                        </div>
-                        <div class="fxg-f-col fxg-f-grow-1 fxg-u-gap-0">
-                            <label asp-for="PostalCode" class="form-label"></label>
-                            <input asp-for="PostalCode" class="form-control" placeholder="Postal code" />
-                            <span asp-validation-for="PostalCode" class="text-danger"></span>
-                        </div>
-                    </div>
+                    <!-- Subtle coordinates label under the search bar -->
+                    <small id="coordsLabel" class="text-muted">Coordinates: UNKNOWN</small>
                 </div>
 
-                <div class="fxg-f-cell fxg-f-grow-1"></div>
-
-                <div class="fxg-f-col fxg-f-grow-3 fxg-u-gap-3">
-                    <!-- Hidden lat/lng fields (still bind and post) -->
-                    <input asp-for="Latitude" type="hidden" id="Latitude" />
-                    <input asp-for="Longitude" type="hidden" id="Longitude" />
-
-                    <div class="fxg-f-col fxg-u-gap-1">
-                        <label for="locationInput" class="form-label">Search location</label>
-                        <div class="fxg-f-row fxg-u-gap-2">
-                            <input id="locationInput" class="form-control fxg-f-grow-1" placeholder="Search by address or place" autocomplete="off" />
-                            <button type="button" class="btn btn-outline-success" id="useMyLocationBtn" title="Use my current location">
-                                <i class="bi bi-crosshair"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="map" class="report-map" style="width: 100%; height: 320px; border-radius: 8px; overflow: hidden;"></div>
-                    <small class="report-hint">Drag the pin or click the map to adjust the location.</small>
-                </div>
+                <div id="map" class="report-map" style="width: 100%; height: 320px; border-radius: 8px; overflow: hidden;"></div>
+                <small class="report-hint">Drag the pin or click the map to adjust the location.</small>
             </div>
         </section>
 
@@ -188,11 +167,13 @@
             const form = document.getElementById("reportForm");
             const root = document.getElementById("reportIssueRoot");
 
-            // Inputs
+            // Hidden address parts (server binding)
             const street = document.getElementById("Street");
             const suburb = document.getElementById("Suburb");
             const city = document.getElementById("City");
             const postalCode = document.getElementById("PostalCode");
+
+            // Inputs
             const lat = document.getElementById("Latitude");
             const lng = document.getElementById("Longitude");
             const category = document.getElementById("CategoryID");
@@ -202,6 +183,7 @@
             const locationInput = document.getElementById("locationInput");
             const mapEl = document.getElementById("map");
             const useMyLocationBtn = document.getElementById("useMyLocationBtn");
+            const coordsLabel = document.getElementById("coordsLabel");
 
             // Rich text editor bits
             const rte = document.getElementById("rteEditor");
@@ -244,10 +226,8 @@
             ];
 
             function computeFormattedAddress() {
-                const parts = [street.value, suburb.value, city.value, postalCode.value]
-                    .map(s => (s || "").trim())
-                    .filter(s => s.length > 0);
-                return parts.join(", ");
+                // Use the single search box as the authoritative formatted address
+                return (locationInput.value || "").trim();
             }
 
             function syncDescription() {
@@ -267,6 +247,21 @@
                     revFiles.innerHTML = files
                         .map(f => `<span class="report-file-pill" title="${f.name}">${f.name}</span>`)
                         .join(" ");
+                }
+            }
+
+            function setCoordsLabel(latVal, lngVal) {
+                const llOk = Number.isFinite(Number(latVal)) && Number.isFinite(Number(lngVal));
+                if (!coordsLabel) return;
+                if (llOk) {
+                    const latFixed = Number(latVal).toFixed(6);
+                    const lngFixed = Number(lngVal).toFixed(6);
+                    coordsLabel.textContent = `Coordinates: ${latFixed}, ${lngFixed}`;
+                    coordsLabel.classList.remove("text-danger");
+                    coordsLabel.classList.add("text-muted");
+                } else {
+                    coordsLabel.textContent = "Coordinates: UNKNOWN";
+                    coordsLabel.classList.add("text-danger");
                 }
             }
 
@@ -361,13 +356,21 @@
 
             // Google Maps: load, init, and wire up to form fields
             (function initMapPicker() {
-                // Start from existing coordinates if present; else default Cape Town
+                const lat = document.getElementById("Latitude");
+                const lng = document.getElementById("Longitude");
+                const street = document.getElementById("Street");
+                const suburb = document.getElementById("Suburb");
+                const city = document.getElementById("City");
+                const postalCode = document.getElementById("PostalCode");
+                const locationInput = document.getElementById("locationInput");
+                const mapEl = document.getElementById("map");
+                const useMyLocationBtn = document.getElementById("useMyLocationBtn");
+
                 const defaultCenter = {
                     lat: parseFloat(lat.value) || -33.9249,
                     lng: parseFloat(lng.value) || 18.4241
                 };
 
-                // Let MapHelper auto-discover key from <meta name="google-maps-api-key" .../>
                 MapHelper.loadGoogleMaps()
                     .then(() => {
                         const instance = MapHelper.init({
@@ -381,20 +384,18 @@
                             draggable: true,
                             reverseGeocodeOnPick: true,
                             inputReflectsCoordinatesOnPick: true,
-                            autocompleteOptions: { fields: ["formatted_address", "geometry", "address_components"] },
+                            autocompleteOptions: { fields: ["place_id", "formatted_address", "geometry", "address_components"] },
+                            // Pass hidden address parts so reverse geocode can populate them for the server model
                             addressFields: { street, suburb, city, postalCode },
-                            validation: {
-                                endpoint: "/api/address/validate",
-                                regionCode: "ZA",
-                                debounceMs: 350
-                            },
-                            onChange: ({ score, scoreLabel }) => {
-                                console.log("Address score:", score, scoreLabel);
+                            onChange: ({ lat: la, lng: ln }) => {
+                                setCoordsLabel(la, ln);
                             }
                         });
                         window.__mapInstance = instance;
 
-                        // Use My Location
+                        // Initialize label with current (or default) coords
+                        setCoordsLabel(lat.value, lng.value);
+
                         if (useMyLocationBtn) {
                             useMyLocationBtn.addEventListener("click", () => {
                                 if (!navigator.geolocation) {
@@ -412,6 +413,8 @@
                                         console.warn("Geolocation error:", err);
                                         alert("Unable to get your location.");
                                         useMyLocationBtn.disabled = false;
+                                        // If we failed to get location, present UNKNOWN
+                                        setCoordsLabel(null, null);
                                     },
                                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                                 );
@@ -427,7 +430,8 @@
                     v.focusFirstError();
                     return;
                 }
-                address.value = computeFormattedAddress();
+                // Persist formatted address from single input
+                document.getElementById("Address").value = (document.getElementById("locationInput").value || "").trim();
                 syncDescription();
             });
         });

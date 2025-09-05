@@ -1,81 +1,13 @@
 ﻿(function (global) {
 	"use strict";
 
-	const state = new WeakMap();
 	let mapsPromise = null;
-
-	function normalizeEl(elOrSelector) {
-		if (!elOrSelector) return null;
-		return typeof elOrSelector === "string" ? document.querySelector(elOrSelector) : elOrSelector;
-	}
-
-	function toFixedOr(val, digits = 6) {
-		const n = Number(val);
-		return Number.isFinite(n) ? n.toFixed(digits) : "";
-	}
-
-	function clamp(n, min, max) {
-		return Math.max(min, Math.min(max, n));
-	}
-
-	function debounce(fn, wait = 250) {
-		let t = null;
-		return function (...args) {
-			clearTimeout(t);
-			t = setTimeout(() => fn.apply(this, args), wait);
-		};
-	}
-
-	function haversineMeters(a, b) {
-		if (!a || !b) return NaN;
-		const R = 6371000;
-		const toRad = (x) => (x * Math.PI) / 180;
-		const dLat = toRad(b.lat - a.lat);
-		const dLon = toRad(b.lng - a.lng);
-		const lat1 = toRad(a.lat);
-		const lat2 = toRad(b.lat);
-		const s =
-			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-		const c = 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
-		return R * c;
-	}
-
-	function extractAddressComponents(place) {
-		const out = {
-			streetNumber: "",
-			route: "",
-			street: "",
-			suburb: "",
-			city: "",
-			postalCode: "",
-			formatted: place?.formatted_address || ""
-		};
-		const comps = place?.address_components || [];
-		for (const c of comps) {
-			const t = c.types || [];
-			if (t.includes("street_number")) out.streetNumber = c.long_name;
-			if (t.includes("route")) out.route = c.long_name;
-			if (
-				t.includes("sublocality_level_1") ||
-				t.includes("sublocality") ||
-				t.includes("neighborhood")
-			) out.suburb = out.suburb || c.long_name;
-			if (t.includes("locality")) out.city = c.long_name;
-			// Fallback for areas where locality is not populated
-			if (!out.city && t.includes("administrative_area_level_2")) out.city = c.long_name;
-			if (t.includes("postal_code")) out.postalCode = c.long_name;
-		}
-		out.street = [out.streetNumber, out.route].filter(Boolean).join(" ").trim();
-		return out;
-	}
 
 	function discoverApiKey(explicitKey) {
 		if (explicitKey) return explicitKey;
 		if (global.__gmapsKey) return global.__gmapsKey;
 		const meta = document.querySelector('meta[name="google-maps-api-key"]');
-		if (meta && meta.content) return meta.content;
-		return "";
+		return meta?.content || "";
 	}
 
 	function loadGoogleMaps(apiKey, options = {}) {
@@ -85,7 +17,6 @@
 
 		const params = new URLSearchParams({
 			key: resolvedKey || "",
-			libraries: (options.libraries || ["places"]).join(","),
 			v: options.version || "quarterly",
 		});
 		if (options.language) params.set("language", options.language);
@@ -104,402 +35,223 @@
 		return mapsPromise;
 	}
 
-	function buildValidationPayload(parts, opts = {}) {
-		// Address Validation API payload
-		// https://developers.google.com/maps/documentation/address-validation/reference/rest/v1/top-level/validateAddress
-		const { regionCode, languageCode } = opts;
-		const addressLines = [];
-		const line1 = [parts.streetNumber, parts.route].filter(Boolean).join(" ").trim() || parts.street || "";
-		if (line1) addressLines.push(line1);
-
-		return {
-			address: {
-				regionCode: regionCode || "ZA", // default to South Africa (adjust as needed or pass via options)
-				languageCode: languageCode || undefined,
-				addressLines,
-				locality: parts.city || undefined,
-				postalCode: parts.postalCode || undefined
-			},
-			previousResponseId: undefined,
-			enableUspsCass: false
-		};
-	}
-
-	async function callAddressValidationProxy(payload, endpoint) {
-		if (!endpoint) return null;
-		try {
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload)
-			});
-			if (!res.ok) throw new Error(`Validation proxy failed: ${res.status}`);
-			return await res.json();
-		} catch (e) {
-			console.warn("Address validation failed:", e);
-			return null;
+	const Dom = {
+		resolve(elOrSelector) {
+			if (!elOrSelector) return null;
+			return typeof elOrSelector === "string" ? document.querySelector(elOrSelector) : elOrSelector;
+		},
+		setValue(el, val) {
+			if (!el) return;
+			el.value = val ?? "";
+		},
+		toFixedOr(val, digits = 6) {
+			const n = Number(val);
+			return Number.isFinite(n) ? n.toFixed(digits) : "";
 		}
-	}
+	};
 
-	function scoreFromValidation(verdict) {
-		// Coarse weights based on Google validation verdict details
-		// addressGranularity: SUB_PREMISE > PREMISE > PREMISE_PROXIMITY > ROUTE > OTHER/LOCALITY...
-		const gran = (verdict?.addressGranularity || "").toUpperCase();
-		const complete = !!verdict?.addressComplete;
-		const hasUnconfirmed = !!verdict?.hasUnconfirmedComponents;
-
-		let s = 0;
-
-		if (complete) s += 40;
-		switch (gran) {
-			case "SUB_PREMISE": s += 35; break;
-			case "PREMISE": s += 30; break;
-			case "PREMISE_PROXIMITY": s += 24; break;
-			case "ROUTE": s += 18; break;
-			case "LOCALITY": s += 10; break;
-			case "ADMINISTRATIVE_AREA": s += 6; break;
-			default: s += 4; break;
-		}
-		if (hasUnconfirmed) s -= 10;
-
-		return s;
-	}
-
-	function scoreFromGeocodePrecision(locationType) {
-		switch ((locationType || "").toUpperCase()) {
-			case "ROOFTOP": return 20;
-			case "RANGE_INTERPOLATED": return 15;
-			case "GEOMETRIC_CENTER": return 8;
-			case "APPROXIMATE": return 2;
-			default: return 0;
-		}
-	}
-
-	function scoreFromDistance(meters) {
-		if (!Number.isFinite(meters)) return 0;
-		if (meters <= 15) return 10;
-		if (meters <= 50) return 5;
-		if (meters <= 200) return 0;
-		if (meters <= 1000) return -10;
-		return -20;
-	}
-
-	function completenessBonus(parts) {
-		let s = 0;
-		if (parts.street || (parts.streetNumber && parts.route)) s += 2;
-		if (parts.suburb) s += 2;
-		if (parts.city) s += 2;
-		if (parts.postalCode) s += 2;
-		return s;
-	}
-
-	function scoreToLabel(score) {
-		if (score >= 85) return "Exact";
-		if (score >= 65) return "Near";
-		if (score >= 40) return "Good Area Match";
-		return "Vague";
-	}
-
-	function computeScore({ validation, geocodeLocationType, pin, validatedPoint, parts }) {
-		const base = scoreFromValidation(validation?.verdict);
-		const precision = scoreFromGeocodePrecision(geocodeLocationType);
-		const d = (pin && validatedPoint) ? haversineMeters(pin, validatedPoint) : NaN;
-		const dist = scoreFromDistance(d);
-		const comp = completenessBonus(parts || {});
-		const raw = base + precision + dist + comp;
-		const score = clamp(Math.round(raw), 0, 100);
-		return {
-			score,
-			label: scoreToLabel(score),
-			details: {
-				validationVerdict: validation?.verdict || null,
-				geocodeLocationType: geocodeLocationType || null,
-				distanceMeters: Number.isFinite(d) ? Math.round(d) : null,
-				completenessBonus: comp
+	class MapPicker {
+		constructor(options) {
+			if (!global.google || !global.google.maps) {
+				throw new Error("MapHelper.init: Google Maps JS API is not loaded. Call MapHelper.loadGoogleMaps() first.");
 			}
-		};
-	}
 
-	function setInputToCoords(inputEl, lat, lng) {
-		if (!inputEl) return;
-		inputEl.value = `${toFixedOr(lat)}, ${toFixedOr(lng)}`;
-	}
+			this.mapEl = Dom.resolve(options.map);
+			this.inputEl = /** @type {HTMLInputElement} */(Dom.resolve(options.input));
+			this.latEl = /** @type {HTMLInputElement} */(Dom.resolve(options.latInput));
+			this.lngEl = /** @type {HTMLInputElement} */(Dom.resolve(options.lngInput));
+			this.addressRefs = {
+				street: Dom.resolve(options.addressFields?.street),
+				suburb: Dom.resolve(options.addressFields?.suburb),
+				city: Dom.resolve(options.addressFields?.city),
+				postalCode: Dom.resolve(options.addressFields?.postalCode)
+			};
 
-	function init(options) {
-		if (!global.google || !global.google.maps) {
-			throw new Error("MapHelper.init: Google Maps JS API is not loaded. Call MapHelper.loadGoogleMaps(apiKey) first.");
+			if (!this.mapEl) throw new Error("MapHelper.init: 'map' element is required.");
+			if (!this.inputEl) throw new Error("MapHelper.init: 'input' element is required.");
+
+			this.opts = {
+				zoom: options.zoom ?? 13,
+				pickZoom: options.pickZoom ?? 15,
+				draggable: options.draggable !== false,
+				onChange: typeof options.onChange === "function" ? options.onChange : null
+			};
+
+			const maps = global.google.maps;
+			const center = options.defaultCenter || { lat: -33.9249, lng: 18.4241 };
+
+			this.map = new maps.Map(this.mapEl, {
+				center,
+				zoom: this.opts.zoom,
+				mapTypeControl: false, streetViewControl: false, fullscreenControl: false
+			});
+			this.marker = new maps.Marker({ map: this.map, position: center, draggable: this.opts.draggable });
+
+			this.lastPlace = null;
+
+			if (this.latEl) this.latEl.value = Dom.toFixedOr(center.lat);
+			if (this.lngEl) this.lngEl.value = Dom.toFixedOr(center.lng);
+			this._emitChange(center.lat, center.lng, null);
+
+			this._wireMapInteractions();
+			this._wireManualGeocode();
 		}
 
-		const maps = global.google.maps;
-
-		const mapEl = normalizeEl(options.map);
-		const inputEl = normalizeEl(options.input);
-		const latEl = normalizeEl(options.latInput);
-		const lngEl = normalizeEl(options.lngInput);
-
-		if (!mapEl) throw new Error("MapHelper.init: 'map' element is required.");
-		if (!inputEl) throw new Error("MapHelper.init: 'input' element is required.");
-
-		const center = options.defaultCenter || { lat: -33.9249, lng: 18.4241 };
-		const map = new maps.Map(mapEl, {
-			center,
-			zoom: options.zoom ?? 13,
-			mapTypeControl: false,
-			streetViewControl: false,
-			fullscreenControl: false
-		});
-
-		const marker = new maps.Marker({
-			map,
-			position: center,
-			draggable: options.draggable !== false
-		});
-
-		const autocomplete = new maps.places.Autocomplete(inputEl, options.autocompleteOptions || {
-			fields: ["formatted_address", "geometry", "address_components"]
-		});
-		autocomplete.bindTo("bounds", map);
-
-		const geocoder = new maps.Geocoder();
-		const sessionToken = new maps.places.AutocompleteSessionToken();
-
-		const addressFields = options.addressFields || {
-			street: null, suburb: null, city: null, postalCode: null
-		};
-		// Normalize DOM refs
-		for (const k of Object.keys(addressFields)) {
-			addressFields[k] = normalizeEl(addressFields[k]);
-		}
-
-		const ctx = {
-			mapEl,
-			inputEl,
-			latEl,
-			lngEl,
-			map,
-			marker,
-			autocomplete,
-			geocoder,
-			sessionToken,
-			lastPlace: null,
-			lastGeocode: null,
-			lastValidation: null,
-			lastScore: null,
-			options
-		};
-
-		function emitChange(lat, lng, place, extra = {}) {
-			if (latEl) latEl.value = toFixedOr(lat);
-			if (lngEl) lngEl.value = toFixedOr(lng);
-			if (typeof options.onChange === "function") {
-				options.onChange({
-					lat,
-					lng,
-					place: place || ctx.lastPlace || null,
-					address: place?.formatted_address || null,
-					map,
-					marker,
-					input: inputEl,
-					validation: ctx.lastValidation || null,
-					score: ctx.lastScore?.score ?? null,
-					scoreLabel: ctx.lastScore?.label ?? null,
-					scoreDetails: ctx.lastScore?.details ?? null,
+		_emitChange(lat, lng, place, extra = {}) {
+			if (this.latEl) this.latEl.value = Dom.toFixedOr(lat);
+			if (this.lngEl) this.lngEl.value = Dom.toFixedOr(lng);
+			if (this.opts.onChange) {
+				this.opts.onChange({
+					lat, lng, place: place || this.lastPlace || null,
+					map: this.map, marker: this.marker, input: this.inputEl,
 					...extra
 				});
 			}
 		}
 
-		function writeAddressFields(parts) {
-			if (!parts) return;
-			const setIfEl = (el, val) => { if (el && val != null) el.value = val; };
-			const streetValue = parts.street || [parts.streetNumber, parts.route].filter(Boolean).join(" ").trim();
-			setIfEl(addressFields.street, streetValue || "");
-			setIfEl(addressFields.suburb, parts.suburb || "");
-			setIfEl(addressFields.city, parts.city || "");
-			setIfEl(addressFields.postalCode, parts.postalCode || "");
-		}
+		_applyServerResult(data, { setInput = true } = {}) {
+			const lat = Number(data?.lat);
+			const lng = Number(data?.lng);
 
-		async function validateAndScore(lat, lng, placeOrResult, { addressText } = {}) {
-			try {
-				const place = placeOrResult || ctx.lastPlace || null;
-				// Prefer components from place/result; fall back to fields
-				let parts = extractAddressComponents(place);
-				if (!parts.formatted && addressText) parts.formatted = addressText;
+			const p = data?.parts || {};
+			Dom.setValue(this.addressRefs.street, p.street || "");
+			Dom.setValue(this.addressRefs.suburb, p.suburb || "");
+			Dom.setValue(this.addressRefs.city, p.city || "");
+			Dom.setValue(this.addressRefs.postalCode, p.postalCode || "");
 
-				// Try to use last geocode result for geometry and location_type
-				let validatedPoint = null;
-				let locationType = null;
-
-				if (ctx.lastGeocode && ctx.lastGeocode.results && ctx.lastGeocode.results[0]) {
-					const r0 = ctx.lastGeocode.results[0];
-					if (r0.geometry && r0.geometry.location) {
-						validatedPoint = {
-							lat: typeof r0.geometry.location.lat === "function" ? r0.geometry.location.lat() : r0.geometry.location.lat,
-							lng: typeof r0.geometry.location.lng === "function" ? r0.geometry.location.lng() : r0.geometry.location.lng
-						};
-					}
-					locationType = r0.geometry?.location_type || null;
-				} else if (place?.geometry?.location) {
-					validatedPoint = {
-						lat: place.geometry.location.lat(),
-						lng: place.geometry.location.lng()
-					};
-				}
-
-				// Build Address Validation payload and call proxy endpoint if configured
-				let validation = null;
-				if (options.validation?.endpoint) {
-					const payload = buildValidationPayload(parts, {
-						regionCode: options.validation.regionCode,
-						languageCode: options.validation.languageCode
-					});
-					validation = await callAddressValidationProxy(payload, options.validation.endpoint);
-				}
-
-				// Compute score
-				const pin = { lat, lng };
-				const score = computeScore({
-					validation,
-					geocodeLocationType: locationType,
-					pin,
-					validatedPoint,
-					parts
-				});
-
-				ctx.lastValidation = validation;
-				ctx.lastScore = score;
-
-				emitChange(lat, lng, place, { validation, score: score.score, scoreLabel: score.label, scoreDetails: score.details });
-			} catch (err) {
-				console.warn("validateAndScore failed:", err);
+			if (setInput && this.inputEl) {
+				const formatted = data?.formattedAddress || p.formatted || "";
+				this.inputEl.value = formatted?.trim()?.length ? formatted : `${Dom.toFixedOr(lat)}, ${Dom.toFixedOr(lng)}`;
 			}
+
+			this._emitChange(lat, lng, this.lastPlace);
 		}
 
-		const debouncedValidate = debounce((lat, lng, place, extra) => {
-			validateAndScore(lat, lng, place, extra);
-		}, options.validation?.debounceMs ?? 350);
+		_wireMapInteractions() {
+			this.map.addListener("click", (e) => {
+				const lat = e.latLng.lat();
+				const lng = e.latLng.lng();
+				this.marker.setPosition(e.latLng);
+				this.map.setCenter(e.latLng);
+				this.map.setZoom(this.opts.pickZoom || 15);
+				this._serverReverseGeocode(lat, lng);
+			});
 
-		function reverseGeocode(lat, lng, { setInput = true } = {}) {
-			return new Promise((resolve) => {
-				ctx.geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-					ctx.lastGeocode = { results: results || [], status };
-					if (status === "OK" && results && results[0]) {
-						ctx.lastPlace = results[0];
-						const parts = extractAddressComponents(results[0]);
-						writeAddressFields(parts);
-						if (setInput && ctx.inputEl) {
-							if (options.inputReflectsCoordinatesOnPick) {
-								setInputToCoords(ctx.inputEl, lat, lng);
-							} else {
-								ctx.inputEl.value = results[0].formatted_address || "";
-							}
-						}
-						resolve(results[0]);
-					} else {
-						resolve(null);
-					}
-				});
+			this.marker.addListener("dragend", () => {
+				const pos = this.marker.getPosition();
+				const lat = pos.lat();
+				const lng = pos.lng();
+				this.map.setCenter(pos);
+				this.map.setZoom(this.opts.pickZoom || 15);
+				this._serverReverseGeocode(lat, lng);
 			});
 		}
 
-		function setPosition(lat, lng, { pan = true, zoom = options.pickZoom ?? 15, reverseGeocodeOnPick = false, reflectCoords = options.inputReflectsCoordinatesOnPick !== false } = {}) {
+		_wireManualGeocode() {
+			this.inputEl.addEventListener("keydown", (e) => {
+				if (e.key === "Enter") {
+					e.preventDefault();
+					const q = (this.inputEl.value || "").trim();
+					if (q.length === 0) return;
+					this._geocodeText(q);
+				}
+			});
+			this.inputEl.addEventListener("blur", () => {
+				const q = (this.inputEl.value || "").trim();
+				if (q.length === 0) return;
+				setTimeout(() => {
+					this._geocodeText(q);
+				}, 150);
+			});
+		}
+
+		_serverReverseGeocode(lat, lng) {
+			return fetch("/api/address/reverse-geocode", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ lat, lng })
+			})
+				.then(r => r.ok ? r.json() : Promise.reject(r))
+				.then(data => this._applyServerResult(data, { setInput: true }))
+				.catch(err => {
+					console.warn("reverse-geocode failed:", err);
+					if (this.inputEl) this.inputEl.value = `${Dom.toFixedOr(lat)}, ${Dom.toFixedOr(lng)}`;
+					this._emitChange(lat, lng, this.lastPlace);
+				});
+		}
+
+		_geocodeText(query) {
+			return fetch("/api/address/geocode-text", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ query })
+			})
+				.then(r => r.ok ? r.json() : Promise.reject(r))
+				.then(data => {
+					const lat = Number(data?.lat);
+					const lng = Number(data?.lng);
+					// Only center if we have a real match (avoid (0,0) no-result centering)
+					if (Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0)) {
+						const maps = global.google.maps;
+						const pos = new maps.LatLng(lat, lng);
+						this.marker.setPosition(pos);
+						this.map.setCenter(pos);
+						this.map.setZoom(this.opts.pickZoom || 15);
+					}
+					this._applyServerResult(data, { setInput: true });
+				})
+				.catch(err => {
+					console.warn("geocode-text failed:", err);
+				});
+		}
+
+		setPosition(lat, lng, { pan = true, zoom = this.opts.pickZoom || 15, reverseGeocodeOnPick = true } = {}) {
+			const maps = global.google.maps;
 			const pos = new maps.LatLng(lat, lng);
-			marker.setPosition(pos);
-			if (pan) map.setCenter(pos);
-			if (zoom) map.setZoom(zoom);
+			this.marker.setPosition(pos);
+			if (pan) this.map.setCenter(pos);
+			if (zoom) this.map.setZoom(zoom);
 
-			if (reflectCoords && inputEl) {
-				setInputToCoords(inputEl, lat, lng);
-			}
-
-			emitChange(lat, lng, ctx.lastPlace);
-
-			if (reverseGeocodeOnPick || options.reverseGeocodeOnPick) {
-				reverseGeocode(lat, lng, { setInput: !reflectCoords }).then((place) => {
-					debouncedValidate(lat, lng, place, { addressText: place?.formatted_address });
-				});
+			if (reverseGeocodeOnPick) {
+				this._serverReverseGeocode(lat, lng);
 			} else {
-				debouncedValidate(lat, lng, ctx.lastPlace, { addressText: inputEl?.value });
+				this._emitChange(lat, lng, this.lastPlace);
 			}
 		}
 
-		// Autocomplete flow: suggestions provided by the widget; selection updates map/pin/fields
-		autocomplete.setOptions({ sessionToken });
-		autocomplete.addListener("place_changed", () => {
-			const place = autocomplete.getPlace();
-			ctx.lastPlace = place || null;
-			if (!place || !place.geometry) return;
+		getPosition() {
+			const p = this.marker.getPosition();
+			return { lat: p.lat(), lng: p.lng() };
+		}
 
-			const loc = place.geometry.location;
-			const lat = loc.lat();
-			const lng = loc.lng();
+		validateNow() {
+			const p = this.marker.getPosition();
+			return this._serverReverseGeocode(p.lat(), p.lng());
+		}
 
-			map.setCenter(loc);
-			map.setZoom(options.pickZoom ?? 15);
-			marker.setPosition(loc);
+		destroy() {
+			const g = global.google.maps;
+			g.event.clearInstanceListeners(this.marker);
+			g.event.clearInstanceListeners(this.map);
+			this.marker.setMap(null);
+		}
+	}
 
-			const parts = extractAddressComponents(place);
-			writeAddressFields(parts);
-
-			// Geocode once to capture location_type for precision scoring
-			geocoder.geocode({ placeId: place.place_id }, (results, status) => {
-				ctx.lastGeocode = { results: results || [], status };
-				debouncedValidate(lat, lng, place, { addressText: place.formatted_address });
-			});
-
-			emitChange(lat, lng, place);
-		});
-
-		// Click to move marker
-		map.addListener("click", (e) => {
-			const lat = e.latLng.lat();
-			const lng = e.latLng.lng();
-			marker.setPosition(e.latLng);
-
-			setPosition(lat, lng, { reverseGeocodeOnPick: true, reflectCoords: options.inputReflectsCoordinatesOnPick !== false });
-		});
-
-		// Drag end to update
-		marker.addListener("dragend", () => {
-			const pos = marker.getPosition();
-			const lat = pos.lat();
-			const lng = pos.lng();
-			setPosition(lat, lng, { reverseGeocodeOnPick: true, reflectCoords: options.inputReflectsCoordinatesOnPick !== false });
-		});
-
-		// Initialize hidden fields and score on load
-		if (latEl) latEl.value = toFixedOr(center.lat);
-		if (lngEl) lngEl.value = toFixedOr(center.lng);
-		emitChange(center.lat, center.lng, null);
-		debouncedValidate(center.lat, center.lng, null, { addressText: inputEl?.value });
-
-		state.set(mapEl, ctx);
-
+	function init(options) {
+		if (!global.google || !global.google.maps) {
+			throw new Error("MapHelper.init: Google Maps JS API is not loaded. Call MapHelper.loadGoogleMaps() first.");
+		}
+		const picker = new MapPicker(options);
 		return {
-			getPosition: () => {
-				const p = marker.getPosition();
-				return { lat: p.lat(), lng: p.lng() };
-			},
-			setPosition: (lat, lng, opts) => setPosition(lat, lng, opts || {}),
-			validateNow: () => {
-				const p = marker.getPosition();
-				const lat = p.lat();
-				const lng = p.lng();
-				return validateAndScore(lat, lng, ctx.lastPlace, { addressText: inputEl?.value });
-			},
-			destroy: () => {
-				global.google.maps.event.clearInstanceListeners(marker);
-				global.google.maps.event.clearInstanceListeners(map);
-				global.google.maps.event.clearInstanceListeners(autocomplete);
-				marker.setMap(null);
-				state.delete(mapEl);
-			}
+			getPosition: () => picker.getPosition(),
+			setPosition: (lat, lng, opts) => picker.setPosition(lat, lng, opts || {}),
+			validateNow: () => picker.validateNow(),
+			destroy: () => picker.destroy()
 		};
 	}
 
 	global.MapHelper = {
 		loadGoogleMaps,
-		init,
-		parseAddressComponents: extractAddressComponents
+		init
 	};
 })(window);

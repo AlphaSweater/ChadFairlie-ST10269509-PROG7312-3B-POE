@@ -59,6 +59,9 @@ namespace MyLocalGov.com
 				options.Cookie.MaxAge = null; // Session-based cookie
 			});
 
+			// HttpClient
+			builder.Services.AddHttpClient();
+
 			// Register Repositories
 			builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -71,11 +74,8 @@ namespace MyLocalGov.com
 			builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<IIssueService, IssueService>();
 
-			// Maps validation service
-			builder.Services.AddScoped<IAddressValidationService, AddressValidationService>();
-
-			// HttpClient if needed elsewhere
-			builder.Services.AddHttpClient();
+			// Maps service
+			builder.Services.AddScoped<IMapsService, MapsService>();
 
 			// ============================================
 			// 2. Build Application

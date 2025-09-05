@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyLocalGov.com.Services.Interfaces;
+using MyLocalGov.com.Services.Models.Maps;
 
 namespace MyLocalGov.com.Controllers
 {
@@ -8,27 +8,38 @@ namespace MyLocalGov.com.Controllers
 	[Route("api/address")]
 	public class MapsController : ControllerBase
 	{
-		private readonly IAddressValidationService _service;
+		private readonly IMapsService _mapsService;
 
-		public MapsController(IAddressValidationService service)
+		public MapsController(IMapsService mapsService)
 		{
-			_service = service;
+			_mapsService = mapsService;
 		}
 
-		[HttpPost("validate")]
-		public async Task<IActionResult> Validate([FromBody] JsonElement payload, CancellationToken ct)
+		public record ReverseGeocodeRequest(double Lat, double Lng);
+		public record PlaceDetailsRequest(string PlaceId);
+		public record GeocodeTextRequest(string Query);
+
+		[HttpPost("reverse-geocode")]
+		public async Task<ActionResult<MapResultDto>> ReverseGeocode([FromBody] ReverseGeocodeRequest req, CancellationToken ct)
 		{
-			try
-			{
-				var json = payload.GetRawText();
-				var result = await _service.ValidateAsync(json, ct);
-				return Content(result, "application/json");
-			}
-			catch (Exception ex)
-			{
-				// Hide internal error details from clients; log if needed.
-				return Problem(title: "Address validation failed", detail: ex.Message, statusCode: 502);
-			}
+			var result = await _mapsService.ReverseGeocodeAsync(req.Lat, req.Lng, ct);
+			return Ok(result);
+		}
+
+		[HttpPost("place-details")]
+		public async Task<ActionResult<MapResultDto>> PlaceDetails([FromBody] PlaceDetailsRequest req, CancellationToken ct)
+		{
+			if (string.IsNullOrWhiteSpace(req.PlaceId)) return BadRequest("PlaceId is required.");
+			var result = await _mapsService.PlaceDetailsAsync(req.PlaceId, ct);
+			return Ok(result);
+		}
+
+		[HttpPost("geocode-text")]
+		public async Task<ActionResult<MapResultDto>> GeocodeText([FromBody] GeocodeTextRequest req, CancellationToken ct)
+		{
+			if (string.IsNullOrWhiteSpace(req.Query)) return BadRequest("Query is required.");
+			var result = await _mapsService.GeocodeTextAsync(req.Query, ct);
+			return Ok(result);
 		}
 	}
 }
