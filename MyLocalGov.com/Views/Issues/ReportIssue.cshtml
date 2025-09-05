@@ -167,27 +167,49 @@
     <script src="~/js/Shared/GoogleMaps/map-helper.js" asp-append-version="true"></script>
     <script src="~/js/Shared/dropzone-helper.js" asp-append-version="true"></script>
     <script>
+        "use strict";
+
+        // ============================================================
+        // Report Issue – Client Script
+        // Organised into sections for clarity:
+        // 1) Validation & DOM references
+        // 2) Utilities (syncing, formatting, review)
+		// 3) Wizard (navigation + progress)
+        // 4) Map & Autocomplete
+        // 5) Rich Text Editor (toolbar + validation)
+        // 6) Attachments (dropzone)
+        // ============================================================
+
         document.addEventListener("DOMContentLoaded", function () {
+
+            // ------------------------------------------------------------
+            // 1) Validation & DOM references
+            // ------------------------------------------------------------
+
             if (window.ValidationHelper) {
+                // Registers the custom validator so contentEditable maps to the hidden textarea
                 ValidationHelper.registerRichTextRequired();
             }
 
-            const form = document.getElementById("reportForm");
+            // Root containers
             const root = document.getElementById("reportIssueRoot");
+            const form = document.getElementById("reportForm");
 
+            // Location fields and UI
             const lat = document.getElementById("Latitude");
             const lng = document.getElementById("Longitude");
-            const category = document.getElementById("CategoryID");
-
             const locationInput = document.getElementById("locationInput");
             const mapEl = document.getElementById("map");
             const useMyLocationBtn = document.getElementById("useMyLocationBtn");
             const coordsLabel = document.getElementById("coordsLabel");
 
+            // Details fields (category + rich text)
+            const category = document.getElementById("CategoryID");
             const rte = document.getElementById("rteEditor");
             const rteToolbar = document.getElementById("rteToolbar");
             const descriptionHidden = document.getElementById("descriptionHidden");
 
+            // Review fields
             const revAddress = document.getElementById("revAddress");
             const revLat = document.getElementById("revLat");
             const revLng = document.getElementById("revLng");
@@ -195,11 +217,13 @@
             const revDescription = document.getElementById("revDescription");
             const revFiles = document.getElementById("revFiles");
 
+            // Attachments UI
             const dropzone = document.getElementById("dropzone");
             const fileInput = document.getElementById("fileInput");
             const fileList = document.getElementById("fileList");
             const browseBtn = document.getElementById("browseBtn");
 
+            // Initialize unobtrusive validation with custom options (if available)
             const v = window.ValidationHelper
                 ? ValidationHelper.init("#reportForm", {
                     includeHidden: ["#descriptionHidden", "#Latitude", "#Longitude"],
@@ -209,9 +233,11 @@
                 : null;
 
             if (window.ValidationHelper) {
+                // Visually mark labels that are required based on data-val-* attributes
                 ValidationHelper.markRequiredLabels(root);
             }
 
+            // Wizard step engagement messages
             const messages = [
                 "Let’s get started — Step 1 of 4",
                 "Great! Add details — Step 2 of 4",
@@ -219,20 +245,46 @@
                 "Review and submit — Step 4 of 4"
             ];
 
+            // ------------------------------------------------------------
+            // 2) Utilities
+            // ------------------------------------------------------------
+
+            // Reads the current address string from the visible input
             function computeFormattedAddress() {
                 return (locationInput.value || "").trim();
             }
 
+            // Keeps the hidden textarea (posted to server) in sync with the contentEditable editor
             function syncDescription() {
                 descriptionHidden.value = (rte.innerHTML || "").trim();
             }
 
+            // Displays the coordinate label using a consistent format
+            function setCoordsLabel(latVal, lngVal) {
+                const latNum = Number(latVal);
+                const lngNum = Number(lngVal);
+                const ok = Number.isFinite(latNum) && Number.isFinite(lngNum);
+
+                if (!coordsLabel) return;
+
+                if (ok) {
+                    coordsLabel.textContent = `Coordinates: ${latNum.toFixed(6)}, ${lngNum.toFixed(6)}`;
+                    coordsLabel.classList.remove("text-danger");
+                    coordsLabel.classList.add("text-muted");
+                } else {
+                    coordsLabel.textContent = "Coordinates: UNKNOWN";
+                    coordsLabel.classList.add("text-danger");
+                }
+            }
+
+            // Compiles current values into the Review section (Step 4)
             function updateReview() {
                 revAddress.textContent = computeFormattedAddress() || "—";
                 revLat.textContent = (lat.value || "").trim() || "—";
                 revLng.textContent = (lng.value || "").trim() || "—";
                 revCategory.textContent = category.options[category.selectedIndex]?.text || "—";
                 revDescription.innerHTML = descriptionHidden.value || "—";
+
                 const files = Array.from(fileInput.files || []);
                 if (files.length === 0) {
                     revFiles.textContent = "No files attached";
@@ -243,31 +295,64 @@
                 }
             }
 
-            function setCoordsLabel(latVal, lngVal) {
-                const coordsLabel = document.getElementById("coordsLabel");
-                const ok = Number.isFinite(Number(latVal)) && Number.isFinite(Number(lngVal));
-                if (!coordsLabel) return;
-                if (ok) {
-                    coordsLabel.textContent = `Coordinates: ${Number(latVal).toFixed(6)}, ${Number(lngVal).toFixed(6)}`;
-                    coordsLabel.classList.remove("text-danger");
-                    coordsLabel.classList.add("text-muted");
-                } else {
-                    coordsLabel.textContent = "Coordinates: UNKNOWN";
-                    coordsLabel.classList.add("text-danger");
-                }
-            }
+            // Ensure hidden description starts in sync (covers server-side pre-population)
+            syncDescription();
 
+			// ------------------------------------------------------------
+			// 3) Wizard (navigation + progress)
+			// ------------------------------------------------------------
+			const wiz = window.WizardHelper && WizardHelper.init({
+				container: "#reportIssueRoot",
+				form: "#reportForm",
+				stepSelector: ".wizard-step",
+				nextSelector: "#nextBtn",
+				prevSelector: "#prevBtn",
+				progressBarSelector: "#wizardProgressBar",
+				stepIndicatorSelector: "#stepIndicator",
+				engagementSelector: "#engagementMessage",
+				hiddenClass: "flex-hidden",
+				validator: v,
+				messages,
+				beforeNext: (ctx) => {
+					// Ensure description is up-to-date before leaving Details step
+					if (ctx.step === 2) {
+						syncDescription();
+					}
+					return true;
+				},
+				onShowStep: (ctx) => {
+					// Populate Review step when it becomes visible
+					if (ctx.step === 4) {
+						syncDescription();
+						updateReview();
+					}
+				},
+				beforeFinish: () => {
+					// Validate the entire form prior to submit
+					syncDescription();
+					if (v && typeof v.validateAll === "function") {
+						const ok = v.validateAll();
+						if (!ok && typeof v.focusFirstError === "function") v.focusFirstError();
+						return ok;
+					}
+					return true;
+				}
+			});
+
+            // ------------------------------------------------------------
+            // 4) Map & Autocomplete
+            // ------------------------------------------------------------
             (function initMapAndAutocomplete() {
-                const latEl = document.getElementById("Latitude");
-                const lngEl = document.getElementById("Longitude");
-                const input = document.getElementById("locationInput");
+                if (!window.MapUI) return; // Map helper not available; skip map wiring
 
+                // Default center: use model values if present, else fallback (Cape Town)
                 const defaultCenter = {
-                    lat: parseFloat(latEl.value) || -33.9249,
-                    lng: parseFloat(lngEl.value) || 18.4241
+                    lat: parseFloat(lat.value) || -33.9249,
+                    lng: parseFloat(lng.value) || 18.4241
                 };
 
                 MapUI.loadGoogleMaps().then(() => {
+                    // Create map widget with marker and bindings to our hidden inputs
                     const widget = MapUI.createWidget({
                         mapEl: "#map",
                         inputEl: "#locationInput",
@@ -276,138 +361,130 @@
                         lngInputEl: "#Longitude",
                         defaultCenter,
                         pickZoom: 15,
-                        onChange: ({ lat, lng }) => setCoordsLabel(lat, lng)
+                        onChange: ({ lat: newLat, lng: newLng }) => setCoordsLabel(newLat, newLng)
                     });
+
+                    // Expose for debugging if needed
                     window.__mapInstance = widget;
-                    setCoordsLabel(latEl.value, lngEl.value);
 
-                    AutocompleteHelper.create({
-                        inputEl: "#locationInput",
-                        minLength: 3,
-                        autoFetchDetails: true,
-                        onSelect: ({ suggestion, details }) => {
-                            const addr = (details?.formattedAddress || suggestion?.description || "").trim();
-                            if (addr) {
-                                input.value = addr;
-                                if (v?.validator) $(input).valid();
-                            }
-                            if (details && Number.isFinite(details.lat) && Number.isFinite(details.lng)) {
-                                widget.setPosition(details.lat, details.lng, { reverseGeocodeOnPick: false });
-                            }
-                        }
-                    });
+                    // Initialize coordinate label from current inputs
+                    setCoordsLabel(lat.value, lng.value);
 
-                    input.addEventListener("keydown", (e) => {
+                    // Wire up places autocomplete
+                    if (window.AutocompleteHelper) {
+                        AutocompleteHelper.create({
+                            inputEl: "#locationInput",
+                            minLength: 3,
+                            autoFetchDetails: true,
+                            onSelect: ({ suggestion, details }) => {
+                                const addr = (details?.formattedAddress || suggestion?.description || "").trim();
+                                if (addr) {
+                                    locationInput.value = addr;
+                                    if (v?.validator) $(locationInput).valid();
+                                }
+                                if (details && Number.isFinite(details.lat) && Number.isFinite(details.lng)) {
+                                    widget.setPosition(details.lat, details.lng, { reverseGeocodeOnPick: false });
+                                }
+                            }
+                        });
+                    }
+
+                    // Pressing Enter in the address box performs a geocode lookup
+                    locationInput.addEventListener("keydown", (e) => {
                         if (e.key !== "Enter" || e.defaultPrevented) return;
                         e.preventDefault();
-                        const q = (input.value || "").trim();
-                        if (!q) return;
+
+                        const q = (locationInput.value || "").trim();
+                        if (!q || !window.MapService?.AddressApi?.geocodeText) return;
+
                         MapService.AddressApi.geocodeText(q)
                             .then(d => {
-                                const lat = Number(d?.lat), lng = Number(d?.lng);
-                                if (Number.isFinite(lat) && Number.isFinite(lng)) {
-                                    input.value = (d?.formattedAddress || "").trim() || input.value;
-                                    if (v?.validator) $(input).valid();
-                                    widget.setPosition(lat, lng, { reverseGeocodeOnPick: false });
+                                const latNum = Number(d?.lat);
+                                const lngNum = Number(d?.lng);
+                                if (Number.isFinite(latNum) && Number.isFinite(lngNum)) {
+                                    locationInput.value = (d?.formattedAddress || "").trim() || locationInput.value;
+                                    if (v?.validator) $(locationInput).valid();
+                                    widget.setPosition(latNum, lngNum, { reverseGeocodeOnPick: false });
                                 }
                             })
-                            .catch(() => { /* ignore */ });
+                            .catch(() => { /* ignore geocode errors for UX smoothness */ });
                     });
 
-                    if (useMyLocationBtn) {
+                    // "Use my location" button via browser geolocation
+                    if (useMyLocationBtn && navigator.geolocation) {
                         useMyLocationBtn.addEventListener("click", () => {
-                            if (!navigator.geolocation) { alert("Geolocation is not supported by your browser."); return; }
                             useMyLocationBtn.disabled = true;
                             navigator.geolocation.getCurrentPosition(
                                 (pos) => {
                                     widget.setPosition(pos.coords.latitude, pos.coords.longitude, { reverseGeocodeOnPick: true });
                                     useMyLocationBtn.disabled = false;
                                 },
-                                () => { alert("Unable to get your location."); useMyLocationBtn.disabled = false; setCoordsLabel(null, null); },
+                                () => {
+                                    alert("Unable to get your location.");
+                                    useMyLocationBtn.disabled = false;
+                                    setCoordsLabel(null, null);
+                                },
                                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                             );
                         });
+                    } else if (useMyLocationBtn && !navigator.geolocation) {
+                        useMyLocationBtn.addEventListener("click", () => alert("Geolocation is not supported by your browser."));
                     }
                 });
             })();
 
-            // Wizard init with progress bar
-            const wiz = window.WizardHelper && WizardHelper.init({
-                container: "#reportIssueRoot",
-                form: "#reportForm",
-                stepSelector: ".wizard-step",
-                nextSelector: "#nextBtn",
-                prevSelector: "#prevBtn",
-                progressBarSelector: "#wizardProgressBar",
-                stepIndicatorSelector: "#stepIndicator",
-                engagementSelector: "#engagementMessage",
-                hiddenClass: "flex-hidden",
-                validator: v,
-                messages,
-                beforeNext: (ctx) => {
-                    if (ctx.step === 2) syncDescription();
-                    return true;
-                },
-                onShowStep: (ctx) => {
-                    if (ctx.step === 4) {
-                        syncDescription();
-                        updateReview();
-                    }
-                },
-                beforeFinish: (ctx) => {
-                    syncDescription();
-                    if (v && typeof v.validateAll === "function") {
-                        const ok = v.validateAll();
-                        if (!ok && typeof v.focusFirstError === "function") v.focusFirstError();
-                        return ok;
-                    }
-                    return true;
-                }
+            // ------------------------------------------------------------
+            // 5) Rich Text Editor (toolbar + validation)
+            // ------------------------------------------------------------
+
+            // Toolbar buttons map to document.execCommand (simple formatting)
+            rteToolbar.addEventListener("click", (e) => {
+                const btn = e.target.closest("[data-cmd]");
+                if (!btn) return;
+                e.preventDefault();
+                document.execCommand(btn.dataset.cmd, false, null);
+                rte.focus();
+                syncDescription();
+                if (v) v.validateFields("#descriptionHidden");
             });
 
-			// Rich text toolbar
-			rteToolbar.addEventListener("click", (e) => {
-				const btn = e.target.closest("[data-cmd]");
-				if (!btn) return;
-				e.preventDefault();
-				document.execCommand(btn.dataset.cmd, false, null);
-				rte.focus();
-				syncDescription();
-				if (v) v.validateFields("#descriptionHidden");
-			});
-			rte.addEventListener("input", () => {
-				syncDescription();
-				if (v) v.validateFields("#descriptionHidden");
-			});
+            // Keep hidden textarea (for model binding) in sync with contentEditable
+            rte.addEventListener("input", () => {
+                syncDescription();
+                if (v) v.validateFields("#descriptionHidden");
+            });
 
-			// Initialize DropzoneHelper (replaces manual drag/drop and render logic)
-			if (window.DropzoneHelper) {
-				const dz = DropzoneHelper.init({
-					dropzone: dropzone,
-					input: fileInput,
-					list: fileList,
-					browse: browseBtn,
-					dragOverClass: "is-dragover",
-					emptyListText: "No files selected",
-					clickToBrowse: true,
-					maxFiles: 10,
-					renderItem: (file, idx) => {
-						const li = document.createElement("li");
-						li.className = "report-file-list-item";
-						li.innerHTML = `
-							<span class="report-file-name">${file.name}</span>
-							<button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}"><i class="bi bi-x"></i></button>`;
-						return li;
-					},
-					validateInputOnChange: false,
-					onChange: () => {
-						if (v) v.validateFields(fileInput);
-						updateReview();
-					}
-				});
-				// Initial sync for review
-				updateReview();
-			}
+            // ------------------------------------------------------------
+            // 6) Attachments (dropzone)
+            // ------------------------------------------------------------
+            if (window.DropzoneHelper) {
+                const dz = DropzoneHelper.init({
+                    dropzone: dropzone,
+                    input: fileInput,
+                    list: fileList,
+                    browse: browseBtn,
+                    dragOverClass: "is-dragover",
+                    emptyListText: "No files selected",
+                    clickToBrowse: true,
+                    maxFiles: 10,
+                    renderItem: (file, idx) => {
+                        const li = document.createElement("li");
+                        li.className = "report-file-list-item";
+                        li.innerHTML = `
+                            <span class="report-file-name">${file.name}</span>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-dz-remove="${idx}"><i class="bi bi-x"></i></button>`;
+                        return li;
+                    },
+                    validateInputOnChange: false,
+                    onChange: () => {
+                        if (v) v.validateFields("#fileInput");
+                        updateReview();
+                    }
+                });
+
+                // Initial review state reflects any pre-selected files
+                updateReview();
+            }
         });
     </script>
 }
