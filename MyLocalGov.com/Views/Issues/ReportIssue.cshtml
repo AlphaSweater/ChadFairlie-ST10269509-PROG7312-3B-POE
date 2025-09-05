@@ -502,13 +502,7 @@
                 const ACCEPTED = [
                     { label: "Images", value: "image/*", test: f => (f.type || "").startsWith("image/") },
 					// Common video types (mobile + desktop)
-					{
-						label: "Videos",
-						value: "video/*,.mp4,.mov,.webm,.mkv,.avi,.m4v,.3gp",
-						test: f =>
-							(f.type || "").startsWith("video/") ||
-							/\.(mp4|mov|webm|mkv|avi|m4v|3gp)$/i.test(f.name)
-					},
+					{ label: "Videos", value: "video/*,.mp4,.mov,.webm,.mkv,.avi,.m4v,.3gp", test: f => (f.type || "").startsWith("video/") || /\.(mp4|mov|webm|mkv|avi|m4v|3gp)$/i.test(f.name) },
 					{ label: "PDF", value: ".pdf", test: f => /\.pdf$/i.test(f.name) },
                     { label: "DOC", value: ".doc", test: f => /\.doc$/i.test(f.name) },
                     { label: "DOCX", value: ".docx", test: f => /\.docx$/i.test(f.name) }
