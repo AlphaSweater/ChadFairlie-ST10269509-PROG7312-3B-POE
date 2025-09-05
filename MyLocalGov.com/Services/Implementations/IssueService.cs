@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MyLocalGov.com.Models;
 using MyLocalGov.com.Repositories.Interfaces;
 using MyLocalGov.com.Services.Interfaces;
-using MyLocalGov.com.ViewModels.Reports;
+using MyLocalGov.com.ViewModels.Issues;
 
 namespace MyLocalGov.com.Services.Implementations
 {

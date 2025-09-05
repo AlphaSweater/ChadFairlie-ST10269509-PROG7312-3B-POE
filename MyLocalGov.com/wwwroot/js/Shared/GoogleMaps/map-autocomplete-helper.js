@@ -13,6 +13,40 @@
 		return typeof elOrSelector === "string" ? document.querySelector(elOrSelector) : elOrSelector;
 	}
 
+	function ensureBaseStyles() {
+		const STYLE_ID = "ac-helper-base-styles";
+		if (document.getElementById(STYLE_ID)) return;
+
+		const css = `
+/* === AutocompleteHelper functional/base styles (injected by JS) === */
+.ac-helper-menu {
+	position: absolute;         /* ensure dropdown anchors to input container */
+	z-index: 2000;              /* floats above page chrome */
+	display: none;              /* JS toggles visibility */
+	max-height: 320px;          /* scroll when long */
+	overflow-y: auto;           /* allow scrolling in the menu */
+	overscroll-behavior: contain;
+	box-sizing: border-box;     /* width/position computed from input rect */
+}
+
+.ac-helper-menu.is-open {
+	display: block;
+}
+
+.ac-helper-item {
+	cursor: pointer;
+	user-select: none;
+	white-space: normal;        /* allow wrapping if needed */
+}
+		`.trim();
+
+		const style = document.createElement("style");
+		style.id = STYLE_ID;
+		style.type = "text/css";
+		style.appendChild(document.createTextNode(css));
+		document.head.appendChild(style);
+	}
+
 	class AutocompleteBox {
 		constructor(options) {
 			this.opts = Object.assign({
@@ -27,6 +61,8 @@
 
 			this.inputEl = resolve(this.opts.inputEl);
 			if (!this.inputEl) throw new Error("AutocompleteHelper: inputEl is required.");
+
+			ensureBaseStyles();
 
 			this._host = null;
 			this._items = [];
@@ -44,7 +80,7 @@
 
 			const parent = this.inputEl.parentElement || this.inputEl;
 			if (getComputedStyle(parent).position === "static") {
-				parent.style.position = "relative";
+				parent.style.position = "relative"; // functional: anchor dropdown positioning
 			}
 			parent.appendChild(host);
 
@@ -123,6 +159,7 @@
 			});
 
 			this._host.classList.add("is-open");
+			this._host.style.display = "block"; // functional: ensure visibility even if theme overrides
 		}
 
 		_move(delta) {
@@ -143,6 +180,7 @@
 
 		_hide() {
 			this._host.classList.remove("is-open");
+			this._host.style.display = "none"; // functional: hide via inline style
 			this._host.innerHTML = "";
 			this._items = [];
 			this._index = -1;

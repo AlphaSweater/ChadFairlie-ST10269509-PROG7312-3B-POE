@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using MyLocalGov.com.ViewModels.Reports;
+using MyLocalGov.com.ViewModels.Issues;
 
 namespace MyLocalGov.com.Services.Interfaces
 {

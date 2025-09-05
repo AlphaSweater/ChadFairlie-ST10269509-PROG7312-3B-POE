@@ -4,21 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyLocalGov.com.Models;
 using MyLocalGov.com.Services.Interfaces;
-using MyLocalGov.com.ViewModels.Reports;
+using MyLocalGov.com.ViewModels.Issues;
 using System.Security.Claims;
 
 namespace MyLocalGov.com.Controllers
 {
 	// ============================================================================
-	// ReportsController
+	// IssuesController
 	// ----------------------------------------------------------------------------
-	// Manages user reports (e.g., issues, incidents, complaints).
+	// Manages user Issues (e.g., issues, incidents, complaints).
 	// Allows users to create, view, and track their own reports.
 	// ----------------------------------------------------------------------------
 	// Typical Actions:
 	// - Create()     : Display form to submit a new report
-	// - MyReports()  : List all reports created by the current user
-	// - Details(id)  : View details for a specific report
+	// - MyIssues()  : List all Issues created by the current user
+	// - Details(id)  : View details for a specific Issue report
 	// ============================================================================
 	[Authorize]
 	public class IssuesController : Controller

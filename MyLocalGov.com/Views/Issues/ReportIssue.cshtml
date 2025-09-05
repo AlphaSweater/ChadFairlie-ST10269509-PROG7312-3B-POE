@@ -1,10 +1,10 @@
-﻿@model MyLocalGov.com.ViewModels.Reports.IssueViewModel
+﻿@model MyLocalGov.com.ViewModels.Issues.IssueViewModel
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Report an Issue";
 }
 <head>
-    <link rel="stylesheet" href="/css/Reports/ReportIssue.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/Issues/ReportIssue.css" asp-append-version="true" />
 </head>
 
 <main class="fxg-u-container fxg-f-col fxg-u-gap-6 report-container" id="reportIssueRoot">
@@ -22,7 +22,7 @@
         <p class="report-subtitle">Help your municipality address problems faster by reporting accurate details.</p>
     </section>
 
-    <form asp-action="ReportIssue" asp-controller="Reports" method="post" enctype="multipart/form-data" class="fxg-f-col fxg-u-gap-6 report-form-card" id="reportForm">
+    <form asp-action="ReportIssue" asp-controller="Issues" method="post" enctype="multipart/form-data" class="fxg-f-col fxg-u-gap-6 report-form-card" id="reportForm">
         <!-- Wizard navigation at the top -->
         <div class="report-wizard-nav fxg-f-row fxg-f-main-between fxg-f-cross-center report-wizard-nav-top">
             <button type="button" class="btn btn-outline-success" id="prevBtn">Back</button>
@@ -38,12 +38,6 @@
         <!-- Hidden combined address to bind on submit -->
         <input asp-for="Address" type="hidden" id="Address" />
 
-        <!-- Keep address parts as hidden so the server model can bind/validate -->
-        <input asp-for="Street" type="hidden" id="Street" />
-        <input asp-for="Suburb" type="hidden" id="Suburb" />
-        <input asp-for="City" type="hidden" id="City" />
-        <input asp-for="PostalCode" type="hidden" id="PostalCode" />
-
         <!-- Step 1 -->
         <section class="wizard-step" data-step="1">
             <h2 class="report-section-title">Location</h2>
@@ -53,16 +47,24 @@
                 <input asp-for="Latitude" type="hidden" id="Latitude" />
                 <input asp-for="Longitude" type="hidden" id="Longitude" />
 
-                <div class="fxg-f-col fxg-u-gap-1">
-                    <label for="locationInput" class="form-label">Search location</label>
-                    <div class="fxg-f-row fxg-u-gap-2">
-                        <input id="locationInput" class="form-control fxg-f-grow-1" placeholder="Search by address or place" autocomplete="off" />
-                        <button type="button" class="btn btn-outline-success" id="useMyLocationBtn" title="Use my current location">
-                            <i class="bi bi-crosshair"></i>
-                        </button>
+                <div class="fxg-f-col fxg-u-gap-1 locationInputArea">
+
+                    <!-- Composite location control -->
+                    <div class="location-composite">
+                        <div class="location-composite-row">
+                            <input id="locationInput"
+                                   class="fxg-f-grow-1 form-control location-input"
+                                   placeholder="Search by address or place"
+                                   autocomplete="off" />
+                            <button type="button"
+                                    class="btn location-btn"
+                                    id="useMyLocationBtn"
+                                    title="Use my current location">
+                                <i class="bi bi-crosshair"></i>
+                            </button>
+                        </div>
+                        <small id="coordsLabel" class="coords text-muted">Coordinates: UNKNOWN</small>
                     </div>
-                    <!-- Subtle coordinates label under the search bar -->
-                    <small id="coordsLabel" class="text-muted">Coordinates: UNKNOWN</small>
                 </div>
 
                 <div id="map" class="report-map" style="width: 100%; height: 320px; border-radius: 8px; overflow: hidden;"></div>
@@ -168,12 +170,6 @@
             // DOM lookups
             const form = document.getElementById("reportForm");
             const root = document.getElementById("reportIssueRoot");
-
-            // Hidden address parts (server binding)
-            const street = document.getElementById("Street");
-            const suburb = document.getElementById("Suburb");
-            const city = document.getElementById("City");
-            const postalCode = document.getElementById("PostalCode");
 
             // Inputs
             const lat = document.getElementById("Latitude");
