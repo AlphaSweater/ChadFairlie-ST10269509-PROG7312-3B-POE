@@ -21,11 +21,11 @@ namespace MyLocalGov.com.Controllers
 	// - Details(id)  : View details for a specific report
 	// ============================================================================
 	[Authorize]
-	public class ReportsController : Controller
+	public class IssuesController : Controller
 	{
 		private readonly IIssueService _issueService;
 
-		public ReportsController(IIssueService issueService)
+		public IssuesController(IIssueService issueService)
 		{
 			_issueService = issueService;
 		}
