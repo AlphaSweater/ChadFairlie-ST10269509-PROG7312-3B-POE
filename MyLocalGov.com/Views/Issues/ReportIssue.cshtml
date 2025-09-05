@@ -35,9 +35,6 @@
             <button type="button" class="btn btn-success" id="nextBtn">Next</button>
         </div>
 
-        <!-- Hidden combined address to bind on submit -->
-        <input asp-for="Address" type="hidden" id="Address" />
-
         <!-- Step 1 -->
         <section class="wizard-step" data-step="1">
             <h2 class="report-section-title">Location</h2>
@@ -52,7 +49,9 @@
                     <!-- Composite location control -->
                     <div class="location-composite">
                         <div class="location-composite-row">
-                            <input id="locationInput"
+                            <!-- Bind this visible input to Address so unobtrusive validation applies -->
+                            <input asp-for="Address"
+                                   id="locationInput"
                                    class="fxg-f-grow-1 form-control location-input"
                                    placeholder="Search by address or place"
                                    autocomplete="off" />
@@ -65,6 +64,9 @@
                         </div>
                         <small id="coordsLabel" class="coords text-muted">Coordinates: UNKNOWN</small>
                     </div>
+
+                    <!-- Address validation message -->
+                    <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
 
                 <div id="map" class="report-map" style="width: 100%; height: 320px; border-radius: 8px; overflow: hidden;"></div>
@@ -175,7 +177,6 @@
             const lat = document.getElementById("Latitude");
             const lng = document.getElementById("Longitude");
             const category = document.getElementById("CategoryID");
-            const address = document.getElementById("Address");
 
             // Map elements
             const locationInput = document.getElementById("locationInput");
@@ -224,7 +225,7 @@
             ];
 
             function computeFormattedAddress() {
-                // Use the single search box as the authoritative formatted address
+                // The input is now bound to Address (name=Address), so use its value
                 return (locationInput.value || "").trim();
             }
 
@@ -294,7 +295,11 @@
                         autoFetchDetails: true,
                         onSelect: ({ suggestion, details }) => {
                             const addr = (details?.formattedAddress || suggestion?.description || "").trim();
-                            if (addr) input.value = addr;
+                            if (addr) {
+                                input.value = addr;
+                                // Trigger validation when address is set by selection
+                                if (v?.validator) $(input).valid();
+                            }
                             if (details && Number.isFinite(details.lat) && Number.isFinite(details.lng)) {
                                 widget.setPosition(details.lat, details.lng, { reverseGeocodeOnPick: false });
                             }
@@ -312,6 +317,7 @@
                                 const lat = Number(d?.lat), lng = Number(d?.lng);
                                 if (Number.isFinite(lat) && Number.isFinite(lng)) {
                                     input.value = (d?.formattedAddress || "").trim() || input.value;
+                                    if (v?.validator) $(input).valid();
                                     widget.setPosition(lat, lng, { reverseGeocodeOnPick: false });
                                 }
                             })
@@ -335,7 +341,43 @@
                 });
             })();
 
-            // Dropzone/Wizard/Submit code (unchanged) ...
+            // WIZARD: init multi-step flow, validation, review sync
+            const wiz = window.WizardHelper && WizardHelper.init({
+                container: "#reportIssueRoot",
+                form: "#reportForm",
+                stepSelector: ".wizard-step",
+                nextSelector: "#nextBtn",
+                prevSelector: "#prevBtn",
+                stepIndicatorSelector: "#stepIndicator",
+                engagementSelector: "#engagementMessage",
+                hiddenClass: "flex-hidden",
+                validator: v,
+                messages,
+                beforeNext: (ctx) => {
+                    // Ensure RTE value is mirrored before leaving Details step
+                    if (ctx.step === 2) syncDescription();
+                    return true;
+                },
+                onShowStep: (ctx) => {
+                    // Refresh review when entering last step
+                    if (ctx.step === 4) {
+                        syncDescription();
+                        updateReview();
+                    }
+                },
+                beforeFinish: (ctx) => {
+                    // Final sync + full form validation safeguard
+                    syncDescription();
+                    if (v && typeof v.validateAll === "function") {
+                        const ok = v.validateAll();
+                        if (!ok && typeof v.focusFirstError === "function") v.focusFirstError();
+                        return ok;
+                    }
+                    return true;
+                }
+            });
+
+            // Dropzone/other code (unchanged) ...
         });
     </script>
 }
