@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 using MyLocalGov.com.Models;
 using MyLocalGov.com.Repositories.Interfaces;
 using MyLocalGov.com.Services.Interfaces;
@@ -124,27 +125,24 @@ namespace MyLocalGov.com.Services.Implementations
 
 		#endregion
 
-		#region File Save (Sequential Planning → Parallel Upload)
+		#region File Save (Sequential Planning → Concurrent Queue Workers)
 
 		/*
-		 * Upload strategy:
-		 * 1. Sequential planning pass:
-		 *    - Dequeue each ValidatedFile.
-		 *    - Assign a *final unique* file name (collision check against existing disk and planned set).
-		 *    - Collect a list of UploadPlan objects (metadata only, no IO yet).
-		 * 2. Parallel execution pass (limited by SemaphoreSlim):
-		 *    - Each UploadPlan streams its file to disk.
-		 *    - On success, creates an IssueAttachmentModel (thread-safe list via lock).
-		 * 3. Single DB batch save of all successful attachments.
+		 * Variant: ConcurrentQueue worker model
+		 * ------------------------------------
+		 * Differences from previous SemaphoreSlim + per-file Task approach:
+		 * 1. Planning phase still runs once (sequential) to assign final unique names → no contention later.
+		 * 2. A ConcurrentQueue<UploadPlan> is populated with all planned uploads.
+		 * 3. We spin up MaxParallelUploads fixed worker tasks. Each worker:
+		 *       while (queue.TryDequeue(out plan)) { upload; enqueue attachment model }
+		 *    This avoids spawning one Task per file (better for very large batches) and removes explicit SemaphoreSlim usage.
+		 * 4. A ConcurrentQueue<IssueAttachmentModel> gathers results without locks.
+		 * 5. After all workers finish, we persist all successful attachments in a single batch.
 		 *
-		 * Why a SemaphoreSlim?
-		 * - To allow multiple concurrent uploads without overwhelming the system.
-		 * - WaitAsync() reserves a slot; Release() frees it when the Task finishes.
-		 * - This pattern prevents unlimited Task.Run usage and keeps controlled pressure on IO.
-		 *
-		 * Why no re-validation here?
-		 * - All validation (empty check, sanitization, duplicate name filtering) is done in BuildValidatedQueue.
-		 * - The planning pass only assigns uniqueness; it trusts sanitized names.
+		 * Rationale:
+		 * - Queue-based fan-out is a natural fit for bounded parallelism without manual semaphore bookkeeping.
+		 * - Reduces synchronization points (no lock around a shared List).
+		 * - Still respects cancellation cooperatively.
 		 */
 
 		private async Task<int> SaveAttachmentsAsync(int issueId, Queue<ValidatedFile> validatedQueue, CancellationToken ct)
@@ -157,120 +155,115 @@ namespace MyLocalGov.com.Services.Implementations
 			Directory.CreateDirectory(destDir);
 			_logger.LogDebug("SaveAttachmentsAsync: Destination directory {DestDir}", destDir);
 
-			// 1) Planning pass (assign final unique names)
+			// 1) Planning pass (assign final unique names up-front, no IO)
 			var existingNames = new HashSet<string>(
-				Directory.EnumerateFiles(destDir).Select(Path.GetFileName) ?? Array.Empty<string>(),
+				Directory.EnumerateFiles(destDir).Select(Path.GetFileName)!,
 				StringComparer.OrdinalIgnoreCase);
 
-			var planedUploads = new List<UploadPlan>(validatedQueue.Count);
+			var plannedUploads = new List<UploadPlan>(validatedQueue.Count);
 
 			while (validatedQueue.Count > 0)
 			{
 				ct.ThrowIfCancellationRequested();
-				var validFile = validatedQueue.Dequeue();
+				var vf = validatedQueue.Dequeue();
 
-				// It already has a sanitized base name, just ensure uniqueness
-				var finalName = EnsureUniqueFileName(existingNames, validFile.SanitizedName);
+				// Sanitized name already provided, ensure final uniqueness
+				var finalName = EnsureUniqueFileName(existingNames, vf.SanitizedName);
 				existingNames.Add(finalName);
 
 				var fullPath = Path.Combine(destDir, finalName);
 				var relativePath = Path.Combine("uploads", "issues", issueId.ToString(), finalName).Replace('\\', '/');
 
-				planedUploads.Add(new UploadPlan(validFile.File, finalName, fullPath, relativePath));
+				plannedUploads.Add(new UploadPlan(vf.File, finalName, fullPath, relativePath));
 			}
 
-			if (planedUploads.Count == 0)
+			if (plannedUploads.Count == 0)
 			{
 				_logger.LogDebug("SaveAttachmentsAsync: Nothing to upload after planning for Issue {IssueId}", issueId);
 				return 0;
 			}
 
-			_logger.LogDebug("SaveAttachmentsAsync: Planned {Count} upload(s) for Issue {IssueId}", planedUploads.Count, issueId);
+			_logger.LogDebug("SaveAttachmentsAsync: Planned {Count} upload(s) for Issue {IssueId}", plannedUploads.Count, issueId);
 
-			// 2) Parallel upload (limited by SemaphoreSlim)
-			var semaphore = new SemaphoreSlim(MaxParallelUploads);
-			var attachmentModels = new List<IssueAttachmentModel>(planedUploads.Count);
-			var tasks = new List<Task>(planedUploads.Count);
-			int completed = 0;
+			// 2) Create work queue + result queue
+			var workQueue = new ConcurrentQueue<UploadPlan>(plannedUploads);
+			var attachments = new ConcurrentQueue<IssueAttachmentModel>();
 
-			foreach (var plan in planedUploads)
+			// Worker logic
+			async Task WorkerAsync(int workerId)
 			{
-				ct.ThrowIfCancellationRequested();
-				await semaphore.WaitAsync(ct);
-
-				// NOTE: Task.Run used to offload each bounded upload; bounded by semaphore.
-				tasks.Add(Task.Run(async () =>
+				while (!ct.IsCancellationRequested && workQueue.TryDequeue(out var plan))
 				{
 					try
 					{
-						_logger.LogDebug("Upload START {FileName} ({Bytes} bytes) -> {Path}",
-							plan.FinalName, plan.File.Length, plan.FullPath);
+						_logger.LogDebug("Worker {Worker} START {FileName} ({Bytes} bytes)",
+							workerId, plan.FinalName, plan.File.Length);
 
 						await using (var fs = new FileStream(plan.FullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true))
 						{
 							await plan.File.CopyToAsync(fs, ct);
 						}
 
-						// Thread-safe add
-						lock (attachmentModels)
+						attachments.Enqueue(new IssueAttachmentModel
 						{
-							attachmentModels.Add(new IssueAttachmentModel
-							{
-								IssueID = issueId,
-								FileName = plan.FinalName,
-								FilePath = plan.RelativePath,
-								ContentType = string.IsNullOrWhiteSpace(plan.File.ContentType) ? null : plan.File.ContentType,
-								FileSizeBytes = plan.File.Length,
-								UploadedAt = DateTime.UtcNow
-							});
-						}
+							IssueID = issueId,
+							FileName = plan.FinalName,
+							FilePath = plan.RelativePath,
+							ContentType = string.IsNullOrWhiteSpace(plan.File.ContentType) ? null : plan.File.ContentType,
+							FileSizeBytes = plan.File.Length,
+							UploadedAt = DateTime.UtcNow
+						});
 
-						var done = Interlocked.Increment(ref completed);
-						_logger.LogInformation("Upload DONE {FileName} for Issue {IssueId} ({Done}/{Total})",
-							plan.FinalName, issueId, done, planedUploads.Count);
+						var remaining = workQueue.Count;
+						_logger.LogInformation("Worker {Worker} DONE {FileName} for Issue {IssueId} (remaining: {Remaining})",
+							workerId, plan.FinalName, issueId, remaining);
 					}
 					catch (OperationCanceledException)
 					{
-						_logger.LogWarning("Upload CANCELED {FileName} for Issue {IssueId}", plan.FinalName, issueId);
+						_logger.LogWarning("Worker {Worker} CANCELED during upload of {FileName} (Issue {IssueId})",
+							workerId, plan.FinalName, issueId);
 						TryDelete(plan.FullPath);
 						throw;
 					}
 					catch (Exception ex)
 					{
-						_logger.LogError(ex, "Upload FAILED {FileName} for Issue {IssueId}", plan.FinalName, issueId);
+						_logger.LogError(ex, "Worker {Worker} FAILED {FileName} (Issue {IssueId})",
+							workerId, plan.FinalName, issueId);
 						TryDelete(plan.FullPath);
-						// Continue letting others finish
+						// Continue with next item
 					}
-					finally
-					{
-						semaphore.Release();
-					}
-				}, ct));
+				}
+			}
+
+			// 3) Spin up limited workers
+			var workerCount = Math.Min(MaxParallelUploads, plannedUploads.Count);
+			var workerTasks = new Task[workerCount];
+			for (int i = 0; i < workerCount; i++)
+			{
+				workerTasks[i] = Task.Run(() => WorkerAsync(i + 1), ct);
 			}
 
 			try
 			{
-				await Task.WhenAll(tasks);
+				await Task.WhenAll(workerTasks);
 			}
 			catch (OperationCanceledException)
 			{
-				_logger.LogWarning("SaveAttachmentsAsync: Upload batch canceled for Issue {IssueId}", issueId);
+				_logger.LogWarning("SaveAttachmentsAsync: Batch canceled for Issue {IssueId}", issueId);
 				throw;
 			}
 
-			// 3) Persist successful attachments
-			if (attachmentModels.Count > 0)
+			// 4) Persist successful attachments
+			if (!attachments.IsEmpty)
 			{
-				foreach (var att in attachmentModels)
+				while (attachments.TryDequeue(out var att))
 					await _unitOfWork.IssueAttachments.AddAsync(att);
 
 				await _unitOfWork.SaveAsync();
 			}
 
-			_logger.LogInformation("SaveAttachmentsAsync: {Saved}/{Planned} attachment(s) persisted for Issue {IssueId}",
-				attachmentModels.Count, planedUploads.Count, issueId);
-
-			return attachmentModels.Count;
+			_logger.LogInformation("SaveAttachmentsAsync: Attachments persisted for Issue {IssueId}", issueId);
+			return plannedUploads.Count - workQueue.Count; // Number of processed items (success + failures); 
 		}
 
 		private sealed record UploadPlan(IFormFile File, string FinalName, string FullPath, string RelativePath);
@@ -282,7 +275,7 @@ namespace MyLocalGov.com.Services.Implementations
 				if (File.Exists(path))
 					File.Delete(path);
 			}
-			catch { /* ignore */ }
+			catch { /* swallow */ }
 		}
 
 		#endregion
