@@ -144,22 +144,32 @@
         <!-- Step 4 -->
         <section class="wizard-step flex-hidden" data-step="4">
             <h2 class="report-section-title">Review & Submit</h2>
-            <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
+            <!-- Single column container so button sits below summary -->
+            <div class="fxg-g-grid fxg-g-cols-1">
                 <div class="fxg-f-col report-review-box">
                     <h3>Summary</h3>
-                    <dl class="report-review-dl">
-                        <dt>Address</dt>
-                        <dd id="revAddress"></dd>
-                        <dt>Coordinates</dt>
-                        <dd><span id="revLat"></span>, <span id="revLng"></span></dd>
-                        <dt>Category</dt>
-                        <dd id="revCategory"></dd>
-                        <dt>Description</dt>
-                        <dd id="revDescription"></dd>
-                        <dt>Files</dt>
-                        <dd id="revFiles"></dd>
-                    </dl>
+
+                    <!-- Two-column info grid inside the summary -->
+                    <div class="fxg-g-grid fxg-g-cols-1 fxg-g-md-cols-2">
+                        <dl class="report-review-dl">
+                            <dt>Address</dt>
+                            <dd id="revAddress"></dd>
+                            <dt>Coordinates</dt>
+                            <dd><span id="revLat"></span>, <span id="revLng"></span></dd>
+                            <dt>Category</dt>
+                            <dd id="revCategory"></dd>
+                        </dl>
+
+                        <dl class="report-review-dl">
+                            <dt>Description</dt>
+                            <dd id="revDescription"></dd>
+                            <dt>Files</dt>
+                            <dd id="revFiles"></dd>
+                        </dl>
+                    </div>
                 </div>
+
+                <!-- Submit button BELOW the summary box -->
                 <div class="fxg-f-col fxg-f-main-center fxg-f-cross-center">
                     <button type="submit" class="btn btn-success btn-lg">Submit Report</button>
                 </div>
